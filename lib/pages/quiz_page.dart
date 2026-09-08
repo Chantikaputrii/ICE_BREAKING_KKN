@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../data/question_bank.dart';
 import '../models/question.dart';
+import '../services/animated_question_api.dart';
 import 'result_page.dart';
 
 class QuizPage extends StatefulWidget {
@@ -9,12 +13,14 @@ class QuizPage extends StatefulWidget {
   final String? subject;
   final Future<void> Function(int score, int total) onFinished;
   final String studentName;
+  final List<Question>? questions;
 
   const QuizPage({
     super.key,
     required this.grade,
     required this.onFinished,
     required this.studentName,
+    this.questions,
     this.subject,
   });
 
@@ -29,15 +35,20 @@ class _QuizPageState extends State<QuizPage> {
   int score = 0;
   int? selectedAnswer;
   bool answered = false;
+  bool timedOut = false;
+  int secondsRemaining = 15;
+  Timer? _timer;
+  Map<String, String> _remoteVisuals = {};
 
   @override
   void initState() {
     super.initState();
 
-    final allQuestions =
-        questionsByGrade[widget.grade] ?? [];
+    final allQuestions = widget.questions ?? questionsByGrade[widget.grade] ?? [];
 
-    if (widget.subject == null) {
+    if (widget.questions != null) {
+      questions = _shuffleQuestions(widget.questions!);
+    } else if (widget.subject == null) {
       questions = [...allQuestions];
       questions.shuffle();
     } else {
@@ -48,14 +59,59 @@ class _QuizPageState extends State<QuizPage> {
           )
           .toList();
     }
+    _startTimer();
+    _loadRemoteVisuals();
+  }
+
+  Future<void> _loadRemoteVisuals() async {
+    final visuals = await AnimatedQuestionApi().loadVisuals(
+      questions.where((question) => question.isAnimated).map((q) => q.id).toList(),
+    );
+    if (mounted && visuals.isNotEmpty) setState(() => _remoteVisuals = visuals);
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    secondsRemaining = 15;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || answered) return;
+      if (secondsRemaining <= 1) {
+        timer.cancel();
+        setState(() {
+          secondsRemaining = 0;
+          answered = true;
+          timedOut = true;
+        });
+      } else {
+        setState(() => secondsRemaining--);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  List<Question> _shuffleQuestions(List<Question> source) {
+    final random = Random();
+    final shuffled = source.map((question) {
+      final options = [...question.options]..shuffle(random);
+      return question.withOptions(options);
+    }).toList();
+    shuffled.shuffle(random);
+    return shuffled;
   }
 
   void chooseAnswer(int index) {
     if (answered) return;
+    _timer?.cancel();
 
     setState(() {
       selectedAnswer = index;
       answered = true;
+      timedOut = false;
 
       if (index == questions[currentQuestion].answer) {
         score += 10;
@@ -87,7 +143,9 @@ class _QuizPageState extends State<QuizPage> {
         currentQuestion++;
         selectedAnswer = null;
         answered = false;
+        timedOut = false;
       });
+      _startTimer();
     }
   }
 
@@ -147,6 +205,33 @@ class _QuizPageState extends State<QuizPage> {
                 ],
               ),
 
+              const SizedBox(height: 14),
+
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                decoration: BoxDecoration(
+                  color: secondsRemaining <= 5
+                      ? const Color(0xFFFFE4E4)
+                      : const Color(0xFFEAF0FF),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      color: secondsRemaining <= 5 ? Colors.red : const Color(0xFF4F7DF3),
+                    ),
+                    const SizedBox(width: 7),
+                    Text(
+                      '$secondsRemaining detik',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 25),
 
               // PERTANYAAN
@@ -167,6 +252,13 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 child: Column(
                   children: [
+                    if (question.visual != null)
+                      _QuestionVisual(
+                        visual: question.visual!,
+                        isAnimated: question.isAnimated,
+                        remoteImageUrl: _remoteVisuals[question.id],
+                      ),
+                    if (question.visual != null) const SizedBox(height: 10),
                     Text(
                       question.subject,
                       style: const TextStyle(
@@ -297,27 +389,25 @@ class _QuizPageState extends State<QuizPage> {
                     padding:
                         const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: selectedAnswer == question.answer
+                          ? const Color(0xFFE0F7E8)
+                          : const Color(0xFFFFE3E3),
                       borderRadius:
                           BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          selectedAnswer ==
-                                  question.answer
-                              ? '🎉'
-                              : '💡',
-                          style:
-                              const TextStyle(fontSize: 30),
+                        _AnswerStatusIcon(
+                          isCorrect: selectedAnswer == question.answer,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            selectedAnswer ==
-                                    question.answer
+                            selectedAnswer == question.answer
                                 ? 'Jawaban benar! ${question.explanation}'
-                                : 'Belum tepat. ${question.explanation}',
+                                : timedOut
+                                    ? 'Waktu habis. Jawaban yang benar adalah “${question.options[question.answer]}”. ${question.explanation}'
+                                    : 'Belum tepat. Jawaban yang benar adalah “${question.options[question.answer]}”. ${question.explanation}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -369,6 +459,62 @@ class _QuizPageState extends State<QuizPage> {
   }
 }
 
+class _QuestionVisual extends StatelessWidget {
+  const _QuestionVisual({
+    required this.visual,
+    required this.isAnimated,
+    this.remoteImageUrl,
+  });
+
+  final String visual;
+  final bool isAnimated;
+  final String? remoteImageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    if (remoteImageUrl != null) {
+      return Image.network(
+        remoteImageUrl!,
+        height: 76,
+        errorBuilder: (_, __, ___) => Text(
+          visual,
+          style: const TextStyle(fontSize: 42),
+        ),
+      );
+    }
+    if (!isAnimated) return Text(visual, style: const TextStyle(fontSize: 42));
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: .8, end: 1),
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) => Transform.scale(scale: value, child: child),
+      child: Text(visual, style: const TextStyle(fontSize: 48)),
+    );
+  }
+}
+
+class _AnswerStatusIcon extends StatelessWidget {
+  const _AnswerStatusIcon({required this.isCorrect});
+
+  final bool isCorrect;
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+        tween: Tween(begin: .3, end: 1),
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.elasticOut,
+        builder: (context, value, child) => Transform.scale(
+          scale: value,
+          child: child,
+        ),
+        child: Icon(
+          isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
+          color: isCorrect ? Colors.green : Colors.red,
+          size: 42,
+        ),
+      );
+
 // =====================================================
 // RESULT PAGE
 // =====================================================
+}

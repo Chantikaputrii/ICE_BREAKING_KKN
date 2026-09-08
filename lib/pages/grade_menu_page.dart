@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/score_record.dart';
+import '../services/question_selection_service.dart';
 import '../services/score_storage.dart';
 import 'quiz_page.dart';
 import 'ranking_page.dart';
@@ -41,12 +42,18 @@ class GradeMenuPage extends StatelessWidget {
     controller.dispose();
     if (!context.mounted || name == null || name.isEmpty) return;
 
+    final questions = await QuestionSelectionService().selectQuestions(
+      grade: grade,
+      studentName: name,
+    );
+    if (!context.mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => QuizPage(
           grade: grade,
           studentName: name,
+          questions: questions,
           onFinished: (score, total) => ScoreStorage().saveRecord(
             ScoreRecord(
               name: name,
