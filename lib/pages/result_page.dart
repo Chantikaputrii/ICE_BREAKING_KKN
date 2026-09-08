@@ -4,12 +4,14 @@ class ResultPage extends StatelessWidget {
   final int grade;
   final int score;
   final int total;
+  final String studentName;
 
   const ResultPage({
     super.key,
     required this.grade,
     required this.score,
     required this.total,
+    required this.studentName,
   });
 
   @override
@@ -59,7 +61,7 @@ class ResultPage extends StatelessWidget {
                 const SizedBox(height: 5),
 
                 Text(
-                  'Kelas $grade SD',
+                  '$studentName • Kelas $grade SD',
                   style: const TextStyle(
                     color: Colors.grey,
                   ),

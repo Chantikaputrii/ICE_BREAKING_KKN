@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'quiz_page.dart';
+import 'grade_menu_page.dart';
 import 'material_page.dart';
 import 'ranking_page.dart';
 
@@ -13,19 +13,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  int _score = 240;
 
-  void _openQuiz(int grade) {
+  void _openGradeMenu(int grade) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => QuizPage(
-          grade: grade,
-          onFinished: (score) {
-            setState(() {
-              _score += score;
-            });
-          },
-        ),
+        builder: (_) => GradeMenuPage(grade: grade),
       ),
     );
   }
@@ -33,10 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
-      _HomeContent(
-        score: _score,
-        onGradeSelected: _openQuiz,
-      ),
+      _HomeContent(onGradeSelected: _openGradeMenu),
       const LearningMaterialPage(),
       const RankingPage(),
     ];
@@ -54,11 +43,9 @@ class _HomePageState extends State<HomePage> {
 
 class _HomeContent extends StatelessWidget {
   const _HomeContent({
-    required this.score,
     required this.onGradeSelected,
   });
 
-  final int score;
   final ValueChanged<int> onGradeSelected;
 
   static const grades = [
@@ -140,11 +127,6 @@ class _HomeContent extends StatelessWidget {
                         vertical: 24,
                       ),
                       children: [
-                        // HEADER
-                        _Header(score: score),
-
-                        const SizedBox(height: 14),
-
                         if (isWide)
                           // Desktop: karakter & misi berdampingan
                           IntrinsicHeight(
@@ -300,123 +282,6 @@ class _BackgroundDecoration extends StatelessWidget {
               color: const Color(0xFF278DE0).withOpacity(.8),
               borderRadius: BorderRadius.circular(160),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ============================================================
-// HEADER
-// ============================================================
-
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.score,
-  });
-
-  final int score;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: const BoxDecoration(
-            color: Color(0xFFF7F7FF),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.person_outline_rounded,
-            color: Color(0xFF554CC7),
-            size: 27,
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Hai, Dito!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Kelas 3 SD',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 11,
-            vertical: 7,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.local_fire_department_rounded,
-                color: Color(0xFFE17B27),
-                size: 17,
-              ),
-              SizedBox(width: 4),
-              Text(
-                '5',
-                style: TextStyle(
-                  color: Color(0xFF4C4C55),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 11,
-            vertical: 7,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.star_border_rounded,
-                color: Color(0xFF554CC7),
-                size: 17,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '$score',
-                style: const TextStyle(
-                  color: Color(0xFF4C4C55),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
           ),
         ),
       ],

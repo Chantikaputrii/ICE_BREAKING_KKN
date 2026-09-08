@@ -7,12 +7,14 @@ import 'result_page.dart';
 class QuizPage extends StatefulWidget {
   final int grade;
   final String? subject;
-  final ValueChanged<int> onFinished;
+  final Future<void> Function(int score, int total) onFinished;
+  final String studentName;
 
   const QuizPage({
     super.key,
     required this.grade,
     required this.onFinished,
+    required this.studentName,
     this.subject,
   });
 
@@ -61,12 +63,13 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-  void nextQuestion() {
+  Future<void> nextQuestion() async {
     if (!answered) return;
 
     if (currentQuestion ==
         questions.length - 1) {
-      widget.onFinished(score);
+      await widget.onFinished(score, questions.length * 10);
+      if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
@@ -75,6 +78,7 @@ class _QuizPageState extends State<QuizPage> {
             grade: widget.grade,
             score: score,
             total: questions.length * 10,
+            studentName: widget.studentName,
           ),
         ),
       );
