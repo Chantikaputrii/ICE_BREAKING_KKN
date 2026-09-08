@@ -87,6 +87,8 @@ class _QuizPageState extends State<QuizPage>
       ),
     );
 
+    unawaited(_audioPlayer.setReleaseMode(ReleaseMode.stop));
+
     final allQuestions =
         widget.questions ?? questionsByGrade[widget.grade] ?? [];
 
@@ -213,6 +215,8 @@ class _QuizPageState extends State<QuizPage>
       }
     });
 
+    // Dipanggil langsung dari klik pengguna agar audio diizinkan browser web.
+    unawaited(_playAnswerSound(correct));
     _showFeedback(correct);
   }
 
@@ -229,11 +233,6 @@ class _QuizPageState extends State<QuizPage>
     });
 
     _feedbackController.reset();
-
-    // Mainkan suara
-    await _playAnswerSound(correct);
-
-    if (!mounted) return;
 
     // Muncul
     await _feedbackController.forward();
@@ -263,13 +262,11 @@ class _QuizPageState extends State<QuizPage>
 
   Future<void> _playAnswerSound(bool correct) async {
     try {
-      await _audioPlayer.stop();
-
       await _audioPlayer.play(
         AssetSource(
           correct
-              ? '/BENAR.mp3'
-              : 'sounds/wrong.wav',
+              ? 'BENAR.mp3'
+              : 'wrong.wav',
         ),
       );
     } catch (_) {

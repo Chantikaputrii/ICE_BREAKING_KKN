@@ -21,7 +21,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-assets:
-  - assets/BENAR.mp3
-  - assets/wrong.wav
+  assets:
+    - assets/BENAR.mp3
+    - assets/wrong.wav
