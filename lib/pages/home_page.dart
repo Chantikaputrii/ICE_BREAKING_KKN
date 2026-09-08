@@ -44,19 +44,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FB),
       body: pages[_selectedIndex],
-
-      // Kalau ingin PERSIS seperti screenshot,
-      // bottom navigation jangan ditampilkan.
-      //
-      // Kalau tetap ingin navigasi Materi/Peringkat,
-      // hapus komentar di bawah:
-      //
-      // bottomNavigationBar: _AnimatedNavBar(
-      //   selectedIndex: _selectedIndex,
-      //   onSelected: (index) {
-      //     setState(() => _selectedIndex = index);
-      //   },
-      // ),
     );
   }
 }
@@ -117,107 +104,138 @@ class _HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Center(
-          child: Container(
-            width: 480,
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-              maxHeight: constraints.maxHeight,
-            ),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFAEA9EF),
-                  Color(0xFF7D74DD),
-                  Color(0xFF6259C7),
-                ],
-              ),
-            ),
-            child: Stack(
-              children: [
-                // Background decoration
-                const _BackgroundDecoration(),
+        final screenWidth = constraints.maxWidth;
 
-                SafeArea(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      17,
-                      24,
-                      17,
-                      24,
-                    ),
-                    children: [
-                      // HEADER
-                      _Header(
-                        score: score,
-                      ),
+        // Desktop: kartu jadi 2 kolom & panel melebar,
+        // background gradient tetap memenuhi seluruh layar.
+        final isWide = screenWidth >= 900;
+        final contentMaxWidth = isWide ? 1100.0 : 480.0;
+        final crossAxisCount = isWide ? 2 : 1;
 
-                      const SizedBox(height: 14),
-
-                      // CHARACTER
-                      const SizedBox(
-                        height: 160,
-                        child: Center(
-                          child: _CuteCharacter(),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // MISSION
-                      const _MissionCard(),
-
-                      const SizedBox(height: 18),
-
-                      // TITLE
-                      const Text(
-                        'Pilih kelasmu',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // GRADES
-                      ...grades.take(3).map(
-                        (grade) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _GradeTile(
-                            info: grade,
-                            onTap: () => onGradeSelected(grade.grade),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      // DOWN BUTTON
-                      const Center(
-                        child: _DownButton(),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // THREE DOTS
-                const Positioned(
-                  right: 20,
-                  top: 22,
-                  child: Icon(
-                    Icons.more_horiz_rounded,
-                    color: Colors.white,
-                    size: 25,
-                  ),
-                ),
+        return Container(
+          width: double.infinity,
+          height: constraints.maxHeight,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFAEA9EF),
+                Color(0xFF7D74DD),
+                Color(0xFF6259C7),
               ],
             ),
+          ),
+          child: Stack(
+            children: [
+              const _BackgroundDecoration(),
+
+              SafeArea(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: contentMaxWidth),
+                    child: ListView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isWide ? 32 : 17,
+                        vertical: 24,
+                      ),
+                      children: [
+                        // HEADER
+                        _Header(score: score),
+
+                        const SizedBox(height: 14),
+
+                        if (isWide)
+                          // Desktop: karakter & misi berdampingan
+                          IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(
+                                  width: 220,
+                                  child: Center(child: _CuteCharacter()),
+                                ),
+                                const SizedBox(width: 20),
+                                const Expanded(child: _MissionCard()),
+                              ],
+                            ),
+                          )
+                        else ...[
+                          const SizedBox(
+                            height: 160,
+                            child: Center(child: _CuteCharacter()),
+                          ),
+                          const SizedBox(height: 8),
+                          const _MissionCard(),
+                        ],
+
+                        const SizedBox(height: 18),
+
+                        // TITLE
+                        const Text(
+                          'Pilih kelasmu',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // GRADES — semua kelas 1 sampai 6
+                        if (isWide)
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: grades.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 4.4,
+                            ),
+                            itemBuilder: (context, i) {
+                              final grade = grades[i];
+                              return _GradeTile(
+                                info: grade,
+                                onTap: () => onGradeSelected(grade.grade),
+                              );
+                            },
+                          )
+                        else
+                          ...grades.map(
+                            (grade) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _GradeTile(
+                                info: grade,
+                                onTap: () => onGradeSelected(grade.grade),
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 4),
+
+                        // DOWN BUTTON
+                        const Center(child: _DownButton()),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // THREE DOTS
+              const Positioned(
+                right: 20,
+                top: 22,
+                child: Icon(
+                  Icons.more_horiz_rounded,
+                  color: Colors.white,
+                  size: 25,
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -236,7 +254,6 @@ class _BackgroundDecoration extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Lingkaran kiri atas
         Positioned(
           left: -150,
           top: -120,
@@ -249,8 +266,6 @@ class _BackgroundDecoration extends StatelessWidget {
             ),
           ),
         ),
-
-        // Lingkaran kanan tengah
         Positioned(
           right: -140,
           top: 145,
@@ -263,8 +278,6 @@ class _BackgroundDecoration extends StatelessWidget {
             ),
           ),
         ),
-
-        // Lingkaran kanan bawah
         Positioned(
           right: -80,
           bottom: 90,
@@ -277,8 +290,6 @@ class _BackgroundDecoration extends StatelessWidget {
             ),
           ),
         ),
-
-        // Biru bawah kiri
         Positioned(
           left: -90,
           bottom: -100,
@@ -311,7 +322,6 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Profile
         Container(
           width: 48,
           height: 48,
@@ -325,9 +335,7 @@ class _Header extends StatelessWidget {
             size: 27,
           ),
         ),
-
         const SizedBox(width: 10),
-
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,8 +360,6 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-
-        // Streak
         Container(
           padding: const EdgeInsets.symmetric(
             horizontal: 11,
@@ -383,10 +389,7 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-
         const SizedBox(width: 6),
-
-        // Points
         Container(
           padding: const EdgeInsets.symmetric(
             horizontal: 11,
@@ -445,192 +448,91 @@ class _CharacterPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final centerX = size.width / 2;
 
-    // Shadow
-    final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(.12);
-
+    final shadowPaint = Paint()..color = Colors.black.withOpacity(.12);
     canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, 136),
-        width: 48,
-        height: 9,
-      ),
+      Rect.fromCenter(center: Offset(centerX, 136), width: 48, height: 9),
       shadowPaint,
     );
 
-    // Legs
     final legPaint = Paint()
       ..color = const Color(0xFFEF594C)
       ..strokeWidth = 9
       ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(centerX - 10, 103), Offset(centerX - 20, 128), legPaint);
+    canvas.drawLine(Offset(centerX + 10, 103), Offset(centerX + 20, 128), legPaint);
 
-    canvas.drawLine(
-      Offset(centerX - 10, 103),
-      Offset(centerX - 20, 128),
-      legPaint,
-    );
-
-    canvas.drawLine(
-      Offset(centerX + 10, 103),
-      Offset(centerX + 20, 128),
-      legPaint,
-    );
-
-    // Shoes
-    final shoePaint = Paint()
-      ..color = Colors.white;
-
+    final shoePaint = Paint()..color = Colors.white;
     canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX - 22, 129),
-        width: 20,
-        height: 9,
-      ),
+      Rect.fromCenter(center: Offset(centerX - 22, 129), width: 20, height: 9),
+      shoePaint,
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(centerX + 22, 129), width: 20, height: 9),
       shoePaint,
     );
 
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX + 22, 129),
-        width: 20,
-        height: 9,
-      ),
-      shoePaint,
-    );
-
-    // Body
-    final bodyPaint = Paint()
-      ..color = Colors.white;
-
+    final bodyPaint = Paint()..color = Colors.white;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: Offset(centerX, 89),
-          width: 43,
-          height: 48,
-        ),
+        Rect.fromCenter(center: Offset(centerX, 89), width: 43, height: 48),
         const Radius.circular(20),
       ),
       bodyPaint,
     );
 
-    // Tie
-    final tiePaint = Paint()
-      ..color = const Color(0xFFE84848);
-
+    final tiePaint = Paint()..color = const Color(0xFFE84848);
     final tiePath = Path()
       ..moveTo(centerX, 78)
       ..lineTo(centerX + 7, 88)
       ..lineTo(centerX, 102)
       ..lineTo(centerX - 7, 88)
       ..close();
-
     canvas.drawPath(tiePath, tiePaint);
 
-    // Arms
     final armPaint = Paint()
       ..color = const Color(0xFFEF594C)
       ..strokeWidth = 8
       ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(centerX - 19, 91), Offset(centerX - 29, 111), armPaint);
+    canvas.drawLine(Offset(centerX + 19, 91), Offset(centerX + 29, 111), armPaint);
 
-    canvas.drawLine(
-      Offset(centerX - 19, 91),
-      Offset(centerX - 29, 111),
-      armPaint,
-    );
-
-    canvas.drawLine(
-      Offset(centerX + 19, 91),
-      Offset(centerX + 29, 111),
-      armPaint,
-    );
-
-    // Neck
-    final skinPaint = Paint()
-      ..color = const Color(0xFFFFC982);
-
+    final skinPaint = Paint()..color = const Color(0xFFFFC982);
     canvas.drawRect(
-      Rect.fromCenter(
-        center: Offset(centerX, 67),
-        width: 13,
-        height: 13,
-      ),
+      Rect.fromCenter(center: Offset(centerX, 67), width: 13, height: 13),
       skinPaint,
     );
+    canvas.drawCircle(Offset(centerX, 55), 22, skinPaint);
 
-    // Head
-    canvas.drawCircle(
-      Offset(centerX, 55),
-      22,
-      skinPaint,
-    );
-
-    // Hair
-    final hairPaint = Paint()
-      ..color = const Color(0xFF2F2D32);
-
+    final hairPaint = Paint()..color = const Color(0xFF2F2D32);
     final hairPath = Path()
       ..moveTo(centerX - 20, 51)
-      ..quadraticBezierTo(
-        centerX - 20,
-        30,
-        centerX,
-        31,
-      )
-      ..quadraticBezierTo(
-        centerX + 21,
-        29,
-        centerX + 21,
-        51,
-      )
+      ..quadraticBezierTo(centerX - 20, 30, centerX, 31)
+      ..quadraticBezierTo(centerX + 21, 29, centerX + 21, 51)
       ..lineTo(centerX + 14, 43)
       ..lineTo(centerX + 7, 48)
       ..lineTo(centerX, 42)
       ..lineTo(centerX - 8, 48)
       ..lineTo(centerX - 15, 43)
       ..close();
-
     canvas.drawPath(hairPath, hairPaint);
 
-    // Eyes
-    final eyePaint = Paint()
-      ..color = const Color(0xFF2F2D32);
+    final eyePaint = Paint()..color = const Color(0xFF2F2D32);
+    canvas.drawCircle(Offset(centerX - 8, 56), 2.5, eyePaint);
+    canvas.drawCircle(Offset(centerX + 8, 56), 2.5, eyePaint);
 
-    canvas.drawCircle(
-      Offset(centerX - 8, 56),
-      2.5,
-      eyePaint,
-    );
-
-    canvas.drawCircle(
-      Offset(centerX + 8, 56),
-      2.5,
-      eyePaint,
-    );
-
-    // Smile
     final smilePaint = Paint()
       ..color = const Color(0xFF2F2D32)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.2
       ..strokeCap = StrokeCap.round;
-
     final smile = Path()
       ..moveTo(centerX - 7, 63)
-      ..quadraticBezierTo(
-        centerX,
-        70,
-        centerX + 7,
-        63,
-      );
-
+      ..quadraticBezierTo(centerX, 70, centerX + 7, 63);
     canvas.drawPath(smile, smilePaint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ============================================================
@@ -650,6 +552,7 @@ class _MissionCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
             'Misi hari ini',
@@ -659,9 +562,7 @@ class _MissionCard extends StatelessWidget {
               fontWeight: FontWeight.w900,
             ),
           ),
-
           const SizedBox(height: 4),
-
           const Text(
             'Selesaikan 3 soal dan dapatkan bintang emas!',
             style: TextStyle(
@@ -670,23 +571,17 @@ class _MissionCard extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 14),
-
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: LinearProgressIndicator(
               value: 2 / 3,
               minHeight: 9,
               backgroundColor: const Color(0xFFE8E7F5),
-              valueColor: const AlwaysStoppedAnimation(
-                Color(0xFF746BE1),
-              ),
+              valueColor: const AlwaysStoppedAnimation(Color(0xFF746BE1)),
             ),
           ),
-
           const SizedBox(height: 10),
-
           const Text(
             '2 dari 3 selesai',
             style: TextStyle(
@@ -739,36 +634,21 @@ class _GradeTileState extends State<_GradeTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      onTapDown: (_) {
-        setState(() {
-          pressed = true;
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          pressed = false;
-        });
-      },
-      onTapCancel: () {
-        setState(() {
-          pressed = false;
-        });
-      },
+      onTapDown: (_) => setState(() => pressed = true),
+      onTapUp: (_) => setState(() => pressed = false),
+      onTapCancel: () => setState(() => pressed = false),
       child: AnimatedScale(
         scale: pressed ? .97 : 1,
         duration: const Duration(milliseconds: 100),
         child: Container(
           height: 80,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 17,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 17),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(.91),
             borderRadius: BorderRadius.circular(21),
           ),
           child: Row(
             children: [
-              // Icon circle
               Container(
                 width: 55,
                 height: 55,
@@ -782,10 +662,7 @@ class _GradeTileState extends State<_GradeTile> {
                   size: 28,
                 ),
               ),
-
               const SizedBox(width: 15),
-
-              // Text
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -811,7 +688,6 @@ class _GradeTileState extends State<_GradeTile> {
                   ],
                 ),
               ),
-
               const Icon(
                 Icons.chevron_right_rounded,
                 color: Color(0xFF888891),
@@ -852,84 +728,6 @@ class _DownButton extends StatelessWidget {
         Icons.keyboard_arrow_down_rounded,
         color: Color(0xFF555562),
         size: 28,
-      ),
-    );
-  }
-}
-
-// ============================================================
-// OPTIONAL BOTTOM NAVIGATION
-// ============================================================
-
-class _AnimatedNavBar extends StatelessWidget {
-  const _AnimatedNavBar({
-    required this.selectedIndex,
-    required this.onSelected,
-  });
-
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    const items = [
-      (
-        icon: Icons.home_rounded,
-        label: 'Beranda',
-      ),
-      (
-        icon: Icons.menu_book_rounded,
-        label: 'Materi',
-      ),
-      (
-        icon: Icons.emoji_events_rounded,
-        label: 'Peringkat',
-      ),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.only(
-        top: 8,
-        bottom: 8,
-      ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(
-          items.length,
-          (index) {
-            final selected = selectedIndex == index;
-
-            return GestureDetector(
-              onTap: () => onSelected(index),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    items[index].icon,
-                    size: 24,
-                    color: selected
-                        ? const Color(0xFF7067DC)
-                        : const Color(0xFF9EA0AA),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    items[index].label,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: selected
-                          ? const Color(0xFF7067DC)
-                          : const Color(0xFF9EA0AA),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
       ),
     );
   }
