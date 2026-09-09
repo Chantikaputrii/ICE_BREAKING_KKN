@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../models/score_record.dart';
 import '../services/score_storage.dart';
-import 'school_ui.dart';
+import '../widgets/school_background.dart';
 
-class RankingPage extends StatefulWidget {
+class RankingPage
+    extends StatefulWidget {
   const RankingPage({
     super.key,
     this.grade,
@@ -17,575 +18,586 @@ class RankingPage extends StatefulWidget {
       _RankingPageState();
 }
 
-class _RankingPageState extends State<RankingPage> {
-  final _storage = ScoreStorage();
+class _RankingPageState
+    extends State<RankingPage> {
+  final storage = ScoreStorage();
 
-  late Future<List<ScoreRecord>> _records;
-  late DateTime _selectedDay;
+  late Future<
+      List<ScoreRecord>> records;
+
+  late DateTime day;
 
   @override
   void initState() {
     super.initState();
 
-    _selectedDay = DateTime.now();
+    day = DateTime.now();
 
-    _loadRecords();
+    load();
   }
 
-  void _loadRecords() {
-    _records =
-        _storage.loadRecords(
+  void load() {
+    records =
+        storage.loadRecords(
       grade: widget.grade,
     );
   }
 
-  bool _isSelectedDay(
+  bool same(
     ScoreRecord record,
   ) {
     return record.completedAt.year ==
-            _selectedDay.year &&
+            day.year &&
         record.completedAt.month ==
-            _selectedDay.month &&
+            day.month &&
         record.completedAt.day ==
-            _selectedDay.day;
+            day.day;
   }
 
-  Future<void> _resetToday() async {
-    if (widget.grade == null) return;
+  Future<void> reset() async {
+    if (widget.grade == null) {
+      return;
+    }
 
-    final confirmed =
+    final ok =
         await showDialog<bool>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(25),
-          ),
-          title: const Text(
-            'Reset peringkat?',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
+      builder: (context) =>
+          AlertDialog(
+        title: const Text(
+          'Reset peringkat hari ini?',
+        ),
+        content: const Text(
+          'Semua nilai kelas ini yang dibuat hari ini akan dihapus.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.pop(
+              context,
+              false,
             ),
+            child:
+                const Text('Batal'),
           ),
-          content: const Text(
-            'Semua nilai kelas ini yang dibuat hari ini akan dihapus.',
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(
+              context,
+              true,
+            ),
+            child:
+                const Text('Reset'),
           ),
-          actions: [
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(
-                context,
-                false,
-              ),
-              child: const Text('Batal'),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.pop(
-                context,
-                true,
-              ),
-              child: const Text('Reset'),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
 
-    if (confirmed != true) return;
+    if (ok != true) {
+      return;
+    }
 
-    await _storage.resetTodayForGrade(
+    await storage
+        .resetTodayForGrade(
       widget.grade!,
     );
 
-    if (!mounted) return;
-
-    setState(_loadRecords);
+    if (mounted) {
+      setState(load);
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final gradeTitle =
+  Widget build(
+    BuildContext context,
+  ) {
+    final title =
         widget.grade == null
             ? 'Semua Kelas'
             : 'Kelas ${widget.grade}';
 
     return Scaffold(
       body: SchoolBackground(
+        showSchoolIllustrations:
+            false,
         child: SafeArea(
-          child: FutureBuilder<List<ScoreRecord>>(
-            future: _records,
-            builder:
-                (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(
-                  child:
-                      CircularProgressIndicator(),
-                );
-              }
-
-              final allRecords =
-                  snapshot.data!;
-
-              final records =
-                  allRecords
-                      .where(
-                        _isSelectedDay,
-                      )
-                      .toList()
-                    ..sort(
-                      (a, b) =>
-                          b.percentage.compareTo(
-                        a.percentage,
-                      ),
-                    );
-
-              final days =
-                  allRecords
-                      .map(
-                        (record) =>
-                            DateUtils.dateOnly(
-                          record.completedAt,
-                        ),
-                      )
-                      .toSet()
-                      .toList()
-                    ..sort(
-                      (a, b) =>
-                          b.compareTo(a),
-                    );
-
-              if (!days.contains(
-                DateUtils.dateOnly(
-                  _selectedDay,
+          child: Center(
+            child: ConstrainedBox(
+              constraints:
+                  const BoxConstraints(
+                maxWidth: 1050,
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  20,
                 ),
-              )) {
-                days.insert(
-                  0,
-                  DateUtils.dateOnly(
-                    _selectedDay,
-                  ),
-                );
-              }
+                child:
+                    FutureBuilder<
+                        List<ScoreRecord>>(
+                  future: records,
+                  builder:
+                      (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child:
+                            CircularProgressIndicator(),
+                      );
+                    }
 
-              return CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    backgroundColor:
-                        Colors.transparent,
-                    leading: Container(
-                      margin:
-                          const EdgeInsets.all(7),
-                      decoration:
-                          BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(
-                          15,
-                        ),
-                      ),
-                      child: IconButton(
-                        onPressed: () =>
-                            Navigator.pop(
-                          context,
-                        ),
-                        icon: const Icon(
-                          Icons
-                              .arrow_back_rounded,
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      'Peringkat $gradeTitle',
-                    ),
-                    actions: [
-                      if (widget.grade != null)
-                        IconButton(
-                          onPressed:
-                              _resetToday,
-                          tooltip:
-                              'Reset skor hari ini',
-                          icon: const Icon(
-                            Icons
-                                .restart_alt_rounded,
-                          ),
-                        ),
-                    ],
-                  ),
-
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.fromLTRB(
-                        20,
-                        10,
-                        20,
-                        18,
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width:
-                                double.infinity,
-                            padding:
-                                const EdgeInsets.all(
-                              22,
+                    final list =
+                        snapshot.data!
+                            .where(
+                              same,
+                            )
+                            .toList()
+                          ..sort(
+                            (a, b) => b
+                                .percentage
+                                .compareTo(
+                              a.percentage,
                             ),
-                            decoration:
-                                BoxDecoration(
-                              gradient:
-                                  const LinearGradient(
-                                colors: [
-                                  SchoolColors
-                                      .yellow,
-                                  Color(
-                                    0xFFFFE58A,
+                          );
+
+                    final days =
+                        snapshot.data!
+                            .map(
+                              (record) =>
+                                  DateUtils
+                                      .dateOnly(
+                                record
+                                    .completedAt,
+                              ),
+                            )
+                            .toSet()
+                            .toList()
+                          ..sort(
+                            (a, b) =>
+                                b.compareTo(a),
+                          );
+
+                    if (!days.contains(
+                      DateUtils.dateOnly(
+                        day,
+                      ),
+                    )) {
+                      days.insert(
+                        0,
+                        DateUtils.dateOnly(
+                          day,
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 52,
+                              height: 52,
+                              decoration:
+                                  BoxDecoration(
+                                color:
+                                    Colors.white,
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  17,
+                                ),
+                              ),
+                              child:
+                                  const Icon(
+                                Icons
+                                    .emoji_events_rounded,
+                                color:
+                                    Color(
+                                  0xFFFFB93F,
+                                ),
+                                size: 30,
+                              ),
+                            ),
+
+                            const SizedBox(
+                              width: 12,
+                            ),
+
+                            Expanded(
+                              child:
+                                  Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    'Peringkat $title',
+                                    style:
+                                        const TextStyle(
+                                      fontSize:
+                                          22,
+                                      fontWeight:
+                                          FontWeight
+                                              .w900,
+                                      color:
+                                          Color(
+                                        0xFF243B5A,
+                                      ),
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Siapa yang jadi bintang hari ini?',
+                                    style:
+                                        TextStyle(
+                                      fontSize:
+                                          12,
+                                      color:
+                                          Color(
+                                        0xFF71869A,
+                                      ),
+                                      fontWeight:
+                                          FontWeight
+                                              .w600,
+                                    ),
                                   ),
                                 ],
                               ),
-                              borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                28,
+                            ),
+
+                            if (widget.grade !=
+                                null)
+                              IconButton(
+                                onPressed:
+                                    reset,
+                                icon:
+                                    const Icon(
+                                  Icons
+                                      .restart_alt_rounded,
+                                ),
                               ),
+                          ],
+                        ),
+
+                        const SizedBox(
+                          height: 14,
+                        ),
+
+                        Container(
+                          padding:
+                              const EdgeInsets.all(
+                            12,
+                          ),
+                          decoration:
+                              BoxDecoration(
+                            color: Colors
+                                .white
+                                .withOpacity(
+                              .94,
                             ),
-                            child: Row(
-                              children: [
-                                const Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      Text(
-                                        '🏆 Top Siswa',
-                                        style:
-                                            TextStyle(
-                                          color:
-                                              SchoolColors
-                                                  .darkBlue,
-                                          fontSize:
-                                              22,
-                                          fontWeight:
-                                              FontWeight
-                                                  .w900,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        'Siapa yang jadi juara hari ini?',
-                                        style:
-                                            TextStyle(
-                                          color:
-                                              Color(
-                                            0xFF75652A,
-                                          ),
-                                          fontSize:
-                                              12,
-                                          fontWeight:
-                                              FontWeight
-                                                  .w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                AnimatedAssetCharacter(
-                                  asset:
-                                      'assets/Gambar anak anak sd.jpeg',
-                                  width: 100,
-                                  height: 80,
-                                ),
-                              ],
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              20,
                             ),
                           ),
-
-                          const SizedBox(
-                            height: 16,
-                          ),
-
-                          DropdownButtonFormField<
-                              DateTime>(
+                          child:
+                              DropdownButtonFormField<
+                                  DateTime>(
                             value:
-                                DateUtils.dateOnly(
-                              _selectedDay,
+                                DateUtils
+                                    .dateOnly(
+                              day,
                             ),
                             decoration:
                                 const InputDecoration(
                               labelText:
                                   'Riwayat tanggal',
-                              prefixIcon: Icon(
+                              prefixIcon:
+                                  Icon(
                                 Icons
                                     .calendar_month_rounded,
                               ),
+                              border:
+                                  InputBorder
+                                      .none,
                             ),
                             items: days
                                 .map(
-                                  (
-                                    day,
-                                  ) =>
-                                      DropdownMenuItem(
-                                    value: day,
-                                    child: Text(
-                                      MaterialLocalizations
-                                          .of(
-                                        context,
-                                      ).formatMediumDate(
-                                        day,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged:
-                                (day) {
-                              if (day == null) {
-                                return;
-                              }
-
-                              setState(
-                                () =>
-                                    _selectedDay =
-                                        day,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  if (records.isEmpty)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Padding(
-                          padding:
-                              EdgeInsets.all(30),
-                          child: Text(
-                            'Belum ada nilai pada tanggal ini.',
-                            textAlign:
-                                TextAlign.center,
-                            style: TextStyle(
-                              color:
-                                  Color(
-                                0xFF718399,
-                              ),
-                              fontWeight:
-                                  FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding:
-                          const EdgeInsets.fromLTRB(
-                        20,
-                        0,
-                        20,
-                        80,
-                      ),
-                      sliver: SliverList(
-                        delegate:
-                            SliverChildBuilderDelegate(
-                          (context, index) {
-                            final record =
-                                records[index];
-
-                            final rank =
-                                index + 1;
-
-                            final color =
-                                rank == 1
-                                    ? SchoolColors
-                                        .yellow
-                                    : rank == 2
-                                        ? const Color(
-                                            0xFFB9C4D0,
-                                          )
-                                        : rank == 3
-                                            ? SchoolColors
-                                                .orange
-                                            : SchoolColors
-                                                .blue;
-
-                            return Padding(
-                              padding:
-                                  const EdgeInsets
-                                      .only(
-                                bottom: 12,
-                              ),
-                              child: PressableCard(
-                                onTap: () {},
+                              (d) =>
+                                  DropdownMenuItem(
+                                value: d,
                                 child:
-                                    Container(
-                                  padding:
-                                      const EdgeInsets
-                                          .all(
-                                    16,
-                                  ),
-                                  decoration:
-                                      BoxDecoration(
-                                    color:
-                                        Colors.white,
-                                    borderRadius:
-                                        BorderRadius
-                                            .circular(
-                                      23,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: color
-                                            .withOpacity(
-                                          .08,
-                                        ),
-                                        blurRadius:
-                                            18,
-                                        offset:
-                                            const Offset(
-                                          0,
-                                          7,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 55,
-                                        height: 55,
-                                        decoration:
-                                            BoxDecoration(
-                                          color: color
-                                              .withOpacity(
-                                            .18,
-                                          ),
-                                          shape:
-                                              BoxShape
-                                                  .circle,
-                                        ),
-                                        child:
-                                            Center(
-                                          child: Text(
-                                            '$rank',
-                                            style:
-                                                TextStyle(
-                                              color:
-                                                  color,
-                                              fontSize:
-                                                  21,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .w900,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(
-                                        width: 14,
-                                      ),
-
-                                      Expanded(
-                                        child:
-                                            Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              record
-                                                  .name,
-                                              style:
-                                                  const TextStyle(
-                                                color:
-                                                    SchoolColors
-                                                        .darkBlue,
-                                                fontSize:
-                                                    16,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .w900,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height:
-                                                  4,
-                                            ),
-                                            Text(
-                                              'Kelas ${record.grade} • ${record.score}/${record.total} poin',
-                                              style:
-                                                  const TextStyle(
-                                                color:
-                                                    Color(
-                                                  0xFF718399,
-                                                ),
-                                                fontSize:
-                                                    11,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      Container(
-                                        padding:
-                                            const EdgeInsets
-                                                .symmetric(
-                                          horizontal:
-                                              11,
-                                          vertical:
-                                              8,
-                                        ),
-                                        decoration:
-                                            BoxDecoration(
-                                          color: color
-                                              .withOpacity(
-                                            .13,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius
-                                                  .circular(
-                                            13,
-                                          ),
-                                        ),
-                                        child:
-                                            Text(
-                                          '${record.percentage}%',
-                                          style:
-                                              TextStyle(
-                                            color:
-                                                color,
-                                            fontWeight:
-                                                FontWeight
-                                                    .w900,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    Text(
+                                  MaterialLocalizations
+                                      .of(
+                                    context,
+                                  ).formatMediumDate(
+                                    d,
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                          childCount:
-                              records.length,
+                            )
+                                .toList(),
+                            onChanged: (d) {
+                              if (d !=
+                                  null) {
+                                setState(
+                                  () =>
+                                      day =
+                                          d,
+                                );
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                    ),
-                ],
-              );
-            },
+
+                        const SizedBox(
+                          height: 12,
+                        ),
+
+                        Expanded(
+                          child: list
+                                  .isEmpty
+                              ? const _Empty()
+                              : Scrollbar(
+                                  child:
+                                      ListView
+                                          .separated(
+                                    itemCount:
+                                        list.length,
+                                    padding:
+                                        const EdgeInsets
+                                            .only(
+                                      right: 7,
+                                      bottom:
+                                          20,
+                                    ),
+                                    separatorBuilder:
+                                        (
+                                      _,
+                                      __,
+                                    ) =>
+                                            const SizedBox(
+                                      height: 10,
+                                    ),
+                                    itemBuilder:
+                                        (
+                                      _,
+                                      i,
+                                    ) =>
+                                            _Tile(
+                                      record:
+                                          list[i],
+                                      rank:
+                                          i + 1,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Tile
+    extends StatelessWidget {
+  const _Tile({
+    required this.record,
+    required this.rank,
+  });
+
+  final ScoreRecord record;
+  final int rank;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    final top = rank <= 3;
+
+    final medal =
+        rank == 1
+            ? '🥇'
+            : rank == 2
+                ? '🥈'
+                : rank == 3
+                    ? '🥉'
+                    : '$rank';
+
+    return Container(
+      padding:
+          const EdgeInsets.all(14),
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.white.withOpacity(.95),
+        borderRadius:
+            BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.black.withOpacity(.05),
+            blurRadius: 12,
+            offset:
+                const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            alignment:
+                Alignment.center,
+            decoration:
+                BoxDecoration(
+              color: top
+                  ? const Color(
+                      0xFFFFF0C2,
+                    )
+                  : const Color(
+                      0xFFEAF2FF,
+                    ),
+              borderRadius:
+                  BorderRadius.circular(
+                15,
+              ),
+            ),
+            child: Text(
+              medal,
+              style: TextStyle(
+                fontSize:
+                    top ? 23 : 16,
+                fontWeight:
+                    FontWeight.w900,
+              ),
+            ),
+          ),
+
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  record.name,
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        Color(0xFF263E5D),
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Kelas ${record.grade} • '
+                  '${record.score}/${record.total} poin',
+                  style:
+                      const TextStyle(
+                    fontSize: 11,
+                    color:
+                        Color(0xFF74879A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Text(
+            '${record.percentage}%',
+            style:
+                const TextStyle(
+              fontSize: 20,
+              fontWeight:
+                  FontWeight.w900,
+              color:
+                  Color(0xFF43B875),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Empty
+    extends StatelessWidget {
+  const _Empty();
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Center(
+      child: Container(
+        padding:
+            const EdgeInsets.all(25),
+        decoration:
+            BoxDecoration(
+          color: Colors.white
+              .withOpacity(.93),
+          borderRadius:
+              BorderRadius.circular(
+            26,
+          ),
+        ),
+        child: Column(
+          mainAxisSize:
+              MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 105,
+              child: Image.asset(
+                'assets/Gambar guru p.jpeg',
+                fit: BoxFit.contain,
+              ),
+            ),
+
+            const Text(
+              'Belum ada nilai',
+              style:
+                  TextStyle(
+                fontSize: 19,
+                fontWeight:
+                    FontWeight.w900,
+                color:
+                    Color(0xFF263E5D),
+              ),
+            ),
+
+            const SizedBox(
+              height: 4,
+            ),
+
+            const Text(
+              'Ayo main kuis dan jadilah bintang pertama!',
+              textAlign:
+                  TextAlign.center,
+              style:
+                  TextStyle(
+                color:
+                    Color(0xFF74879A),
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,287 +1,565 @@
 import 'package:flutter/material.dart';
 
-import 'school_ui.dart';
+import '../data/question_bank.dart';
+import '../models/question.dart';
+import '../widgets/school_background.dart';
 
-class LearningMaterialPage extends StatelessWidget {
-  const LearningMaterialPage({super.key});
+class LearningMaterialPage
+    extends StatefulWidget {
+  const LearningMaterialPage({
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final subjects = [
-      (
-        'Matematika',
-        'Belajar angka, hitungan, dan logika.',
-        Icons.calculate_rounded,
-        SchoolColors.blue,
-      ),
-      (
-        'Bahasa Indonesia',
-        'Membaca, memahami, dan berbahasa.',
-        Icons.menu_book_rounded,
-        SchoolColors.pink,
-      ),
-      (
-        'PKN',
-        'Belajar menjadi warga negara yang baik.',
-        Icons.flag_rounded,
-        SchoolColors.yellow,
-      ),
-      (
-        'IPA',
-        'Kenali dunia dan lingkungan sekitar.',
-        Icons.science_rounded,
-        SchoolColors.green,
-      ),
-      (
-        'Logika',
-        'Latih otak dengan teka-teki seru.',
-        Icons.psychology_rounded,
-        SchoolColors.purple,
-      ),
-    ];
+  State<LearningMaterialPage>
+      createState() =>
+          _LearningMaterialPageState();
+}
 
+class _LearningMaterialPageState
+    extends State<LearningMaterialPage> {
+  int grade = 1;
+
+  String subject = 'Semua';
+
+  static const subjects = [
+    'Semua',
+    'Matematika',
+    'Bahasa Indonesia',
+    'IPA',
+    'Logika',
+  ];
+
+  List<Question> get questions {
+    final source =
+        questionsByGrade[grade] ??
+            const <Question>[];
+
+    if (subject == 'Semua') {
+      return source;
+    }
+
+    return source
+        .where(
+          (q) => q.subject == subject,
+        )
+        .toList();
+  }
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       body: SchoolBackground(
+        showSchoolIllustrations:
+            false,
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                backgroundColor:
-                    Colors.transparent,
-                title: const Text(
-                  'Perpustakaan Ceria',
-                ),
-                leading: Container(
-                  margin: const EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        BorderRadius.circular(15),
-                  ),
-                  child: IconButton(
-                    onPressed: () =>
-                        Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.arrow_back_rounded,
-                    ),
-                  ),
-                ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints:
+                  const BoxConstraints(
+                maxWidth: 1100,
               ),
-
-              SliverToBoxAdapter(
-                child: Padding(
+              child: Scrollbar(
+                child: ListView(
                   padding:
                       const EdgeInsets.fromLTRB(
                     20,
-                    15,
                     20,
                     20,
+                    100,
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(28),
+                  children: [
+                    const Row(
+                      children: [
+                        _BookIcon(),
+                        SizedBox(
+                          width: 12,
                         ),
-                        child: Row(
-                          children: [
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Text(
-                                    '📚 Yuk, Belajar!',
-                                    style: TextStyle(
-                                      fontSize: 23,
-                                      fontWeight:
-                                          FontWeight.w900,
-                                      color:
-                                          SchoolColors
-                                              .darkBlue,
-                                    ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
+                            children: [
+                              Text(
+                                'Materi Belajar',
+                                style:
+                                    TextStyle(
+                                  fontSize: 24,
+                                  fontWeight:
+                                      FontWeight
+                                          .w900,
+                                  color:
+                                      Color(
+                                    0xFF243B5A,
                                   ),
-                                  SizedBox(height: 7),
-                                  Text(
-                                    'Pilih buku yang ingin kamu pelajari hari ini.',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color:
-                                          Color(
-                                        0xFF718399,
-                                      ),
-                                      fontWeight:
-                                          FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                            AnimatedAssetCharacter(
-                              asset:
-                                  'assets/Gambar guru l.jpeg',
-                              width: 105,
-                              height: 105,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  0,
-                  20,
-                  90,
-                ),
-                sliver: SliverList(
-                  delegate:
-                      SliverChildBuilderDelegate(
-                    (context, index) {
-                      final subject =
-                          subjects[index];
-
-                      return Padding(
-                        padding:
-                            const EdgeInsets.only(
-                          bottom: 13,
-                        ),
-                        child: PressableCard(
-                          onTap: () {
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Materi ${subject.$1} siap dipelajari!',
+                              Text(
+                                'Pelajari pembahasan soal sesuai kelasmu.',
+                                style:
+                                    TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      Color(
+                                    0xFF71869A,
+                                  ),
+                                  fontWeight:
+                                      FontWeight
+                                          .w600,
                                 ),
-                                behavior:
-                                    SnackBarBehavior
-                                        .floating,
                               ),
-                            );
-                          },
-                          child: Container(
-                            padding:
-                                const EdgeInsets.all(
-                              17,
-                            ),
-                            decoration:
-                                BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.circular(
-                                23,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: subject.$4
-                                      .withOpacity(.08),
-                                  blurRadius: 18,
-                                  offset:
-                                      const Offset(
-                                    0,
-                                    7,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 62,
-                                  height: 62,
-                                  decoration:
-                                      BoxDecoration(
-                                    color: subject.$4
-                                        .withOpacity(
-                                      .13,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius
-                                            .circular(
-                                      18,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    subject.$3,
-                                    color:
-                                        subject.$4,
-                                    size: 31,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      Text(
-                                        subject.$1,
-                                        style:
-                                            const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight:
-                                              FontWeight
-                                                  .w900,
-                                          color:
-                                              SchoolColors
-                                                  .darkBlue,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        subject.$2,
-                                        style:
-                                            const TextStyle(
-                                          fontSize: 11,
-                                          color:
-                                              Color(
-                                            0xFF718399,
-                                          ),
-                                          fontWeight:
-                                              FontWeight
-                                                  .w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Icon(
-                                  Icons
-                                      .arrow_forward_ios_rounded,
-                                  color: subject.$4,
-                                  size: 17,
-                                ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    childCount: subjects.length,
-                  ),
+                      ],
+                    ),
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+
+                    _GradePicker(
+                      grade: grade,
+                      onChanged: (value) {
+                        setState(() {
+                          grade = value;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    SizedBox(
+                      height: 42,
+                      child: ListView
+                          .separated(
+                        scrollDirection:
+                            Axis.horizontal,
+                        itemCount:
+                            subjects.length,
+                        separatorBuilder:
+                            (_, __) =>
+                                const SizedBox(
+                          width: 8,
+                        ),
+                        itemBuilder:
+                            (_, i) {
+                          final s =
+                              subjects[i];
+
+                          final selected =
+                              s == subject;
+
+                          return FilterChip(
+                            label: Text(s),
+                            selected:
+                                selected,
+                            onSelected: (_) {
+                              setState(() {
+                                subject = s;
+                              });
+                            },
+                            selectedColor:
+                                const Color(
+                              0xFFBDEFD0,
+                            ),
+                            checkmarkColor:
+                                const Color(
+                              0xFF2EAD69,
+                            ),
+                            backgroundColor:
+                                Colors.white,
+                            labelStyle:
+                                TextStyle(
+                              fontWeight:
+                                  FontWeight
+                                      .w800,
+                              color: selected
+                                  ? const Color(
+                                      0xFF2E8E5D,
+                                    )
+                                  : const Color(
+                                      0xFF61758A,
+                                    ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 12,
+                    ),
+
+                    Container(
+                      padding:
+                          const EdgeInsets.all(
+                        13,
+                      ),
+                      decoration:
+                          BoxDecoration(
+                        color:
+                            const Color(
+                          0xFFFFF3CF,
+                        ),
+                        borderRadius:
+                            BorderRadius.circular(
+                          17,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons
+                                .lightbulb_rounded,
+                            color:
+                                Color(
+                              0xFFFFB629,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Kelas $grade • '
+                              '${subject == 'Semua' ? 'Semua mata pelajaran' : subject} • '
+                              '${questions.length} soal',
+                              style:
+                                  const TextStyle(
+                                color:
+                                    Color(
+                                  0xFF775D25,
+                                ),
+                                fontWeight:
+                                    FontWeight
+                                        .w800,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 12,
+                    ),
+
+                    ...questions
+                        .asMap()
+                        .entries
+                        .map(
+                      (entry) =>
+                          _ExplanationCard(
+                        number:
+                            entry.key + 1,
+                        question:
+                            entry.value,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _BookIcon
+    extends StatelessWidget {
+  const _BookIcon();
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Container(
+      width: 54,
+      height: 54,
+      decoration:
+          BoxDecoration(
+        color:
+            const Color(0xFF4F8FF7),
+        borderRadius:
+            BorderRadius.circular(
+          17,
+        ),
+      ),
+      child: const Icon(
+        Icons.menu_book_rounded,
+        color: Colors.white,
+        size: 29,
+      ),
+    );
+  }
+}
+
+class _GradePicker
+    extends StatelessWidget {
+  const _GradePicker({
+    required this.grade,
+    required this.onChanged,
+  });
+
+  final int grade;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Container(
+      padding:
+          const EdgeInsets.all(14),
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.white.withOpacity(.94),
+        borderRadius:
+            BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          const Text(
+            'Kelas',
+            style: TextStyle(
+              fontWeight:
+                  FontWeight.w900,
+              color:
+                  Color(0xFF334C67),
+            ),
+          ),
+
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  List.generate(
+                6,
+                (i) {
+                  final g = i + 1;
+
+                  return ChoiceChip(
+                    label:
+                        Text('$g'),
+                    selected:
+                        grade == g,
+                    onSelected:
+                        (_) =>
+                            onChanged(
+                      g,
+                    ),
+                    selectedColor:
+                        const Color(
+                      0xFFFFD66B,
+                    ),
+                    labelStyle:
+                        const TextStyle(
+                      fontWeight:
+                          FontWeight
+                              .w900,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExplanationCard
+    extends StatelessWidget {
+  const _ExplanationCard({
+    required this.number,
+    required this.question,
+  });
+
+  final int number;
+  final Question question;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Container(
+      margin:
+          const EdgeInsets.only(
+        bottom: 10,
+      ),
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.white.withOpacity(.95),
+        borderRadius:
+            BorderRadius.circular(20),
+      ),
+      child: ExpansionTile(
+        tilePadding:
+            const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
+
+        leading: Container(
+          width: 43,
+          height: 43,
+          alignment:
+              Alignment.center,
+          decoration:
+              BoxDecoration(
+            color:
+                const Color(0xFFEAF2FF),
+            borderRadius:
+                BorderRadius.circular(
+              14,
+            ),
+          ),
+          child: Text(
+            '$number',
+            style:
+                const TextStyle(
+              color:
+                  Color(0xFF4F8FF7),
+              fontWeight:
+                  FontWeight.w900,
+            ),
+          ),
+        ),
+
+        title: Text(
+          question.question,
+          maxLines: 2,
+          overflow:
+              TextOverflow.ellipsis,
+          style:
+              const TextStyle(
+            fontWeight:
+                FontWeight.w800,
+            color:
+                Color(0xFF2A425E),
+          ),
+        ),
+
+        subtitle: Text(
+          question.subject,
+          style:
+              const TextStyle(
+            fontSize: 11,
+            color:
+                Color(0xFF71869A),
+          ),
+        ),
+
+        children: [
+          Container(
+            margin:
+                const EdgeInsets.fromLTRB(
+              15,
+              0,
+              15,
+              15,
+            ),
+            padding:
+                const EdgeInsets.all(
+              15,
+            ),
+            decoration:
+                BoxDecoration(
+              color:
+                  const Color(0xFFEFFFF4),
+              borderRadius:
+                  BorderRadius.circular(
+                16,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Jawaban benar',
+                  style:
+                      TextStyle(
+                    color:
+                        Color(0xFF2E9E61),
+                    fontWeight:
+                        FontWeight
+                            .w900,
+                    fontSize: 12,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 4,
+                ),
+
+                Text(
+                  question.options[
+                      question.answer],
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight
+                            .w900,
+                    color:
+                        Color(0xFF315D47),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 10,
+                ),
+
+                const Text(
+                  'Pembahasan',
+                  style:
+                      TextStyle(
+                    color:
+                        Color(0xFF2E9E61),
+                    fontWeight:
+                        FontWeight
+                            .w900,
+                    fontSize: 12,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 4,
+                ),
+
+                Text(
+                  question.explanation,
+                  style:
+                      const TextStyle(
+                    color:
+                        Color(0xFF587465),
+                    height: 1.45,
+                    fontWeight:
+                        FontWeight
+                            .w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

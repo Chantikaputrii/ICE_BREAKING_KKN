@@ -1,594 +1,699 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/school_background.dart';
 import 'grade_menu_page.dart';
 import 'material_page.dart';
 import 'ranking_page.dart';
-import 'school_ui.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() =>
+      _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  void _openGradeMenu(int grade) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => GradeMenuPage(grade: grade),
-      ),
-    );
-  }
+  int index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SchoolBackground(
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 850;
-
-              return Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 1150,
-                  ),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: wide ? 40 : 18,
-                      vertical: 20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        _buildTopBar(context),
-
-                        const SizedBox(height: 20),
-
-                        _buildHero(wide),
-
-                        const SizedBox(height: 30),
-
-                        const SectionTitle(
-                          title: 'Pilih Kelasmu',
-                          subtitle:
-                              'Ayo mulai petualangan belajar!',
-                          icon: Icons.backpack_rounded,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        _buildGrades(wide),
-
-                        const SizedBox(height: 30),
-
-                        _buildQuickMenu(context, wide),
-
-                        const SizedBox(height: 90),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(17),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blueGrey.withOpacity(.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.school_rounded,
-            color: SchoolColors.blue,
-            size: 30,
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'BELAJAR CERIA',
-                style: TextStyle(
-                  color: SchoolColors.darkBlue,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .5,
+      body: [
+        _Home(
+          onGrade: (grade) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    GradeMenuPage(
+                  grade: grade,
                 ),
               ),
-              Text(
-                'Petualangan belajar anak SD',
-                style: TextStyle(
-                  color: Color(0xFF718399),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
+        const LearningMaterialPage(),
+        const RankingPage(),
+      ][index],
 
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blueGrey.withOpacity(.08),
-                blurRadius: 15,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.notifications_none_rounded,
-            color: SchoolColors.darkBlue,
-          ),
-        ),
-      ],
-    );
-  }
+      bottomNavigationBar:
+          NavigationBar(
+        selectedIndex: index,
+        onDestinationSelected: (value) {
+          setState(() {
+            index = value;
+          });
+        },
+        backgroundColor: Colors.white,
+        indicatorColor:
+            const Color(0xFFFFE29A),
 
-  Widget _buildHero(bool wide) {
-    final content = Row(
-      children: [
-        Expanded(
-          flex: 6,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: wide ? 28 : 20,
-              top: 25,
-              bottom: 25,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(
+              Icons.home_outlined,
             ),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13,
-                    vertical: 7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: SchoolColors.yellow,
-                    borderRadius:
-                        BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    '🎒 WAKTUNYA BELAJAR!',
-                    style: TextStyle(
-                      color: SchoolColors.darkBlue,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                const Text(
-                  'Halo, Sobat\nBelajar! 👋',
-                  style: TextStyle(
-                    fontSize: 35,
-                    height: 1.05,
-                    color: SchoolColors.darkBlue,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                const Text(
-                  'Belajar jadi lebih seru bersama teman-teman di sekolah.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    color: Color(0xFF63758B),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 11,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(.85),
-                    borderRadius:
-                        BorderRadius.circular(16),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: SchoolColors.yellow,
-                      ),
-                      SizedBox(width: 7),
-                      Text(
-                        'Kumpulkan bintangmu!',
-                        style: TextStyle(
-                          color: SchoolColors.darkBlue,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            selectedIcon: Icon(
+              Icons.home_rounded,
             ),
+            label: 'Beranda',
           ),
-        ),
-
-        Expanded(
-          flex: 4,
-          child: Center(
-            child: AnimatedAssetCharacter(
-              asset:
-                  'assets/Gambar anak sd lagi.png',
-              width: wide ? 280 : 190,
-              height: wide ? 280 : 190,
+          NavigationDestination(
+            icon: Icon(
+              Icons.menu_book_outlined,
             ),
+            selectedIcon: Icon(
+              Icons.menu_book_rounded,
+            ),
+            label: 'Materi',
           ),
-        ),
-      ],
-    );
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFBDEBFF),
-            Color(0xFFDDF7FF),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(
-          color: Colors.white,
-          width: 3,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6EA9D9)
-                .withOpacity(.15),
-            blurRadius: 25,
-            offset: const Offset(0, 12),
+          NavigationDestination(
+            icon: Icon(
+              Icons.emoji_events_outlined,
+            ),
+            selectedIcon: Icon(
+              Icons.emoji_events_rounded,
+            ),
+            label: 'Peringkat',
           ),
         ],
       ),
-      child: wide
-          ? content
-          : Column(
-              children: [
-                content.children[0],
-                content.children[1],
-              ],
-            ),
-    );
-  }
-
-  Widget _buildGrades(bool wide) {
-    final grades = [
-      (
-        1,
-        'Pemula Hebat',
-        SchoolColors.orange,
-        Icons.looks_one_rounded,
-      ),
-      (
-        2,
-        'Penjelajah',
-        SchoolColors.pink,
-        Icons.looks_two_rounded,
-      ),
-      (
-        3,
-        'Petualang',
-        SchoolColors.purple,
-        Icons.looks_3_rounded,
-      ),
-      (
-        4,
-        'Cerdas',
-        SchoolColors.blue,
-        Icons.looks_4_rounded,
-      ),
-      (
-        5,
-        'Jagoan',
-        SchoolColors.green,
-        Icons.looks_5_rounded,
-      ),
-      (
-        6,
-        'Bintang Sekolah',
-        SchoolColors.yellow,
-        Icons.looks_6_rounded,
-      ),
-    ];
-
-    if (wide) {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics:
-            const NeverScrollableScrollPhysics(),
-        itemCount: grades.length,
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 15,
-          mainAxisSpacing: 15,
-          childAspectRatio: 2.25,
-        ),
-        itemBuilder: (_, index) {
-          final item = grades[index];
-
-          return _GradeCard(
-            grade: item.$1,
-            title: item.$2,
-            color: item.$3,
-            icon: item.$4,
-            onTap: () =>
-                _openGradeMenu(item.$1),
-          );
-        },
-      );
-    }
-
-    return Column(
-      children: grades.map((item) {
-        return Padding(
-          padding:
-              const EdgeInsets.only(bottom: 12),
-          child: _GradeCard(
-            grade: item.$1,
-            title: item.$2,
-            color: item.$3,
-            icon: item.$4,
-            onTap: () =>
-                _openGradeMenu(item.$1),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildQuickMenu(
-    BuildContext context,
-    bool wide,
-  ) {
-    final items = [
-      (
-        'Materi Belajar',
-        'Buka buku dan pelajari materi',
-        Icons.menu_book_rounded,
-        SchoolColors.blue,
-        () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  const LearningMaterialPage(),
-            ),
-          );
-        },
-      ),
-      (
-        'Peringkat',
-        'Lihat siapa yang paling jago',
-        Icons.emoji_events_rounded,
-        SchoolColors.yellow,
-        () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const RankingPage(),
-            ),
-          );
-        },
-      ),
-    ];
-
-    return Flex(
-      direction: wide
-          ? Axis.horizontal
-          : Axis.vertical,
-      children: items.map((item) {
-        final card = PressableCard(
-          onTap: item.$5,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color:
-                      Colors.blueGrey.withOpacity(.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 55,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: item.$4.withOpacity(.16),
-                    borderRadius:
-                        BorderRadius.circular(17),
-                  ),
-                  child: Icon(
-                    item.$3,
-                    color: item.$4,
-                    size: 29,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.$1,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color:
-                              SchoolColors.darkBlue,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.$2,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color:
-                              Color(0xFF718399),
-                          fontWeight:
-                              FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: Color(0xFF9AA9BA),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(
-              right: wide ? 8 : 0,
-              bottom: wide ? 0 : 12,
-            ),
-            child: card,
-          ),
-        );
-      }).toList(),
     );
   }
 }
 
-class _GradeCard extends StatelessWidget {
-  const _GradeCard({
-    required this.grade,
-    required this.title,
-    required this.color,
-    required this.icon,
-    required this.onTap,
+class _Home extends StatelessWidget {
+  const _Home({
+    required this.onGrade,
   });
 
-  final int grade;
-  final String title;
-  final Color color;
+  final ValueChanged<int> onGrade;
+
+  static const grades = [
+    [
+      '1',
+      'Pemula Hebat',
+      Icons.looks_one_rounded,
+      Color(0xFFFF8A65),
+    ],
+    [
+      '2',
+      'Penjelajah',
+      Icons.looks_two_rounded,
+      Color(0xFFFF5C8A),
+    ],
+    [
+      '3',
+      'Petualang',
+      Icons.looks_3_rounded,
+      Color(0xFF8A6FE8),
+    ],
+    [
+      '4',
+      'Cerdas',
+      Icons.looks_4_rounded,
+      Color(0xFF4F8FF7),
+    ],
+    [
+      '5',
+      'Jagoan',
+      Icons.looks_5_rounded,
+      Color(0xFF45C878),
+    ],
+    [
+      '6',
+      'Bintang Sekolah',
+      Icons.looks_6_rounded,
+      Color(0xFFFFB93F),
+    ],
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide =
+            constraints.maxWidth >= 900;
+
+        return SchoolBackground(
+          child: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints:
+                    const BoxConstraints(
+                  maxWidth: 1180,
+                ),
+                child: Scrollbar(
+                  thumbVisibility: wide,
+                  thickness: 8,
+                  radius:
+                      const Radius.circular(20),
+                  child: ListView(
+                    padding:
+                        EdgeInsets.fromLTRB(
+                      wide ? 32 : 18,
+                      24,
+                      wide ? 32 : 18,
+                      100,
+                    ),
+                    children: [
+                      _Hero(
+                        wide: wide,
+                      ),
+
+                      const SizedBox(
+                        height: 25,
+                      ),
+
+                      const _Title(),
+
+                      const SizedBox(
+                        height: 14,
+                      ),
+
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics:
+                            const NeverScrollableScrollPhysics(),
+                        itemCount: 6,
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                              wide ? 3 : 1,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio:
+                              wide ? 2.8 : 4.8,
+                        ),
+                        itemBuilder:
+                            (context, i) {
+                          final grade =
+                              grades[i];
+
+                          return PressableCard(
+                            onTap: () {
+                              onGrade(
+                                int.parse(
+                                  grade[0]
+                                      as String,
+                                ),
+                              );
+                            },
+                            child: _Grade(
+                              number:
+                                  grade[0]
+                                      as String,
+                              name:
+                                  grade[1]
+                                      as String,
+                              icon:
+                                  grade[2]
+                                      as IconData,
+                              color:
+                                  grade[3]
+                                      as Color,
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _Quick(
+                              icon: Icons
+                                  .menu_book_rounded,
+                              color:
+                                  const Color(
+                                0xFF4F8FF7,
+                              ),
+                              title:
+                                  'Materi Belajar',
+                              sub:
+                                  'Pembahasan soal',
+                              tap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const LearningMaterialPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(
+                            width: 14,
+                          ),
+
+                          Expanded(
+                            child: _Quick(
+                              icon: Icons
+                                  .emoji_events_rounded,
+                              color:
+                                  const Color(
+                                0xFFFFB93F,
+                              ),
+                              title: 'Peringkat',
+                              sub:
+                                  'Lihat hasil belajar',
+                              tap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const RankingPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Hero extends StatelessWidget {
+  const _Hero({
+    required this.wide,
+  });
+
+  final bool wide;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 220,
+      padding:
+          const EdgeInsets.fromLTRB(
+        25,
+        22,
+        10,
+        16,
+      ),
+      decoration: BoxDecoration(
+        gradient:
+            const LinearGradient(
+          colors: [
+            Color(0xFFFFD96A),
+            Color(0xFFFFA55D),
+          ],
+        ),
+        borderRadius:
+            BorderRadius.circular(30),
+        border: Border.all(
+          color: Colors.white,
+          width: 3,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x228B6A36),
+            blurRadius: 25,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
+                  decoration:
+                      BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.circular(
+                      30,
+                    ),
+                  ),
+                  child: const Text(
+                    '🌟 BELAJAR JADI SERU!',
+                    style: TextStyle(
+                      color:
+                          Color(0xFF8B5D1D),
+                      fontWeight:
+                          FontWeight.w900,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 13,
+                ),
+
+                const Text(
+                  'Halo, Bintang Kecil! 👋',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        Color(0xFF3E3B36),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 7,
+                ),
+
+                const Text(
+                  'Pilih kelas dan jawab soal '
+                  'seperti sedang bermain '
+                  'bersama teman.',
+                  style: TextStyle(
+                    color:
+                        Color(0xFF625B50),
+                    fontWeight:
+                        FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(
+            width: wide ? 280 : 145,
+            child: const FloatingAsset(
+              asset:
+                  'assets/Gambar anak anak sd.jpeg',
+              width: 270,
+              height: 185,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        _IconBox(
+          icon: Icons.school_rounded,
+        ),
+        SizedBox(
+          width: 12,
+        ),
+        Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Pilih kelasmu',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight:
+                    FontWeight.w900,
+                color:
+                    Color(0xFF243B5A),
+              ),
+            ),
+            Text(
+              'Ayo mulai petualangan belajar!',
+              style: TextStyle(
+                fontSize: 12,
+                color:
+                    Color(0xFF71869A),
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _IconBox extends StatelessWidget {
+  const _IconBox({
+    required this.icon,
+  });
+
   final IconData icon;
-  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color:
+            const Color(0xFFFFC94A),
+        borderRadius:
+            BorderRadius.circular(16),
+      ),
+      child: Icon(
+        icon,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class _Grade extends StatelessWidget {
+  const _Grade({
+    required this.number,
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
+
+  final String number;
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 17,
+      ),
+      decoration: BoxDecoration(
+        color:
+            Colors.white.withOpacity(.95),
+        borderRadius:
+            BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color:
+                color.withOpacity(.13),
+            blurRadius: 18,
+            offset:
+                const Offset(0, 7),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration:
+                BoxDecoration(
+              color:
+                  color.withOpacity(.13),
+              borderRadius:
+                  BorderRadius.circular(
+                18,
+              ),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 30,
+            ),
+          ),
+
+          const SizedBox(
+            width: 14,
+          ),
+
+          Expanded(
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kelas $number',
+                  style:
+                      const TextStyle(
+                    fontSize: 17,
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        Color(0xFF243B5A),
+                  ),
+                ),
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight:
+                        FontWeight.w800,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            width: 34,
+            height: 34,
+            decoration:
+                BoxDecoration(
+              color: color,
+              shape:
+                  BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons
+                  .play_arrow_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Quick extends StatelessWidget {
+  const _Quick({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.sub,
+    required this.tap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String sub;
+  final VoidCallback tap;
 
   @override
   Widget build(BuildContext context) {
     return PressableCard(
-      onTap: onTap,
+      onTap: tap,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding:
+            const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(23),
+          color:
+              Colors.white.withOpacity(.95),
+          borderRadius:
+              BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(.10),
-              blurRadius: 18,
-              offset: const Offset(0, 7),
+              color:
+                  Colors.black.withOpacity(.06),
+              blurRadius: 15,
+              offset:
+                  const Offset(0, 7),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                color: color.withOpacity(.15),
+              width: 50,
+              height: 50,
+              decoration:
+                  BoxDecoration(
+                color:
+                    color.withOpacity(.12),
                 borderRadius:
-                    BorderRadius.circular(17),
+                    BorderRadius.circular(
+                  16,
+                ),
               ),
               child: Icon(
                 icon,
                 color: color,
-                size: 30,
               ),
             ),
-            const SizedBox(width: 12),
+
+            const SizedBox(
+              width: 11,
+            ),
+
             Expanded(
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Kelas $grade',
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w900,
+                    title,
+                    style:
+                        const TextStyle(
+                      fontWeight:
+                          FontWeight.w900,
                       color:
-                          SchoolColors.darkBlue,
+                          Color(0xFF263E5D),
                     ),
                   ),
                   Text(
-                    title,
-                    style: TextStyle(
+                    sub,
+                    style:
+                        const TextStyle(
                       fontSize: 11,
-                      color: color,
-                      fontWeight: FontWeight.w800,
+                      color:
+                          Color(0xFF71869A),
+                      fontWeight:
+                          FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
+
             Icon(
-              Icons.play_circle_fill_rounded,
+              Icons
+                  .arrow_forward_ios_rounded,
               color: color,
-              size: 30,
+              size: 15,
             ),
           ],
         ),
