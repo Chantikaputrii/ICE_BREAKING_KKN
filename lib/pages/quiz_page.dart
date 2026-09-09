@@ -1,18 +1,22 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 
 import '../data/question_bank.dart';
 import '../models/question.dart';
 import '../services/animated_question_api.dart';
 import 'result_page.dart';
+import 'school_ui.dart';
 
 class QuizPage extends StatefulWidget {
   final int grade;
   final String? subject;
-  final Future<void> Function(int score, int total) onFinished;
+  final Future<void> Function(
+    int score,
+    int total,
+  ) onFinished;
   final String studentName;
   final List<Question>? questions;
 
@@ -26,7 +30,8 @@ class QuizPage extends StatefulWidget {
   });
 
   @override
-  State<QuizPage> createState() => _QuizPageState();
+  State<QuizPage> createState() =>
+      _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage>
@@ -46,10 +51,6 @@ class _QuizPageState extends State<QuizPage>
 
   Map<String, String> _remoteVisuals = {};
 
-  // ============================================================
-  // ANIMASI JAWABAN
-  // ============================================================
-
   bool _showAnswerAnimation = false;
   bool _lastAnswerCorrect = false;
 
@@ -57,19 +58,18 @@ class _QuizPageState extends State<QuizPage>
   late Animation<double> _feedbackScale;
   late Animation<double> _feedbackOpacity;
 
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  // ============================================================
-  // INIT
-  // ============================================================
+  final AudioPlayer _audioPlayer =
+      AudioPlayer();
 
   @override
   void initState() {
     super.initState();
 
-    _feedbackController = AnimationController(
+    _feedbackController =
+        AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration:
+          const Duration(milliseconds: 600),
     );
 
     _feedbackScale = CurvedAnimation(
@@ -77,7 +77,8 @@ class _QuizPageState extends State<QuizPage>
       curve: Curves.elasticOut,
     );
 
-    _feedbackOpacity = Tween<double>(
+    _feedbackOpacity =
+        Tween<double>(
       begin: 0,
       end: 1,
     ).animate(
@@ -87,38 +88,62 @@ class _QuizPageState extends State<QuizPage>
       ),
     );
 
-    unawaited(_audioPlayer.setReleaseMode(ReleaseMode.stop));
+    unawaited(
+      _audioPlayer.setReleaseMode(
+        ReleaseMode.stop,
+      ),
+    );
 
     final allQuestions =
-        widget.questions ?? questionsByGrade[widget.grade] ?? [];
+        widget.questions ??
+            questionsByGrade[
+                widget.grade] ??
+            [];
 
     if (widget.questions != null) {
-      questions = _shuffleQuestions(widget.questions!);
+      questions =
+          _shuffleQuestions(
+        widget.questions!,
+      );
     } else if (widget.subject == null) {
-      questions = _shuffleQuestions(allQuestions);
+      questions =
+          _shuffleQuestions(
+        allQuestions,
+      );
     } else {
-      final subjectQuestions = allQuestions
-          .where((question) => question.subject == widget.subject)
-          .toList();
+      final subjectQuestions =
+          allQuestions
+              .where(
+                (question) =>
+                    question.subject ==
+                    widget.subject,
+              )
+              .toList();
 
-      questions = _shuffleQuestions(subjectQuestions);
+      questions =
+          _shuffleQuestions(
+        subjectQuestions,
+      );
     }
 
     _startTimer();
     _loadRemoteVisuals();
   }
 
-  // ============================================================
-  // LOAD VISUAL API
-  // ============================================================
-
   Future<void> _loadRemoteVisuals() async {
     if (questions.isEmpty) return;
 
-    final visuals = await AnimatedQuestionApi().loadVisuals(
+    final visuals =
+        await AnimatedQuestionApi()
+            .loadVisuals(
       questions
-          .where((question) => question.isAnimated)
-          .map((question) => question.id)
+          .where(
+            (question) =>
+                question.isAnimated,
+          )
+          .map(
+            (question) => question.id,
+          )
           .toList(),
     );
 
@@ -130,10 +155,6 @@ class _QuizPageState extends State<QuizPage>
       });
     }
   }
-
-  // ============================================================
-  // TIMER
-  // ============================================================
 
   void _startTimer() {
     _timer?.cancel();
@@ -170,21 +191,23 @@ class _QuizPageState extends State<QuizPage>
     );
   }
 
-  // ============================================================
-  // ACAK SOAL DAN PILIHAN JAWABAN
-  // ============================================================
-
-  List<Question> _shuffleQuestions(List<Question> source) {
+  List<Question> _shuffleQuestions(
+    List<Question> source,
+  ) {
     final random = Random();
 
-    final shuffled = source.map((question) {
-      final options = List<String>.from(question.options);
+    final shuffled =
+        source.map((question) {
+      final options =
+          List<String>.from(
+        question.options,
+      );
 
       options.shuffle(random);
 
-      // Question.withOptions() sudah menghitung
-      // ulang posisi jawaban yang benar.
-      return question.withOptions(options);
+      return question.withOptions(
+        options,
+      );
     }).toList();
 
     shuffled.shuffle(random);
@@ -192,17 +215,19 @@ class _QuizPageState extends State<QuizPage>
     return shuffled;
   }
 
-  // ============================================================
-  // PILIH JAWABAN
-  // ============================================================
-
   void chooseAnswer(int index) {
-    if (answered || _showAnswerAnimation) return;
+    if (answered ||
+        _showAnswerAnimation) {
+      return;
+    }
 
     _timer?.cancel();
 
-    final question = questions[currentQuestion];
-    final correct = index == question.answer;
+    final question =
+        questions[currentQuestion];
+
+    final correct =
+        index == question.answer;
 
     setState(() {
       selectedAnswer = index;
@@ -215,16 +240,16 @@ class _QuizPageState extends State<QuizPage>
       }
     });
 
-    // Dipanggil langsung dari klik pengguna agar audio diizinkan browser web.
-    unawaited(_playAnswerSound(correct));
+    unawaited(
+      _playAnswerSound(correct),
+    );
+
     _showFeedback(correct);
   }
 
-  // ============================================================
-  // TAMPILKAN ANIMASI BENAR / SALAH
-  // ============================================================
-
-  Future<void> _showFeedback(bool correct) async {
+  Future<void> _showFeedback(
+    bool correct,
+  ) async {
     if (!mounted) return;
 
     setState(() {
@@ -234,19 +259,18 @@ class _QuizPageState extends State<QuizPage>
 
     _feedbackController.reset();
 
-    // Muncul
     await _feedbackController.forward();
 
     if (!mounted) return;
 
-    // Diam sebentar
     await Future.delayed(
-      const Duration(milliseconds: 800),
+      const Duration(
+        milliseconds: 800,
+      ),
     );
 
     if (!mounted) return;
 
-    // Hilang
     await _feedbackController.reverse();
 
     if (!mounted) return;
@@ -256,11 +280,9 @@ class _QuizPageState extends State<QuizPage>
     });
   }
 
-  // ============================================================
-  // SUARA BENAR / SALAH
-  // ============================================================
-
-  Future<void> _playAnswerSound(bool correct) async {
+  Future<void> _playAnswerSound(
+    bool correct,
+  ) async {
     try {
       await _audioPlayer.play(
         AssetSource(
@@ -269,22 +291,16 @@ class _QuizPageState extends State<QuizPage>
               : 'wrong.wav',
         ),
       );
-    } catch (_) {
-      // Jika suara gagal, kuis tetap berjalan.
-    }
+    } catch (_) {}
   }
-
-  // ============================================================
-  // SOAL BERIKUTNYA
-  // ============================================================
 
   Future<void> nextQuestion() async {
     if (!answered) return;
 
     if (_showAnswerAnimation) return;
 
-    // Kalau soal terakhir
-    if (currentQuestion == questions.length - 1) {
+    if (currentQuestion ==
+        questions.length - 1) {
       _timer?.cancel();
 
       await widget.onFinished(
@@ -300,8 +316,10 @@ class _QuizPageState extends State<QuizPage>
           builder: (_) => ResultPage(
             grade: widget.grade,
             score: score,
-            total: questions.length * 10,
-            studentName: widget.studentName,
+            total:
+                questions.length * 10,
+            studentName:
+                widget.studentName,
           ),
         ),
       );
@@ -317,10 +335,6 @@ class _QuizPageState extends State<QuizPage>
     }
   }
 
-  // ============================================================
-  // DISPOSE
-  // ============================================================
-
   @override
   void dispose() {
     _timer?.cancel();
@@ -329,401 +343,120 @@ class _QuizPageState extends State<QuizPage>
     super.dispose();
   }
 
-  // ============================================================
-  // BUILD
-  // ============================================================
-
   @override
   Widget build(BuildContext context) {
     if (questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Kuis'),
-        ),
-        body: const Center(
-          child: Text(
-            'Soal untuk mata pelajaran ini belum tersedia.',
+        body: SchoolBackground(
+          child: Center(
+            child: Container(
+              margin:
+                  const EdgeInsets.all(25),
+              padding:
+                  const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(25),
+              ),
+              child: const Text(
+                'Soal untuk mata pelajaran ini belum tersedia.',
+                textAlign:
+                    TextAlign.center,
+              ),
+            ),
           ),
         ),
       );
     }
 
-    final question = questions[currentQuestion];
+    final question =
+        questions[currentQuestion];
 
     final progress =
-        (currentQuestion + 1) / questions.length;
+        (currentQuestion + 1) /
+            questions.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Kuis Kelas ${widget.grade} SD',
-        ),
-        backgroundColor: Colors.transparent,
-      ),
       body: Stack(
         children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(25),
-              child: Column(
-                children: [
-                  // ==================================================
-                  // PROGRESS
-                  // ==================================================
+          SchoolBackground(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.fromLTRB(
+                  18,
+                  15,
+                  18,
+                  35,
+                ),
+                child: Column(
+                  children: [
+                    _buildHeader(),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(20),
-                          child: LinearProgressIndicator(
-                            value: progress,
-                            minHeight: 12,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '${currentQuestion + 1}/${questions.length}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    const SizedBox(height: 15),
+
+                    _buildProgress(progress),
+
+                    const SizedBox(height: 15),
+
+                    _buildTimer(),
+
+                    const SizedBox(height: 18),
+
+                    _buildQuestion(question),
+
+                    const SizedBox(height: 18),
+
+                    _buildAnswers(question),
+
+                    if (answered) ...[
+                      const SizedBox(height: 8),
+                      _buildExplanation(
+                        question,
                       ),
                     ],
-                  ),
 
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 18),
 
-                  // ==================================================
-                  // TIMER
-                  // ==================================================
-
-                  AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: 250),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 9,
-                    ),
-                    decoration: BoxDecoration(
-                      color: secondsRemaining <= 5
-                          ? const Color(0xFFFFE4E4)
-                          : const Color(0xFFEAF0FF),
-                      borderRadius:
-                          BorderRadius.circular(14),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          color: secondsRemaining <= 5
-                              ? Colors.red
-                              : const Color(0xFF4F7DF3),
-                        ),
-                        const SizedBox(width: 7),
-                        Text(
-                          '$secondsRemaining detik',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  // ==================================================
-                  // PERTANYAAN
-                  // ==================================================
-
-                  AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: 300),
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFFD85C),
-                          Color(0xFFFFB65C),
-                        ],
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(28),
-                    ),
-                    child: Column(
-                      children: [
-                        if (question.visual != null)
-                          _QuestionVisual(
-                            visual: question.visual!,
-                            isAnimated: question.isAnimated,
-                            remoteImageUrl:
-                                _remoteVisuals[question.id],
-                          ),
-
-                        if (question.visual != null)
-                          const SizedBox(height: 10),
-
-                        Text(
-                          question.subject,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF745300),
-                          ),
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        Text(
-                          question.question,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  // ==================================================
-                  // PILIHAN JAWABAN
-                  // ==================================================
-
-                  ...List.generate(
-                    question.options.length,
-                    (index) {
-                      final correct =
-                          index == question.answer;
-
-                      final selected =
-                          index == selectedAnswer;
-
-                      final showCorrect =
-                          answered && correct;
-
-                      final showWrong =
-                          answered &&
-                              selected &&
-                              !correct;
-
-                      return GestureDetector(
-                        onTap: answered ||
-                                _showAnswerAnimation
-                            ? null
-                            : () => chooseAnswer(index),
-
-                        child: AnimatedContainer(
-                          duration:
-                              const Duration(milliseconds: 250),
-                          width: double.infinity,
-                          margin:
-                              const EdgeInsets.only(bottom: 13),
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: showCorrect
-                                ? const Color(0xFFE0F7E8)
-                                : showWrong
-                                    ? const Color(0xFFFFE3E3)
-                                    : Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(18),
-                            border: Border.all(
-                              color: showCorrect
-                                  ? Colors.green
-                                  : showWrong
-                                      ? Colors.red
-                                      : const Color(0xFFE0E6F2),
-                              width: 2,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor:
-                                    showCorrect
-                                        ? Colors.green
-                                        : showWrong
-                                            ? Colors.red
-                                            : const Color(
-                                                0xFFEAF0FF,
-                                              ),
-                                child: Text(
-                                  String.fromCharCode(
-                                    65 + index,
-                                  ),
-                                  style: TextStyle(
-                                    color: showCorrect ||
-                                            showWrong
-                                        ? Colors.white
-                                        : const Color(
-                                            0xFF4F7DF3,
-                                          ),
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(width: 15),
-
-                              Expanded(
-                                child: Text(
-                                  question.options[index],
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight:
-                                        FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-
-                              if (showCorrect)
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                ),
-
-                              if (showWrong)
-                                const Icon(
-                                  Icons.cancel,
-                                  color: Colors.red,
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  // ==================================================
-                  // PENJELASAN
-                  // ==================================================
-
-                  if (answered)
-                    AnimatedSwitcher(
-                      duration:
-                          const Duration(milliseconds: 300),
-                      child: Container(
-                        key: ValueKey(
-                          '${currentQuestion}_$selectedAnswer',
-                        ),
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: selectedAnswer ==
-                                  question.answer
-                              ? const Color(0xFFE0F7E8)
-                              : const Color(0xFFFFE3E3),
-                          borderRadius:
-                              BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            _AnswerStatusIcon(
-                              isCorrect:
-                                  selectedAnswer ==
-                                      question.answer,
-                            ),
-
-                            const SizedBox(width: 12),
-
-                            Expanded(
-                              child: Text(
-                                selectedAnswer ==
-                                        question.answer
-                                    ? 'Jawaban benar! ${question.explanation}'
-                                    : timedOut
-                                        ? 'Waktu habis. Jawaban yang benar adalah "${question.options[question.answer]}". ${question.explanation}'
-                                        : 'Belum tepat. Jawaban yang benar adalah "${question.options[question.answer]}". ${question.explanation}',
-                                style: const TextStyle(
-                                  fontWeight:
-                                      FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                  const SizedBox(height: 20),
-
-                  // ==================================================
-                  // TOMBOL BERIKUTNYA
-                  // ==================================================
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed:
-                          answered &&
-                                  !_showAnswerAnimation
-                              ? nextQuestion
-                              : null,
-                      style:
-                          ElevatedButton.styleFrom(
-                        padding:
-                            const EdgeInsets.symmetric(
-                          vertical: 17,
-                        ),
-                        backgroundColor:
-                            const Color(0xFF4F7DF3),
-                        foregroundColor: Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(18),
-                        ),
-                      ),
-                      child: Text(
-                        currentQuestion ==
-                                questions.length - 1
-                            ? 'Lihat Nilai 🏆'
-                            : 'Soal Berikutnya ➜',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                    _buildNextButton(),
+                  ],
+                ),
               ),
             ),
           ),
-
-          // ========================================================
-          // ANIMASI BESAR DI TENGAH
-          // ========================================================
 
           if (_showAnswerAnimation)
             Positioned.fill(
               child: IgnorePointer(
                 child: Container(
-                  color: Colors.black.withOpacity(0.20),
+                  color:
+                      Colors.black.withOpacity(
+                    .12,
+                  ),
                   child: Center(
                     child: AnimatedBuilder(
-                      animation: _feedbackController,
-                      builder: (context, child) {
+                      animation:
+                          _feedbackController,
+                      builder:
+                          (context, child) {
                         return Opacity(
                           opacity:
-                              _feedbackOpacity.value,
-                          child: Transform.scale(
+                              _feedbackOpacity
+                                  .value,
+                          child:
+                              Transform.scale(
                             scale:
-                                _feedbackScale.value,
+                                _feedbackScale
+                                    .value,
                             child: child,
                           ),
                         );
                       },
-                      child: _BigAnswerFeedback(
-                        correct: _lastAnswerCorrect,
+                      child:
+                          _BigAnswerFeedback(
+                        correct:
+                            _lastAnswerCorrect,
                       ),
                     ),
                   ),
@@ -734,13 +467,553 @@ class _QuizPageState extends State<QuizPage>
       ),
     );
   }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius:
+                BorderRadius.circular(15),
+          ),
+          child: IconButton(
+            onPressed: () =>
+                Navigator.pop(context),
+            icon: const Icon(
+              Icons.close_rounded,
+              color:
+                  SchoolColors.darkBlue,
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Kelas ${widget.grade} SD',
+                style: const TextStyle(
+                  color:
+                      SchoolColors.darkBlue,
+                  fontSize: 18,
+                  fontWeight:
+                      FontWeight.w900,
+                ),
+              ),
+              Text(
+                'Ayo jawab dengan benar!',
+                style: const TextStyle(
+                  color:
+                      Color(0xFF718399),
+                  fontSize: 11,
+                  fontWeight:
+                      FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        AnimatedAssetCharacter(
+          asset:
+              'assets/Gambar guru p.jpeg',
+          width: 52,
+          height: 52,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgress(
+    double progress,
+  ) {
+    return Container(
+      padding:
+          const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius:
+                  BorderRadius.circular(20),
+              child:
+                  LinearProgressIndicator(
+                value: progress,
+                minHeight: 12,
+                backgroundColor:
+                    const Color(
+                  0xFFE7EEF6,
+                ),
+                valueColor:
+                    const AlwaysStoppedAnimation(
+                  SchoolColors.green,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '${currentQuestion + 1}/${questions.length}',
+            style: const TextStyle(
+              color:
+                  SchoolColors.darkBlue,
+              fontWeight:
+                  FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimer() {
+    final danger =
+        secondsRemaining <= 5;
+
+    return AnimatedContainer(
+      duration:
+          const Duration(milliseconds: 250),
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 17,
+        vertical: 11,
+      ),
+      decoration: BoxDecoration(
+        color: danger
+            ? const Color(0xFFFFE5E5)
+            : Colors.white,
+        borderRadius:
+            BorderRadius.circular(18),
+        border: Border.all(
+          color: danger
+              ? Colors.redAccent
+              : const Color(
+                  0xFFE3EDF7,
+                ),
+        ),
+      ),
+      child: Row(
+        mainAxisSize:
+            MainAxisSize.min,
+        children: [
+          AnimatedSwitcher(
+            duration:
+                const Duration(
+              milliseconds: 200,
+            ),
+            child: Icon(
+              Icons.timer_rounded,
+              key: ValueKey(
+                danger,
+              ),
+              color: danger
+                  ? Colors.red
+                  : SchoolColors.blue,
+            ),
+          ),
+          const SizedBox(width: 7),
+          Text(
+            '$secondsRemaining detik',
+            style: TextStyle(
+              color: danger
+                  ? Colors.red
+                  : SchoolColors.darkBlue,
+              fontWeight:
+                  FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuestion(
+    Question question,
+  ) {
+    return AnimatedSwitcher(
+      duration:
+          const Duration(milliseconds: 450),
+      transitionBuilder:
+          (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position:
+                Tween<Offset>(
+              begin:
+                  const Offset(.15, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        key: ValueKey(
+          currentQuestion,
+        ),
+        width: double.infinity,
+        padding:
+            const EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          24,
+        ),
+        decoration: BoxDecoration(
+          gradient:
+              const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFFFD968),
+              Color(0xFFFFB85C),
+            ],
+          ),
+          borderRadius:
+              BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: SchoolColors
+                  .orange
+                  .withOpacity(.16),
+              blurRadius: 20,
+              offset:
+                  const Offset(0, 9),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            if (question.visual != null)
+              _QuestionVisual(
+                visual:
+                    question.visual!,
+                isAnimated:
+                    question.isAnimated,
+                remoteImageUrl:
+                    _remoteVisuals[
+                        question.id],
+              ),
+
+            if (question.visual != null)
+              const SizedBox(
+                height: 10,
+              ),
+
+            Container(
+              padding:
+                  const EdgeInsets
+                      .symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration:
+                  BoxDecoration(
+                color: Colors.white
+                    .withOpacity(.65),
+                borderRadius:
+                    BorderRadius.circular(
+                  15,
+                ),
+              ),
+              child: Text(
+                question.subject,
+                style:
+                    const TextStyle(
+                  color:
+                      Color(0xFF745300),
+                  fontSize: 11,
+                  fontWeight:
+                      FontWeight.w900,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            Text(
+              question.question,
+              textAlign:
+                  TextAlign.center,
+              style:
+                  const TextStyle(
+                color:
+                    SchoolColors.darkBlue,
+                fontSize: 24,
+                height: 1.25,
+                fontWeight:
+                    FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnswers(
+    Question question,
+  ) {
+    return Column(
+      children: List.generate(
+        question.options.length,
+        (index) {
+          final correct =
+              index == question.answer;
+
+          final selected =
+              index == selectedAnswer;
+
+          final showCorrect =
+              answered && correct;
+
+          final showWrong =
+              answered &&
+                  selected &&
+                  !correct;
+
+          final color =
+              showCorrect
+                  ? SchoolColors.green
+                  : showWrong
+                      ? Colors.redAccent
+                      : SchoolColors.blue;
+
+          return Padding(
+            padding:
+                const EdgeInsets.only(
+              bottom: 12,
+            ),
+            child: PressableCard(
+              onTap:
+                  answered ||
+                          _showAnswerAnimation
+                      ? () {}
+                      : () =>
+                          chooseAnswer(index),
+              child: AnimatedContainer(
+                duration:
+                    const Duration(
+                  milliseconds: 250,
+                ),
+                padding:
+                    const EdgeInsets.all(
+                  15,
+                ),
+                decoration:
+                    BoxDecoration(
+                  color: showCorrect
+                      ? const Color(
+                          0xFFE6F9ED,
+                        )
+                      : showWrong
+                          ? const Color(
+                              0xFFFFE7E7,
+                            )
+                          : Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(
+                    20,
+                  ),
+                  border: Border.all(
+                    color: showCorrect ||
+                            showWrong
+                        ? color
+                        : const Color(
+                            0xFFE3ECF6,
+                          ),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color
+                          .withOpacity(.06),
+                      blurRadius: 15,
+                      offset:
+                          const Offset(
+                        0,
+                        5,
+                      ),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration:
+                          BoxDecoration(
+                        color: color
+                            .withOpacity(
+                          .13,
+                        ),
+                        borderRadius:
+                            BorderRadius
+                                .circular(
+                          14,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          String.fromCharCode(
+                            65 + index,
+                          ),
+                          style:
+                              TextStyle(
+                            color: color,
+                            fontWeight:
+                                FontWeight
+                                    .w900,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(
+                      width: 13,
+                    ),
+
+                    Expanded(
+                      child: Text(
+                        question
+                            .options[index],
+                        style:
+                            const TextStyle(
+                          color:
+                              SchoolColors
+                                  .darkBlue,
+                          fontSize: 15,
+                          fontWeight:
+                              FontWeight.w700,
+                        ),
+                      ),
+                    ),
+
+                    if (showCorrect)
+                      const Icon(
+                        Icons
+                            .check_circle_rounded,
+                        color:
+                            SchoolColors.green,
+                      ),
+
+                    if (showWrong)
+                      const Icon(
+                        Icons
+                            .cancel_rounded,
+                        color:
+                            Colors.redAccent,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildExplanation(
+    Question question,
+  ) {
+    final correct =
+        selectedAnswer ==
+            question.answer;
+
+    return AnimatedSwitcher(
+      duration:
+          const Duration(milliseconds: 350),
+      child: Container(
+        key: ValueKey(
+          '${currentQuestion}_$selectedAnswer',
+        ),
+        width: double.infinity,
+        padding:
+            const EdgeInsets.all(17),
+        decoration: BoxDecoration(
+          color: correct
+              ? const Color(0xFFE7F9EE)
+              : const Color(0xFFFFE8E8),
+          borderRadius:
+              BorderRadius.circular(20),
+        ),
+        child: Row(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+            _AnswerStatusIcon(
+              isCorrect: correct,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                correct
+                    ? 'Jawaban benar! ${question.explanation}'
+                    : timedOut
+                        ? 'Waktu habis. Jawaban yang benar adalah "${question.options[question.answer]}". ${question.explanation}'
+                        : 'Belum tepat. Jawaban yang benar adalah "${question.options[question.answer]}". ${question.explanation}',
+                style: const TextStyle(
+                  color:
+                      SchoolColors.darkBlue,
+                  fontWeight:
+                      FontWeight.w700,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNextButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed:
+            answered &&
+                    !_showAnswerAnimation
+                ? nextQuestion
+                : null,
+        icon: Icon(
+          currentQuestion ==
+                  questions.length - 1
+              ? Icons
+                  .emoji_events_rounded
+              : Icons
+                  .arrow_forward_rounded,
+        ),
+        label: Text(
+          currentQuestion ==
+                  questions.length - 1
+              ? 'Lihat Nilai'
+              : 'Soal Berikutnya',
+        ),
+      ),
+    );
+  }
 }
 
-// ================================================================
-// ANIMASI CENTANG / SILANG BESAR
-// ================================================================
-
-class _BigAnswerFeedback extends StatelessWidget {
+class _BigAnswerFeedback
+    extends StatelessWidget {
   const _BigAnswerFeedback({
     required this.correct,
   });
@@ -750,40 +1023,54 @@ class _BigAnswerFeedback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 190,
-      height: 190,
+      width: 180,
+      height: 180,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: correct
-            ? Colors.green
-            : Colors.red,
+            ? SchoolColors.green
+            : Colors.redAccent,
         boxShadow: [
           BoxShadow(
             color: (correct
-                    ? Colors.green
-                    : Colors.red)
-                .withOpacity(0.45),
+                    ? SchoolColors.green
+                    : Colors.redAccent)
+                .withOpacity(.35),
             blurRadius: 35,
-            spreadRadius: 10,
+            spreadRadius: 8,
           ),
         ],
       ),
-      child: Icon(
-        correct
-            ? Icons.check_rounded
-            : Icons.close_rounded,
-        color: Colors.white,
-        size: 130,
+      child: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.center,
+        children: [
+          Icon(
+            correct
+                ? Icons.check_rounded
+                : Icons.close_rounded,
+            color: Colors.white,
+            size: 80,
+          ),
+          Text(
+            correct
+                ? 'HEBAT!'
+                : 'COBA LAGI!',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight:
+                  FontWeight.w900,
+              fontSize: 16,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ================================================================
-// VISUAL SOAL
-// ================================================================
-
-class _QuestionVisual extends StatelessWidget {
+class _QuestionVisual
+    extends StatelessWidget {
   const _QuestionVisual({
     required this.visual,
     required this.isAnimated,
@@ -800,12 +1087,12 @@ class _QuestionVisual extends StatelessWidget {
         remoteImageUrl!.isNotEmpty) {
       return Image.network(
         remoteImageUrl!,
-        height: 76,
+        height: 95,
         errorBuilder: (_, __, ___) {
           return Text(
             visual,
             style: const TextStyle(
-              fontSize: 42,
+              fontSize: 44,
             ),
           );
         },
@@ -816,20 +1103,21 @@ class _QuestionVisual extends StatelessWidget {
       return Text(
         visual,
         style: const TextStyle(
-          fontSize: 42,
+          fontSize: 44,
         ),
       );
     }
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(
-        begin: 0.8,
-        end: 1.0,
+        begin: .75,
+        end: 1,
       ),
       duration:
           const Duration(milliseconds: 650),
       curve: Curves.elasticOut,
-      builder: (context, value, child) {
+      builder:
+          (context, value, child) {
         return Transform.scale(
           scale: value,
           child: child,
@@ -845,11 +1133,8 @@ class _QuestionVisual extends StatelessWidget {
   }
 }
 
-// ================================================================
-// ICON FEEDBACK KECIL
-// ================================================================
-
-class _AnswerStatusIcon extends StatelessWidget {
+class _AnswerStatusIcon
+    extends StatelessWidget {
   const _AnswerStatusIcon({
     required this.isCorrect,
   });
@@ -860,13 +1145,14 @@ class _AnswerStatusIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(
-        begin: 0.3,
-        end: 1.0,
+        begin: .3,
+        end: 1,
       ),
       duration:
           const Duration(milliseconds: 420),
       curve: Curves.elasticOut,
-      builder: (context, value, child) {
+      builder:
+          (context, value, child) {
         return Transform.scale(
           scale: value,
           child: child,
@@ -876,9 +1162,10 @@ class _AnswerStatusIcon extends StatelessWidget {
         isCorrect
             ? Icons.check_circle_rounded
             : Icons.cancel_rounded,
-        color:
-            isCorrect ? Colors.green : Colors.red,
-        size: 42,
+        color: isCorrect
+            ? SchoolColors.green
+            : Colors.redAccent,
+        size: 38,
       ),
     );
   }

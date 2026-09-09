@@ -9,9 +9,9 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(const BelajarCeriaApp());
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.byType(HomePage), findsOneWidget);
-    expect(find.text('Beranda'), findsOneWidget);
+    expect(find.text('BELAJAR CERIA'), findsOneWidget);
   });
 }

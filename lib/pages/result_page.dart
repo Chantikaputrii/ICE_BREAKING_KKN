@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'school_ui.dart';
+
 class ResultPage extends StatelessWidget {
   final int grade;
   final int score;
@@ -16,204 +18,299 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final percent =
-        total == 0
-            ? 0
-            : ((score / total) * 100).round();
+    final percent = total == 0
+        ? 0
+        : ((score / total) * 100).round();
 
-    final stars =
-        percent >= 80
-            ? 3
-            : percent >= 60
-                ? 2
-                : 1;
+    final stars = percent >= 80
+        ? 3
+        : percent >= 60
+            ? 2
+            : 1;
 
     String message;
+    String subMessage;
 
     if (percent >= 80) {
-      message = 'Hebat sekali! Kamu luar biasa! 🎉';
+      message = 'Hebat Sekali!';
+      subMessage =
+          'Kamu benar-benar bintang sekolah! 🌟';
     } else if (percent >= 60) {
-      message = 'Bagus! Terus tingkatkan lagi! 💪';
+      message = 'Bagus!';
+      subMessage =
+          'Sedikit lagi menuju nilai sempurna!';
     } else {
-      message = 'Tidak apa-apa, ayo coba lagi! 🌟';
+      message = 'Tetap Semangat!';
+      subMessage =
+          'Yuk belajar lagi dan coba kembali!';
     }
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(25),
-            child: Column(
-              children: [
-                const Text(
-                  '🏆',
-                  style: TextStyle(fontSize: 90),
-                ),
+      body: SchoolBackground(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const SizedBox(height: 15),
 
-                const Text(
-                  'Kuis Selesai!',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
+                  const Text(
+                    'HASIL PETUALANGAN',
+                    style: TextStyle(
+                      color: SchoolColors.darkBlue,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 5),
+                  const SizedBox(height: 8),
 
-                Text(
-                  '$studentName • Kelas $grade SD',
-                  style: const TextStyle(
-                    color: Colors.grey,
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      color: SchoolColors.darkBlue,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 25),
+                  const SizedBox(height: 5),
 
-                // NILAI
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(35),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF4F7DF3),
-                        Color(0xFF6D5CE7),
+                  Text(
+                    subMessage,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF718399),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  AnimatedAssetCharacter(
+                    asset:
+                        'assets/anak sd angkat tangan.jpeg',
+                    width: 190,
+                    height: 160,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 28,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          SchoolColors.blue,
+                          Color(0xFF76B8FF),
+                        ],
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              SchoolColors.blue
+                                  .withOpacity(.22),
+                          blurRadius: 25,
+                          offset:
+                              const Offset(0, 12),
+                        ),
                       ],
                     ),
-                    borderRadius:
-                        BorderRadius.circular(30),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Nilai Kamu',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontWeight:
+                                FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        Text(
+                          '$percent',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 78,
+                            height: 1,
+                            fontWeight:
+                                FontWeight.w900,
+                          ),
+                        ),
+
+                        const Text(
+                          'dari 100',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontWeight:
+                                FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: List.generate(
+                            3,
+                            (index) {
+                              return AnimatedScale(
+                                scale:
+                                    index < stars
+                                        ? 1
+                                        : .65,
+                                duration:
+                                    Duration(
+                                  milliseconds:
+                                      400 +
+                                          index *
+                                              150,
+                                ),
+                                child: Icon(
+                                  Icons.star_rounded,
+                                  color:
+                                      index < stars
+                                          ? SchoolColors
+                                              .yellow
+                                          : Colors
+                                              .white24,
+                                  size: 40,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
+
+                  const SizedBox(height: 15),
+
+                  Text(
+                    '$studentName • Kelas $grade SD',
+                    style: const TextStyle(
+                      color: SchoolColors.darkBlue,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  Row(
                     children: [
-                      const Text(
-                        'Nilai Kamu',
-                        style: TextStyle(
-                          color: Colors.white70,
+                      Expanded(
+                        child: _StatCard(
+                          icon:
+                              Icons.bolt_rounded,
+                          title: 'Poin',
+                          value: '$score',
+                          color:
+                              SchoolColors.orange,
                         ),
                       ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        '$percent',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 75,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-
-                      const Text(
-                        '/ 100',
-                        style: TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      Text(
-                        '⭐' * stars,
-                        style:
-                            const TextStyle(fontSize: 32),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          icon:
+                              Icons.percent_rounded,
+                          title: 'Persentase',
+                          value: '$percent%',
+                          color:
+                              SchoolColors.green,
                         ),
                       ),
                     ],
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 22),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: resultCard(
-                        'Poin',
-                        '$score',
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () =>
+                          Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.home_rounded,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: resultCard(
-                        'Persentase',
-                        '$percent%',
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 25),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFF4F7DF3),
-                      foregroundColor: Colors.white,
-                      padding:
-                          const EdgeInsets.symmetric(
-                        vertical: 17,
-                      ),
-                      shape:
-                          RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(18),
-                      ),
-                    ),
-                    child: const Text(
-                      'Kembali ke Beranda',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                      label: const Text(
+                        'Kembali ke Sekolah',
                       ),
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget resultCard(
-    String title,
-    String value,
-  ) {
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius:
+            BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(.08),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
       ),
       child: Column(
         children: [
+          Icon(
+            icon,
+            color: color,
+            size: 27,
+          ),
+          const SizedBox(height: 7),
           Text(
             title,
             style: const TextStyle(
-              color: Colors.grey,
+              color: Color(0xFF718399),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 3),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 25,
+              color: SchoolColors.darkBlue,
+              fontSize: 24,
               fontWeight: FontWeight.w900,
             ),
           ),
