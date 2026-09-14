@@ -15,32 +15,46 @@ class SchoolBackground extends StatefulWidget {
   final bool compact;
 
   @override
-  State<SchoolBackground> createState() => _SchoolBackgroundState();
+  State<SchoolBackground> createState() =>
+      _SchoolBackgroundState();
 }
 
-class _SchoolBackgroundState extends State<SchoolBackground>
+class _SchoolBackgroundState
+    extends State<SchoolBackground>
     with TickerProviderStateMixin {
-  late final AnimationController _cloudController;
-  late final AnimationController _sunController;
-  late final AnimationController _birdController;
+  late final AnimationController
+      _cloudController;
+
+  late final AnimationController
+      _sunController;
+
+  late final AnimationController
+      _birdController;
 
   @override
   void initState() {
     super.initState();
 
-    _cloudController = AnimationController(
+    _cloudController =
+        AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 18),
+      duration:
+          const Duration(seconds: 22),
     )..repeat();
 
-    _sunController = AnimationController(
+    _sunController =
+        AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 12),
+      duration:
+          const Duration(seconds: 18),
     )..repeat();
 
-    _birdController = AnimationController(
+    // Burung dibuat jauh lebih lambat.
+    _birdController =
+        AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration:
+          const Duration(seconds: 32),
     )..repeat();
   }
 
@@ -54,17 +68,28 @@ class _SchoolBackgroundState extends State<SchoolBackground>
 
   @override
   Widget build(BuildContext context) {
-    final grassHeight = widget.compact ? 85.0 : 125.0;
-
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
+      builder: (
+        context,
+        constraints,
+      ) {
+        final width =
+            constraints.maxWidth;
+
+        final grassHeight =
+            widget.compact
+                ? 85.0
+                : 125.0;
 
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+          decoration:
+              const BoxDecoration(
+            gradient:
+                LinearGradient(
+              begin:
+                  Alignment.topCenter,
+              end:
+                  Alignment.bottomCenter,
               colors: [
                 Color(0xFFBDEBFF),
                 Color(0xFFEAF8FF),
@@ -80,52 +105,92 @@ class _SchoolBackgroundState extends State<SchoolBackground>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // ==============================
-              // MATAHARI BERPUTAR
-              // ==============================
+              // =========================
+              // MATAHARI
+              // =========================
               Positioned(
                 top: 28,
-                right: width < 700 ? 25 : 70,
-                child: AnimatedBuilder(
-                  animation: _sunController,
-                  builder: (context, child) {
+                right:
+                    width < 700
+                        ? 25
+                        : 70,
+                child:
+                    AnimatedBuilder(
+                  animation:
+                      _sunController,
+                  builder:
+                      (
+                    context,
+                    child,
+                  ) {
                     return Transform.rotate(
-                      angle: _sunController.value * math.pi * 2,
-                      child: const _Sun(),
+                      angle:
+                          _sunController
+                                  .value *
+                              math.pi *
+                              2,
+                      child:
+                          const _Sun(),
                     );
                   },
                 ),
               ),
 
-              // ==============================
-              // AWAN BERGERAK
-              // ==============================
+              // =========================
+              // AWAN
+              // =========================
               AnimatedBuilder(
-                animation: _cloudController,
-                builder: (context, child) {
-                  final t = _cloudController.value;
+                animation:
+                    _cloudController,
+                builder:
+                    (
+                  context,
+                  child,
+                ) {
+                  final t =
+                      _cloudController
+                          .value;
 
                   return Stack(
                     children: [
                       Positioned(
                         top: 65,
-                        left: -130 + (width + 260) * t,
-                        child: const _Cloud(
-                          scale: 1.0,
+                        left:
+                            -150 +
+                                (width +
+                                        300) *
+                                    t,
+                        child:
+                            const _Cloud(
+                          scale: 1,
                         ),
                       ),
                       Positioned(
-                        top: 155,
-                        left: 50 + (width + 220) * ((t + .38) % 1),
-                        child: const _Cloud(
-                          scale: .7,
+                        top: 160,
+                        left:
+                            40 +
+                                (width +
+                                        250) *
+                                    ((t +
+                                            .38) %
+                                        1),
+                        child:
+                            const _Cloud(
+                          scale: .72,
                         ),
                       ),
                       Positioned(
-                        top: 245,
-                        left: -150 + (width + 300) * ((t + .72) % 1),
-                        child: const _Cloud(
-                          scale: .85,
+                        top: 255,
+                        left:
+                            -170 +
+                                (width +
+                                        340) *
+                                    ((t +
+                                            .72) %
+                                        1),
+                        child:
+                            const _Cloud(
+                          scale: .82,
                         ),
                       ),
                     ],
@@ -133,30 +198,62 @@ class _SchoolBackgroundState extends State<SchoolBackground>
                 },
               ),
 
-              // ==============================
-              // BURUNG BERGERAK
-              // ==============================
+              // =========================
+              // BURUNG LAMBAT
+              // =========================
               AnimatedBuilder(
-                animation: _birdController,
-                builder: (context, child) {
-                  final t = Curves.easeInOut.transform(
-                    _birdController.value,
-                  );
+                animation:
+                    _birdController,
+                builder:
+                    (
+                  context,
+                  child,
+                ) {
+                  final t =
+                      _birdController
+                          .value;
 
                   return Stack(
                     children: [
                       Positioned(
-                        top: 115 + math.sin(t * math.pi * 2) * 10,
-                        left: -80 + (width + 160) * t,
-                        child: const _Bird(
+                        top:
+                            115 +
+                                math.sin(
+                                      t *
+                                          math.pi *
+                                          2,
+                                    ) *
+                                    8,
+                        left:
+                            -90 +
+                                (width +
+                                        180) *
+                                    t,
+                        child:
+                            const _Bird(
                           scale: .85,
                         ),
                       ),
                       Positioned(
-                        top: 195 + math.sin((t + .3) * math.pi * 2) * 8,
-                        left: -130 + (width + 260) * ((t + .5) % 1),
-                        child: const _Bird(
-                          scale: .6,
+                        top:
+                            205 +
+                                math.sin(
+                                      (t +
+                                              .4) *
+                                          math.pi *
+                                          2,
+                                    ) *
+                                    6,
+                        left:
+                            -120 +
+                                (width +
+                                        240) *
+                                    ((t +
+                                            .55) %
+                                        1),
+                        child:
+                            const _Bird(
+                          scale: .58,
                         ),
                       ),
                     ],
@@ -164,9 +261,9 @@ class _SchoolBackgroundState extends State<SchoolBackground>
                 },
               ),
 
-              // ==============================
+              // =========================
               // BINTANG
-              // ==============================
+              // =========================
               const Positioned(
                 left: 50,
                 top: 190,
@@ -189,53 +286,61 @@ class _SchoolBackgroundState extends State<SchoolBackground>
                 ),
               ),
 
-              // ==============================
-              // POHON
-              // ==============================
+              // =========================
+              // POHON BESAR
+              // =========================
               if (widget.showSchoolIllustrations &&
                   width >= 900) ...[
                 Positioned(
-                  left: 15,
-                  bottom: grassHeight - 12,
+                  left: 5,
+                  bottom:
+                      grassHeight - 12,
                   child: Opacity(
-                    opacity: .95,
-                    child: Image.asset(
+                    opacity: .96,
+                    child:
+                        Image.asset(
                       'assets/Gambar pohon 2.jpeg',
-                      width: 145,
-                      height: 145,
+                      width: 280,
+                      height: 285,
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
+
                 Positioned(
-                  right: 15,
-                  bottom: grassHeight - 10,
+                  right: 5,
+                  bottom:
+                      grassHeight - 10,
                   child: Opacity(
-                    opacity: .95,
-                    child: Image.asset(
+                    opacity: .96,
+                    child:
+                        Image.asset(
                       'assets/Gambar pohon 3.jpeg',
-                      width: 150,
-                      height: 160,
+                      width: 285,
+                      height: 295,
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
               ],
 
-              // ==============================
+              // =========================
               // RUMPUT GELOMBANG
-              // ==============================
+              // =========================
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
                 child: SizedBox(
-                  height: grassHeight,
-                  child: const _WavyGrass(),
+                  height:
+                      grassHeight,
+                  child:
+                      const _WavyGrass(),
                 ),
               ),
 
-              if (widget.child != null) widget.child!,
+              if (widget.child != null)
+                widget.child!,
             ],
           ),
         );
@@ -252,23 +357,63 @@ class _Sun extends StatelessWidget {
     return Container(
       width: 72,
       height: 72,
-      decoration: BoxDecoration(
+      decoration:
+          BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFFFFC94A),
+        color:
+            const Color(0xFFFFC94A),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFC94A).withOpacity(.32),
-            blurRadius: 28,
-            spreadRadius: 10,
+            color:
+                const Color(
+              0xFFFFC94A,
+            ).withOpacity(.32),
+            blurRadius: 24,
+            spreadRadius: 5,
           ),
         ],
       ),
-      child: const Center(
-        child: Icon(
-          Icons.wb_sunny_rounded,
-          color: Color(0xFFFFF4C7),
-          size: 42,
-        ),
+      child: Stack(
+        alignment:
+            Alignment.center,
+        children: [
+          for (int i = 0;
+              i < 8;
+              i++)
+            Transform.rotate(
+              angle:
+                  i *
+                      math.pi /
+                      4,
+              child:
+                  Align(
+                alignment:
+                    Alignment.topCenter,
+                child:
+                    Container(
+                  width: 5,
+                  height: 15,
+                  margin:
+                      const EdgeInsets
+                          .only(
+                    top: -8,
+                  ),
+                  decoration:
+                      BoxDecoration(
+                    color:
+                        const Color(
+                      0xFFFFC94A,
+                    ),
+                    borderRadius:
+                        BorderRadius
+                            .circular(
+                      10,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -285,43 +430,53 @@ class _Cloud extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scale: scale,
+      alignment:
+          Alignment.center,
       child: SizedBox(
-        width: 150,
-        height: 65,
+        width: 145,
+        height: 70,
         child: Stack(
-          alignment: Alignment.bottomCenter,
+          alignment:
+              Alignment.bottomCenter,
           children: [
             Positioned(
-              left: 22,
-              bottom: 0,
-              child: Container(
-                width: 115,
-                height: 35,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.92),
-                  borderRadius: BorderRadius.circular(30),
-                ),
+              left: 5,
+              bottom: 8,
+              child: _cloudCircle(
+                45,
               ),
             ),
             Positioned(
               left: 42,
-              bottom: 20,
-              child: _CloudBubble(
-                size: 42,
+              bottom: 5,
+              child: _cloudCircle(
+                60,
               ),
             ),
             Positioned(
-              left: 74,
-              bottom: 14,
-              child: _CloudBubble(
-                size: 50,
+              left: 91,
+              bottom: 10,
+              child: _cloudCircle(
+                42,
               ),
             ),
             Positioned(
-              left: 103,
-              bottom: 20,
-              child: _CloudBubble(
-                size: 35,
+              left: 20,
+              bottom: 3,
+              child:
+                  Container(
+                width: 105,
+                height: 30,
+                decoration:
+                    BoxDecoration(
+                  color: Colors.white
+                      .withOpacity(.82),
+                  borderRadius:
+                      BorderRadius
+                          .circular(
+                    30,
+                  ),
+                ),
               ),
             ),
           ],
@@ -329,22 +484,17 @@ class _Cloud extends StatelessWidget {
       ),
     );
   }
-}
 
-class _CloudBubble extends StatelessWidget {
-  const _CloudBubble({
-    required this.size,
-  });
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _cloudCircle(
+    double size,
+  ) {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(.92),
+      decoration:
+          BoxDecoration(
+        color: Colors.white
+            .withOpacity(.82),
         shape: BoxShape.circle,
       ),
     );
@@ -362,12 +512,87 @@ class _Bird extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scale: scale,
-      child: const Icon(
-        Icons.flutter_dash,
-        color: Color(0xFF455A64),
-        size: 34,
+      child: CustomPaint(
+        size:
+            const Size(80, 45),
+        painter:
+            _BirdPainter(),
       ),
     );
+  }
+}
+
+class _BirdPainter
+    extends CustomPainter {
+  @override
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
+    final paint = Paint()
+      ..color =
+          const Color(0xFF36566B)
+      ..style =
+          PaintingStyle.stroke
+      ..strokeWidth = 3.5
+      ..strokeCap =
+          StrokeCap.round;
+
+    final leftWing =
+        Path()
+          ..moveTo(4, 25)
+          ..cubicTo(
+            14,
+            10,
+            27,
+            10,
+            39,
+            23,
+          );
+
+    final rightWing =
+        Path()
+          ..moveTo(39, 23)
+          ..cubicTo(
+            51,
+            10,
+            65,
+            10,
+            76,
+            25,
+          );
+
+    canvas.drawPath(
+      leftWing,
+      paint,
+    );
+
+    canvas.drawPath(
+      rightWing,
+      paint,
+    );
+
+    final body =
+        Paint()
+          ..color =
+              const Color(
+            0xFF36566B,
+          )
+          ..style =
+              PaintingStyle.fill;
+
+    canvas.drawCircle(
+      const Offset(39, 23),
+      3.5,
+      body,
+    );
+  }
+
+  @override
+  bool shouldRepaint(
+    covariant CustomPainter oldDelegate,
+  ) {
+    return false;
   }
 }
 
@@ -383,44 +608,58 @@ class _Star extends StatelessWidget {
     return Icon(
       Icons.star_rounded,
       size: size,
-      color: const Color(0xFFFFC94A),
+      color:
+          const Color(0xFFFFC94A),
     );
   }
 }
 
-class _WavyGrass extends StatelessWidget {
+class _WavyGrass
+    extends StatelessWidget {
   const _WavyGrass();
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _WavyGrassPainter(),
-      child: const SizedBox.expand(),
+      painter:
+          _WavyGrassPainter(),
+      child:
+          const SizedBox.expand(),
     );
   }
 }
 
-class _WavyGrassPainter extends CustomPainter {
+class _WavyGrassPainter
+    extends CustomPainter {
   @override
-  void paint(Canvas canvas, Size size) {
-    final grassPaint = Paint()
-      ..color = const Color(0xFF67C96B);
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
+    final grassPaint =
+        Paint()
+          ..color =
+              const Color(
+            0xFF67C96B,
+          );
 
-    final path = Path()
-      ..moveTo(
-        0,
-        35,
-      );
+    final path =
+        Path()
+          ..moveTo(0, 35);
 
-    final segment = size.width / 5;
+    final segment =
+        size.width / 5;
 
     for (var i = 0; i < 5; i++) {
-      final startX = i * segment;
+      final startX =
+          i * segment;
 
       path.cubicTo(
-        startX + segment * .25,
+        startX +
+            segment * .25,
         5,
-        startX + segment * .70,
+        startX +
+            segment * .70,
         65,
         startX + segment,
         30,
@@ -443,24 +682,31 @@ class _WavyGrassPainter extends CustomPainter {
       grassPaint,
     );
 
-    final lightPaint = Paint()
-      ..color = const Color(0xFF8EDB76);
+    final lightPaint =
+        Paint()
+          ..color =
+              const Color(
+            0xFF8EDB76,
+          );
 
-    final smallPath = Path()
-      ..moveTo(
-        0,
-        58,
-      );
+    final smallPath =
+        Path()
+          ..moveTo(0, 58);
 
     for (var i = 0; i < 7; i++) {
-      final x = i * (size.width / 7);
+      final x =
+          i *
+              (size.width /
+                  7);
 
       smallPath.cubicTo(
         x + 20,
         40,
         x + 45,
         70,
-        x + size.width / 7,
+        x +
+            size.width /
+                7,
         52,
       );
     }
@@ -490,7 +736,8 @@ class _WavyGrassPainter extends CustomPainter {
   }
 }
 
-class FloatingAsset extends StatelessWidget {
+class FloatingAsset
+    extends StatelessWidget {
   const FloatingAsset({
     super.key,
     required this.asset,
@@ -503,22 +750,28 @@ class FloatingAsset extends StatelessWidget {
   final double height;
 
   @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
+  Widget build(
+    BuildContext context,
+  ) {
+    return TweenAnimationBuilder<
+        double>(
       tween: Tween(
         begin: -5,
         end: 5,
       ),
-      duration: const Duration(
-        seconds: 2,
-      ),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
+      duration:
+          const Duration(seconds: 2),
+      curve:
+          Curves.easeInOut,
+      builder:
+          (
+        context,
+        value,
+        child,
+      ) {
         return Transform.translate(
-          offset: Offset(
-            0,
-            value,
-          ),
+          offset:
+              Offset(0, value),
           child: child,
         );
       },
@@ -532,7 +785,8 @@ class FloatingAsset extends StatelessWidget {
   }
 }
 
-class PressableCard extends StatefulWidget {
+class PressableCard
+    extends StatefulWidget {
   const PressableCard({
     super.key,
     required this.child,
@@ -543,14 +797,18 @@ class PressableCard extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<PressableCard> createState() => _PressableCardState();
+  State<PressableCard> createState() =>
+      _PressableCardState();
 }
 
-class _PressableCardState extends State<PressableCard> {
+class _PressableCardState
+    extends State<PressableCard> {
   bool pressed = false;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return GestureDetector(
       onTap: widget.onTap,
       onTapDown: (_) {
@@ -569,8 +827,10 @@ class _PressableCardState extends State<PressableCard> {
         });
       },
       child: AnimatedScale(
-        scale: pressed ? .975 : 1,
-        duration: const Duration(
+        scale:
+            pressed ? .975 : 1,
+        duration:
+            const Duration(
           milliseconds: 120,
         ),
         child: widget.child,

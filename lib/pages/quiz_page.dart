@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 import '../data/question_bank.dart';
 import '../models/question.dart';
-import '../services/animated_question_api.dart';
 import '../widgets/school_background.dart';
 import 'result_page.dart';
 
@@ -18,21 +17,18 @@ class QuizPage extends StatefulWidget {
     required this.studentName,
     this.questions,
     this.subject,
+    this.topic,
   });
 
   final int grade;
-  final String? subject;
-  final Future<void> Function(
-    int score,
-    int total,
-  ) onFinished;
-
   final String studentName;
+  final Future<void> Function(int score, int total) onFinished;
   final List<Question>? questions;
+  final String? subject;
+  final String? topic;
 
   @override
-  State<QuizPage> createState() =>
-      _QuizPageState();
+  State<QuizPage> createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage>
@@ -52,117 +48,81 @@ class _QuizPageState extends State<QuizPage>
 
   Timer? timer;
 
-  Map<String, String> remote = {};
+  late final AnimationController feedbackController;
+  late final Animation<double> scaleAnimation;
+  late final Animation<double> opacityAnimation;
 
-  late AnimationController
-      feedbackController;
-
-  late Animation<double> scale;
-  late Animation<double> opacity;
-
-  final AudioPlayer audio =
-      AudioPlayer();
+  final AudioPlayer audio = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
 
-    feedbackController =
-        AnimationController(
+    feedbackController = AnimationController(
       vsync: this,
-      duration:
-          const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 850),
     );
 
-    scale = CurvedAnimation(
+    scaleAnimation = CurvedAnimation(
       parent: feedbackController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutBack,
     );
 
-    opacity = CurvedAnimation(
+    opacityAnimation = CurvedAnimation(
       parent: feedbackController,
       curve: Curves.easeOut,
     );
 
     unawaited(
-      audio.setReleaseMode(
-        ReleaseMode.stop,
-      ),
+      audio.setReleaseMode(ReleaseMode.stop),
     );
 
-    final all =
-        widget.questions ??
-            questionsByGrade[
-                widget.grade] ??
-            [];
+    final allQuestions = List<Question>.from(
+      widget.questions ??
+          questionsByGrade[widget.grade] ??
+          <Question>[],
+    );
 
-    final source =
-        widget.subject == null
-            ? all
-            : all
-                .where(
-                  (q) =>
-                      q.subject ==
-                      widget.subject,
-                )
-                .toList();
+    final filteredQuestions = widget.subject == null
+        ? allQuestions
+        : allQuestions
+            .where(
+              (question) =>
+                  question.subject == widget.subject,
+            )
+            .toList();
 
-    questions =
-        _shuffle(source);
+    questions = _shuffleQuestions(filteredQuestions);
 
-    startTimer();
-    loadRemote();
+    if (questions.isNotEmpty) {
+      startTimer();
+    }
   }
 
-  List<Question> _shuffle(
+  List<Question> _shuffleQuestions(
     List<Question> source,
   ) {
     final random = Random();
 
-    final result =
-        source.map((question) {
-      final options =
-          List<String>.from(
-            question.options,
-          )..shuffle(random);
-
-      return question.withOptions(
-        options,
+    final result = source.map((question) {
+      final options = List<String>.from(
+        question.options,
       );
-    }).toList()
-          ..shuffle(random);
+
+      options.shuffle(random);
+
+      return question.withOptions(options);
+    }).toList();
+
+    result.shuffle(random);
 
     return result;
   }
 
-  Future<void> loadRemote() async {
-    if (questions.isEmpty) return;
-
-    final visuals =
-        await AnimatedQuestionApi()
-            .loadVisuals(
-      questions
-          .where(
-            (q) => q.isAnimated,
-          )
-          .map(
-            (q) => q.id,
-          )
-          .toList(),
-    );
-
-    if (!mounted ||
-        visuals.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      remote = visuals;
-    });
-  }
-
   void startTimer() {
     timer?.cancel();
+
+    if (!mounted) return;
 
     setState(() {
       seconds = 15;
@@ -170,14 +130,14 @@ class _QuizPageState extends State<QuizPage>
 
     timer = Timer.periodic(
       const Duration(seconds: 1),
-      (t) {
+      (timer) {
         if (!mounted || answered) {
-          t.cancel();
+          timer.cancel();
           return;
         }
 
         if (seconds <= 1) {
-          t.cancel();
+          timer.cancel();
 
           setState(() {
             seconds = 0;
@@ -187,7 +147,9 @@ class _QuizPageState extends State<QuizPage>
             feedbackCorrect = false;
           });
 
-          showAnswerFeedback(false);
+          unawaited(
+            showAnswerFeedback(false),
+          );
         } else {
           setState(() {
             seconds--;
@@ -197,19 +159,16 @@ class _QuizPageState extends State<QuizPage>
     );
   }
 
-  void choose(int index) {
-    if (answered ||
-        showFeedback) {
+  void chooseAnswer(int index) {
+    if (answered || showFeedback) {
       return;
     }
 
     timer?.cancel();
 
-    final question =
-        questions[current];
+    final question = questions[current];
 
-    final correct =
-        index == question.answer;
+    final correct = index == question.answer;
 
     setState(() {
       selected = index;
@@ -226,30 +185,24 @@ class _QuizPageState extends State<QuizPage>
       playSound(correct),
     );
 
-    showAnswerFeedback(
-      correct,
+    unawaited(
+      showAnswerFeedback(correct),
     );
   }
 
-  Future<void> playSound(
-    bool correct,
-  ) async {
+  Future<void> playSound(bool correct) async {
     try {
       await audio.play(
         AssetSource(
-          correct
-              ? 'BENAR.mp3'
-              : 'wrong.wav',
+          correct ? 'BENAR.mp3' : 'wrong.wav',
         ),
       );
     } catch (_) {
-      // Audio gagal tidak
-      // menghentikan kuis.
+      // Jika audio gagal, kuis tetap berjalan.
     }
   }
 
-  Future<void>
-      showAnswerFeedback(
+  Future<void> showAnswerFeedback(
     bool correct,
   ) async {
     if (!mounted) return;
@@ -265,11 +218,9 @@ class _QuizPageState extends State<QuizPage>
 
     if (!mounted) return;
 
-    // Feedback muncul sebentar.
+    // Dibuat 5 detik supaya pembahasan bisa dibaca.
     await Future.delayed(
-      const Duration(
-        milliseconds: 1100,
-      ),
+      const Duration(seconds: 5),
     );
 
     if (!mounted) return;
@@ -282,28 +233,22 @@ class _QuizPageState extends State<QuizPage>
       showFeedback = false;
     });
 
-    // ======================================
-    // OTOMATIS PINDAH KE SOAL BERIKUTNYA
-    // ======================================
     await nextQuestion();
   }
 
   Future<void> nextQuestion() async {
-    if (!answered ||
-        showFeedback) {
+    if (!answered || showFeedback) {
       return;
     }
 
-    // ======================================
-    // SOAL TERAKHIR
-    // ======================================
-    if (current ==
-        questions.length - 1) {
+    if (current >= questions.length - 1) {
       timer?.cancel();
+
+      final total = questions.length * 10;
 
       await widget.onFinished(
         score,
-        questions.length * 10,
+        total,
       );
 
       if (!mounted) return;
@@ -311,14 +256,11 @@ class _QuizPageState extends State<QuizPage>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              ResultPage(
+          builder: (context) => ResultPage(
             grade: widget.grade,
             score: score,
-            total:
-                questions.length * 10,
-            studentName:
-                widget.studentName,
+            total: total,
+            studentName: widget.studentName,
           ),
         ),
       );
@@ -331,6 +273,7 @@ class _QuizPageState extends State<QuizPage>
       selected = null;
       answered = false;
       timedOut = false;
+      feedbackCorrect = false;
     });
 
     startTimer();
@@ -345,28 +288,25 @@ class _QuizPageState extends State<QuizPage>
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     if (questions.isEmpty) {
       return Scaffold(
         body: SchoolBackground(
           child: Center(
             child: Container(
-              padding:
-                  const EdgeInsets.all(
-                24,
-              ),
-              decoration:
-                  BoxDecoration(
+              margin: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(
-                  24,
-                ),
+                borderRadius: BorderRadius.circular(25),
               ),
               child: const Text(
                 'Soal belum tersedia.',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF263E5D),
+                ),
               ),
             ),
           ),
@@ -374,165 +314,135 @@ class _QuizPageState extends State<QuizPage>
       );
     }
 
-    final question =
-        questions[current];
+    final question = questions[current];
 
     final progress =
-        (current + 1) /
-            questions.length;
+        (current + 1) / questions.length;
 
     return Scaffold(
       body: SchoolBackground(
         compact: true,
-        showSchoolIllustrations:
-            false,
+        showSchoolIllustrations: false,
         child: SafeArea(
           child: Stack(
             children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(
-                    maxWidth: 1180,
+              // Scrollbar dibuat selebar layar,
+              // sehingga berada di pinggir kanan desktop.
+              Scrollbar(
+                thumbVisibility:
+                    MediaQuery.sizeOf(context).width >= 900,
+                trackVisibility:
+                    MediaQuery.sizeOf(context).width >= 900,
+                interactive: true,
+                thickness: 8,
+                radius: const Radius.circular(20),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    14,
+                    20,
+                    80,
                   ),
-                  child: Scrollbar(
-                    thumbVisibility:
-                        MediaQuery.sizeOf(
-                              context,
-                            ).width >=
-                            900,
-                    thickness: 8,
-                    radius:
-                        const Radius.circular(
-                      20,
-                    ),
-                    child: ListView(
-                      padding:
-                          const EdgeInsets.fromLTRB(
-                        20,
-                        12,
-                        20,
-                        80,
-                      ),
-                      children: [
-                        _Top(
-                          grade: widget.grade,
-                          name:
-                              widget.studentName,
-                          current:
-                              current + 1,
-                          total:
-                              questions.length,
-                          progress:
-                              progress,
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 1180,
                         ),
-
-                        const SizedBox(
-                          height: 14,
-                        ),
-
-                        _Timer(seconds),
-
-                        const SizedBox(
-                          height: 17,
-                        ),
-
-                        _Question(
-                          q: question,
-                          remote:
-                              remote[
-                                  question.id],
-                        ),
-
-                        const SizedBox(
-                          height: 16,
-                        ),
-
-                        ...List.generate(
-                          question
-                              .options
-                              .length,
-                          (i) => _Option(
-                            q: question,
-                            index: i,
-                            selected:
-                                selected,
-                            answered:
-                                answered,
-                            onTap: choose,
-                          ),
-                        ),
-
-                        if (answered)
-                          _Explain(
-                            q: question,
-                            selected:
-                                selected,
-                            timedOut:
-                                timedOut,
-                          ),
-
-                        if (answered)
-                          const Padding(
-                            padding:
-                                EdgeInsets.only(
-                              top: 12,
+                        child: Column(
+                          children: [
+                            _QuizHeader(
+                              grade: widget.grade,
+                              name: widget.studentName,
+                              current: current + 1,
+                              total: questions.length,
+                              progress: progress,
+                              topic: widget.topic,
                             ),
-                            child: Text(
-                              'Soal berikutnya akan terbuka otomatis ✨',
-                              textAlign:
-                                  TextAlign.center,
-                              style:
-                                  TextStyle(
-                                color:
-                                    Color(
-                                  0xFF667D92,
-                                ),
-                                fontSize: 12,
-                                fontWeight:
-                                    FontWeight
-                                        .w800,
+
+                            const SizedBox(height: 15),
+
+                            _Timer(seconds),
+
+                            const SizedBox(height: 18),
+
+                            // Kotak soal TANPA gambar.
+                            _QuestionCard(
+                              question: question,
+                              topic: widget.topic,
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            ...List.generate(
+                              question.options.length,
+                              (index) {
+                                return _AnswerOption(
+                                  question: question,
+                                  index: index,
+                                  selected: selected,
+                                  answered: answered,
+                                  onTap: chooseAnswer,
+                                );
+                              },
+                            ),
+
+                            if (answered)
+                              _ExplanationCard(
+                                question: question,
+                                selected: selected,
+                                timedOut: timedOut,
                               ),
-                            ),
-                          ),
-                      ],
+
+                            if (answered)
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  top: 14,
+                                ),
+                                child: Text(
+                                  'Soal berikutnya akan terbuka otomatis...',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xFF667D92),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
 
-              // =================================
-              // FEEDBACK ANIMASI BESAR
-              // =================================
               if (showFeedback)
                 Positioned.fill(
                   child: IgnorePointer(
                     child: Container(
-                      color: const Color(
-                        0x3324445D,
-                      ),
-                      alignment:
-                          Alignment.center,
+                      color: const Color(0x3324445D),
+                      alignment: Alignment.center,
                       child: AnimatedBuilder(
-                        animation:
-                            feedbackController,
-                        builder:
-                            (context, child) {
+                        animation: feedbackController,
+                        builder: (
+                          context,
+                          child,
+                        ) {
                           return Opacity(
                             opacity:
-                                opacity.value,
-                            child:
-                                Transform.scale(
+                                opacityAnimation.value,
+                            child: Transform.scale(
                               scale:
-                                  scale.value,
+                                  scaleAnimation.value,
                               child: child,
                             ),
                           );
                         },
-                        child:
-                            _Feedback(
-                          correct:
-                              feedbackCorrect,
+                        child: _FeedbackCard(
+                          correct: feedbackCorrect,
+                          question: question,
+                          timedOut: timedOut,
                         ),
                       ),
                     ),
@@ -546,13 +456,14 @@ class _QuizPageState extends State<QuizPage>
   }
 }
 
-class _Top extends StatelessWidget {
-  const _Top({
+class _QuizHeader extends StatelessWidget {
+  const _QuizHeader({
     required this.grade,
     required this.name,
     required this.current,
     required this.total,
     required this.progress,
+    this.topic,
   });
 
   final int grade;
@@ -560,42 +471,32 @@ class _Top extends StatelessWidget {
   final int current;
   final int total;
   final double progress;
+  final String? topic;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.all(15),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withOpacity(.94),
-        borderRadius:
-            BorderRadius.circular(23),
+        color: Colors.white.withOpacity(.95),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color:
-                Colors.black.withOpacity(.06),
-            blurRadius: 15,
-            offset:
-                const Offset(0, 7),
+            color: Colors.black.withOpacity(.06),
+            blurRadius: 16,
+            offset: const Offset(0, 7),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 47,
-            height: 47,
-            decoration:
-                BoxDecoration(
-              color:
-                  const Color(0xFFFFD66B),
-              borderRadius:
-                  BorderRadius.circular(
-                15,
-              ),
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFD66B),
+              borderRadius: BorderRadius.circular(15),
             ),
             child: const Icon(
               Icons.school_rounded,
@@ -603,45 +504,46 @@ class _Top extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(
-            width: 11,
-          ),
+          const SizedBox(width: 12),
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment
-                      .start,
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   'Kelas $grade • $name',
-                  style:
-                      const TextStyle(
-                    fontWeight:
-                        FontWeight.w900,
-                    color:
-                        Color(0xFF243B5A),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF243B5A),
                   ),
                 ),
 
-                const SizedBox(
-                  height: 6,
-                ),
+                if (topic != null) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    topic!,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF4F8FF7),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 7),
 
                 ClipRRect(
                   borderRadius:
-                      BorderRadius.circular(
-                    20,
-                  ),
-                  child:
-                      LinearProgressIndicator(
-                    value: progress,
+                      BorderRadius.circular(20),
+                  child: LinearProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
                     minHeight: 9,
                     backgroundColor:
-                        const Color(
-                      0xFFE5EDF4,
-                    ),
+                        const Color(0xFFE5EDF4),
                     valueColor:
                         const AlwaysStoppedAnimation(
                       Color(0xFF45C77A),
@@ -652,18 +554,13 @@ class _Top extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(
-            width: 12,
-          ),
+          const SizedBox(width: 12),
 
           Text(
             '$current/$total',
-            style:
-                const TextStyle(
-              fontWeight:
-                  FontWeight.w900,
-              color:
-                  Color(0xFF4F8FF7),
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF4F8FF7),
             ),
           ),
         ],
@@ -673,79 +570,49 @@ class _Top extends StatelessWidget {
 }
 
 class _Timer extends StatelessWidget {
-  const _Timer(this.value);
+  const _Timer(this.seconds);
 
-  final int value;
+  final int seconds;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    final danger = value <= 5;
+  Widget build(BuildContext context) {
+    final danger = seconds <= 5;
 
-    return Align(
-      alignment:
-          Alignment.center,
+    return Center(
       child: AnimatedContainer(
-        duration:
-            const Duration(
-          milliseconds: 200,
-        ),
-        padding:
-            const EdgeInsets.symmetric(
-          horizontal: 17,
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
           vertical: 9,
         ),
-        decoration:
-            BoxDecoration(
+        decoration: BoxDecoration(
           color: danger
-              ? const Color(
-                  0xFFFFE6E6,
-                )
+              ? const Color(0xFFFFE6E6)
               : Colors.white,
-          borderRadius:
-              BorderRadius.circular(
-            30,
-          ),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: danger
-                ? const Color(
-                    0xFFFF7373,
-                  )
-                : const Color(
-                    0xFFD8E8F4,
-                  ),
+                ? const Color(0xFFFF7373)
+                : const Color(0xFFD8E8F4),
           ),
         ),
         child: Row(
-          mainAxisSize:
-              MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.timer_rounded,
               color: danger
-                  ? const Color(
-                      0xFFE65353,
-                    )
-                  : const Color(
-                      0xFF4F8FF7,
-                    ),
+                  ? const Color(0xFFE65353)
+                  : const Color(0xFF4F8FF7),
             ),
-            const SizedBox(
-              width: 7,
-            ),
+            const SizedBox(width: 7),
             Text(
-              '$value detik',
+              '$seconds detik',
               style: TextStyle(
-                fontWeight:
-                    FontWeight.w900,
+                fontWeight: FontWeight.w900,
                 color: danger
-                    ? const Color(
-                        0xFFE65353,
-                      )
-                    : const Color(
-                        0xFF3B5974,
-                      ),
+                    ? const Color(0xFFE65353)
+                    : const Color(0xFF3B5974),
               ),
             ),
           ],
@@ -755,37 +622,33 @@ class _Timer extends StatelessWidget {
   }
 }
 
-class _Question extends StatelessWidget {
-  const _Question({
-    required this.q,
-    this.remote,
+class _QuestionCard extends StatelessWidget {
+  const _QuestionCard({
+    required this.question,
+    this.topic,
   });
 
-  final Question q;
-  final String? remote;
+  final Question question;
+  final String? topic;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.fromLTRB(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
         20,
-        17,
+        18,
         20,
-        21,
+        22,
       ),
       decoration: BoxDecoration(
-        gradient:
-            const LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             Color(0xFFFFD969),
             Color(0xFFFFA85E),
           ],
         ),
-        borderRadius:
-            BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: Colors.white,
           width: 3,
@@ -803,97 +666,85 @@ class _Question extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 12,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13,
                   vertical: 7,
                 ),
-                decoration:
-                    BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius:
-                      BorderRadius.circular(
-                    30,
-                  ),
+                      BorderRadius.circular(30),
                 ),
                 child: Text(
-                  q.subject,
-                  style:
-                      const TextStyle(
+                  question.subject,
+                  style: const TextStyle(
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w900,
-                    color:
-                        Color(0xFF72531A),
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF72531A),
                   ),
                 ),
               ),
 
+              if (topic != null) ...[
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white
+                          .withOpacity(.75),
+                      borderRadius:
+                          BorderRadius.circular(30),
+                    ),
+                    child: Text(
+                      topic!,
+                      overflow:
+                          TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF72531A),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
               const Spacer(),
 
               const Icon(
-                Icons
-                    .auto_awesome_rounded,
+                Icons.auto_awesome_rounded,
                 color: Colors.white,
               ),
             ],
           ),
 
-          const SizedBox(
-            height: 10,
-          ),
-
-          SizedBox(
-            height: 88,
-            child: remote != null
-                ? Image.network(
-                    remote!,
-                    fit: BoxFit.contain,
-                    errorBuilder:
-                        (_, __, ___) =>
-                            _Illustration(
-                      subject:
-                          q.subject,
-                    ),
-                  )
-                : _Illustration(
-                    subject:
-                        q.subject,
-                  ),
-          ),
-
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 14),
 
           Container(
             width: double.infinity,
             padding:
                 const EdgeInsets.symmetric(
               horizontal: 20,
-              vertical: 17,
+              vertical: 26,
             ),
-            decoration:
-                BoxDecoration(
-              color: Colors.white
-                  .withOpacity(.90),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(.94),
               borderRadius:
-                  BorderRadius.circular(
-                21,
-              ),
+                  BorderRadius.circular(22),
             ),
             child: Text(
-              q.question,
-              textAlign:
-                  TextAlign.center,
-              style:
-                  const TextStyle(
-                fontSize: 23,
-                fontWeight:
-                    FontWeight.w900,
-                color:
-                    Color(0xFF263B54),
-                height: 1.25,
+              question.question,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF263B54),
+                height: 1.3,
               ),
             ),
           ),
@@ -903,110 +754,48 @@ class _Question extends StatelessWidget {
   }
 }
 
-class _Illustration
-    extends StatelessWidget {
-  const _Illustration({
-    required this.subject,
-  });
-
-  final String subject;
-
-  String get asset {
-    final s =
-        subject.toLowerCase();
-
-    if (s.contains('bahasa')) {
-      return 'assets/Gambar guru p.jpeg';
-    }
-
-    if (s.contains('ipa')) {
-      return 'assets/Gambar pohon 1.jpeg';
-    }
-
-    if (s.contains('logika')) {
-      return 'assets/Naik bus.jpeg';
-    }
-
-    return 'assets/anak sd angkat tangan.jpeg';
-  }
-
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return TweenAnimationBuilder<
-        double>(
-      tween: Tween(
-        begin: .90,
-        end: 1,
-      ),
-      duration:
-          const Duration(
-        milliseconds: 600,
-      ),
-      curve:
-          Curves.elasticOut,
-      builder:
-          (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: child,
-        );
-      },
-      child: Image.asset(
-        asset,
-        fit: BoxFit.contain,
-      ),
-    );
-  }
-}
-
-class _Option extends StatelessWidget {
-  const _Option({
-    required this.q,
+class _AnswerOption extends StatelessWidget {
+  const _AnswerOption({
+    required this.question,
     required this.index,
     required this.selected,
     required this.answered,
     required this.onTap,
   });
 
-  final Question q;
+  final Question question;
   final int index;
   final int? selected;
   final bool answered;
   final ValueChanged<int> onTap;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    final correct =
-        index == q.answer;
+  Widget build(BuildContext context) {
+    final isCorrect =
+        index == question.answer;
 
-    final wrong =
+    final isWrong =
         answered &&
-            selected == index &&
-            !correct;
+        selected == index &&
+        !isCorrect;
 
-    final good =
-        answered && correct;
+    final isGood =
+        answered && isCorrect;
 
-    final border =
-        good
-            ? const Color(
-                0xFF43C77A,
-              )
-            : wrong
-                ? const Color(
-                    0xFFEF6262,
-                  )
-                : const Color(
-                    0xFFDCE8F2,
-                  );
+    final borderColor = isGood
+        ? const Color(0xFF43C77A)
+        : isWrong
+            ? const Color(0xFFEF6262)
+            : const Color(0xFFDCE8F2);
+
+    final backgroundColor = isGood
+        ? const Color(0xFFE9FFF2)
+        : isWrong
+            ? const Color(0xFFFFEEEE)
+            : Colors.white.withOpacity(.95);
 
     return Padding(
-      padding:
-          const EdgeInsets.only(
+      padding: const EdgeInsets.only(
         bottom: 11,
       ),
       child: PressableCard(
@@ -1015,36 +804,20 @@ class _Option extends StatelessWidget {
             : () => onTap(index),
         child: AnimatedContainer(
           duration:
-              const Duration(
-            milliseconds: 220,
-          ),
-          padding:
-              const EdgeInsets.symmetric(
+              const Duration(milliseconds: 220),
+          padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 14,
           ),
-          decoration:
-              BoxDecoration(
-            color: good
-                ? const Color(
-                    0xFFE9FFF2,
-                  )
-                : wrong
-                    ? const Color(
-                        0xFFFFEEEE,
-                      )
-                    : Colors.white
-                        .withOpacity(.95),
+          decoration: BoxDecoration(
+            color: backgroundColor,
             borderRadius:
-                BorderRadius.circular(
-              21,
-            ),
+                BorderRadius.circular(21),
             border: Border.all(
-              color: border,
-              width:
-                  good || wrong
-                      ? 2
-                      : 1.5,
+              color: borderColor,
+              width: isGood || isWrong
+                  ? 2
+                  : 1.5,
             ),
           ),
           child: Row(
@@ -1052,74 +825,52 @@ class _Option extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                alignment:
-                    Alignment.center,
-                decoration:
-                    BoxDecoration(
-                  color: good
-                      ? const Color(
-                          0xFF43C77A,
-                        )
-                      : wrong
-                          ? const Color(
-                              0xFFEF6262,
-                            )
-                          : const Color(
-                              0xFFEAF2FF,
-                            ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isGood
+                      ? const Color(0xFF43C77A)
+                      : isWrong
+                          ? const Color(0xFFEF6262)
+                          : const Color(0xFFEAF2FF),
                   borderRadius:
-                      BorderRadius.circular(
-                    14,
-                  ),
+                      BorderRadius.circular(14),
                 ),
                 child: Text(
                   String.fromCharCode(
                     65 + index,
                   ),
                   style: TextStyle(
-                    color:
-                        good || wrong
-                            ? Colors.white
-                            : const Color(
-                                0xFF4F8FF7,
-                              ),
-                    fontWeight:
-                        FontWeight.w900,
+                    color: isGood || isWrong
+                        ? Colors.white
+                        : const Color(0xFF4F8FF7),
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
 
-              const SizedBox(
-                width: 13,
-              ),
+              const SizedBox(width: 13),
 
               Expanded(
                 child: Text(
-                  q.options[index],
-                  style:
-                      const TextStyle(
+                  question.options[index],
+                  style: const TextStyle(
                     fontSize: 16,
-                    fontWeight:
-                        FontWeight.w700,
-                    color:
-                        Color(0xFF2D455F),
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2D455F),
                   ),
                 ),
               ),
 
-              if (good)
+              if (isGood)
                 const Icon(
-                  Icons
-                      .check_circle_rounded,
-                  color:
-                      Color(0xFF43C77A),
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF43C77A),
                 ),
 
-              if (wrong)
+              if (isWrong)
                 const Icon(
                   Icons.cancel_rounded,
-                  color:
-                      Color(0xFFEF6262),
+                  color: Color(0xFFEF6262),
                 ),
             ],
           ),
@@ -1129,45 +880,44 @@ class _Option extends StatelessWidget {
   }
 }
 
-class _Explain
-    extends StatelessWidget {
-  const _Explain({
-    required this.q,
+class _ExplanationCard extends StatelessWidget {
+  const _ExplanationCard({
+    required this.question,
     required this.selected,
     required this.timedOut,
   });
 
-  final Question q;
+  final Question question;
   final int? selected;
   final bool timedOut;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     final correct =
-        selected == q.answer;
+        selected != null &&
+        selected == question.answer;
+
+    final title = correct
+        ? 'Jawaban benar!'
+        : timedOut
+            ? 'Waktu habis'
+            : 'Belum tepat, yuk pelajari lagi';
+
+    final explanation = correct
+        ? question.explanation
+        : 'Jawaban yang benar adalah '
+            '"${question.options[question.answer]}". '
+            '${question.explanation}';
 
     return Container(
-      margin:
-          const EdgeInsets.only(
-        top: 3,
-      ),
-      padding:
-          const EdgeInsets.all(16),
-      decoration:
-          BoxDecoration(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 5),
+      padding: const EdgeInsets.all(17),
+      decoration: BoxDecoration(
         color: correct
-            ? const Color(
-                0xFFE9FFF2,
-              )
-            : const Color(
-                0xFFFFF1E9,
-              ),
-        borderRadius:
-            BorderRadius.circular(
-          21,
-        ),
+            ? const Color(0xFFE9FFF2)
+            : const Color(0xFFFFF1E9),
+        borderRadius: BorderRadius.circular(21),
       ),
       child: Row(
         crossAxisAlignment:
@@ -1175,23 +925,15 @@ class _Explain
         children: [
           Icon(
             correct
-                ? Icons
-                    .check_circle_rounded
-                : Icons
-                    .lightbulb_rounded,
+                ? Icons.check_circle_rounded
+                : Icons.lightbulb_rounded,
             color: correct
-                ? const Color(
-                    0xFF43C77A,
-                  )
-                : const Color(
-                    0xFFF0A35A,
-                  ),
+                ? const Color(0xFF43C77A)
+                : const Color(0xFFF0A35A),
             size: 38,
           ),
 
-          const SizedBox(
-            width: 11,
-          ),
+          const SizedBox(width: 11),
 
           Expanded(
             child: Column(
@@ -1199,37 +941,21 @@ class _Explain
                   CrossAxisAlignment.start,
               children: [
                 Text(
-                  correct
-                      ? 'Jawaban benar! 🎉'
-                      : timedOut
-                          ? 'Waktu habis ⏰'
-                          : 'Belum tepat, yuk pelajari lagi 💡',
-                  style:
-                      const TextStyle(
-                    fontWeight:
-                        FontWeight.w900,
-                    color:
-                        Color(0xFF29435F),
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF29435F),
                   ),
                 ),
 
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 6),
 
                 Text(
-                  correct
-                      ? q.explanation
-                      : 'Jawaban yang benar adalah '
-                          '"${q.options[q.answer]}". '
-                          '${q.explanation}',
-                  style:
-                      const TextStyle(
-                    color:
-                        Color(0xFF5E7183),
+                  explanation,
+                  style: const TextStyle(
+                    color: Color(0xFF5E7183),
                     height: 1.4,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -1241,93 +967,124 @@ class _Explain
   }
 }
 
-class _Feedback
-    extends StatelessWidget {
-  const _Feedback({
+class _FeedbackCard extends StatelessWidget {
+  const _FeedbackCard({
     required this.correct,
+    required this.question,
+    required this.timedOut,
   });
 
   final bool correct;
+  final Question question;
+  final bool timedOut;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
+    final title = correct
+        ? 'Jawaban Benar!'
+        : timedOut
+            ? 'Waktu Habis'
+            : 'Belum Tepat';
+
+    final subtitle = correct
+        ? question.explanation
+        : 'Jawaban yang benar adalah '
+            '"${question.options[question.answer]}". '
+            '${question.explanation}';
+
     return Container(
-      width: 290,
-      padding:
-          const EdgeInsets.all(22),
-      decoration:
-          BoxDecoration(
+      width: 420,
+      constraints: const BoxConstraints(
+        maxWidth: 430,
+      ),
+      margin: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(
+        25,
+        25,
+        25,
+        28,
+      ),
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(
-          32,
-        ),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 30,
+            offset: Offset(0, 12),
           ),
         ],
       ),
       child: Column(
-        mainAxisSize:
-            MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: 130,
-            child: Image.asset(
-              correct
-                  ? 'assets/Gambar anak sd .jpeg'
-                  : 'assets/Gambar guru p.jpeg',
-              fit: BoxFit.contain,
-            ),
-          ),
-
           Container(
-            width: 60,
-            height: 60,
-            decoration:
-                BoxDecoration(
+            width: 78,
+            height: 78,
+            decoration: BoxDecoration(
               color: correct
-                  ? const Color(
-                      0xFF43C77A,
-                    )
-                  : const Color(
-                      0xFFEF6262,
-                    ),
-              shape:
-                  BoxShape.circle,
+                  ? const Color(0xFF43C77A)
+                  : const Color(0xFFEF6262),
+              shape: BoxShape.circle,
             ),
             child: Icon(
               correct
                   ? Icons.check_rounded
-                  : Icons.close_rounded,
+                  : timedOut
+                      ? Icons.timer_off_rounded
+                      : Icons.close_rounded,
               color: Colors.white,
-              size: 40,
+              size: 48,
             ),
           ),
 
-          const SizedBox(
-            height: 9,
-          ),
+          const SizedBox(height: 14),
 
           Text(
-            correct
-                ? 'Jawaban Benar!'
-                : 'Belum Tepat',
+            title,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 21,
-              fontWeight:
-                  FontWeight.w900,
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
               color: correct
-                  ? const Color(
-                      0xFF2EAE68,
-                    )
-                  : const Color(
-                      0xFFE65353,
-                    ),
+                  ? const Color(0xFF2EAE68)
+                  : const Color(0xFFE65353),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: correct
+                  ? const Color(0xFFE9FFF2)
+                  : const Color(0xFFFFF1E9),
+              borderRadius:
+                  BorderRadius.circular(18),
+            ),
+            child: Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF4E6478),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          const Text(
+            'Sebentar lagi lanjut ke soal berikutnya...',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF8798A7),
             ),
           ),
         ],

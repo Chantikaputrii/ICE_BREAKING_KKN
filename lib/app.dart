@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/home_page.dart';
+import 'pages/splash_page.dart';
 
 class BelajarCeriaApp extends StatelessWidget {
   const BelajarCeriaApp({
@@ -15,7 +15,6 @@ class BelajarCeriaApp extends StatelessWidget {
 
       theme: ThemeData(
         useMaterial3: true,
-
         fontFamily: 'Trebuchet MS',
 
         colorScheme: ColorScheme.fromSeed(
@@ -29,17 +28,18 @@ class BelajarCeriaApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          foregroundColor: Color(0xFF243B5A),
+          surfaceTintColor:
+              Colors.transparent,
+          foregroundColor:
+              Color(0xFF243B5A),
         ),
 
         inputDecorationTheme:
-            InputDecorationTheme(
+            const InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.all(
+            borderRadius: BorderRadius.all(
               Radius.circular(18),
             ),
             borderSide: BorderSide.none,
@@ -47,7 +47,7 @@ class BelajarCeriaApp extends StatelessWidget {
         ),
       ),
 
-      home: const HomePage(),
+      home: const SplashPage(),
     );
   }
 }
