@@ -19,14 +19,29 @@ class Question {
     this.isAnimated = false,
   });
 
-  Question withOptions(List<String> newOptions) => Question(
-        id: id,
-        subject: subject,
-        question: question,
-        options: newOptions,
-        answer: newOptions.indexOf(options[answer]),
-        explanation: explanation,
-        visual: visual,
-        isAnimated: isAnimated,
-      );
+  Question withOptions(List<String> newOptions) {
+    // Cari posisi baru dari jawaban yang benar berdasarkan
+    // teksnya. Kalau karena suatu sebab teksnya tidak
+    // ditemukan (mis. data soal tidak konsisten), jangan
+    // sampai index-nya jadi -1 (tidak valid) karena itu bisa
+    // membuat layar error merah saat soal ditampilkan.
+    final matchedIndex = newOptions.indexOf(
+      options[answer],
+    );
+
+    final safeAnswer = matchedIndex >= 0
+        ? matchedIndex
+        : answer.clamp(0, newOptions.length - 1);
+
+    return Question(
+      id: id,
+      subject: subject,
+      question: question,
+      options: newOptions,
+      answer: safeAnswer,
+      explanation: explanation,
+      visual: visual,
+      isAnimated: isAnimated,
+    );
+  }
 }

@@ -296,7 +296,7 @@ class ResultPage extends StatelessWidget {
                             ),
                             child:
                                 Image.asset(
-                              'assets/Gambar anak sd .jpeg',
+                              'assets/Anak Sd Cewek.png',
                               fit: BoxFit
                                   .contain,
                             ),

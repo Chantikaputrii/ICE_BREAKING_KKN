@@ -22,10 +22,7 @@ class _LearningMaterialPageState
 
   static const subjects = [
     'Semua',
-    'Matematika',
-    'Bahasa Indonesia',
-    'IPA',
-    'Logika',
+    'Stop Bullying',
   ];
 
   List<Question> get questions {
@@ -46,17 +43,8 @@ class _LearningMaterialPageState
 
   Color _subjectColor(String value) {
     switch (value) {
-      case 'Matematika':
-        return const Color(0xFF4B7BEC);
-
-      case 'Bahasa Indonesia':
-        return const Color(0xFFFF718F);
-
-      case 'IPA':
-        return const Color(0xFF45C878);
-
-      case 'Logika':
-        return const Color(0xFF9B7BEA);
+      case 'Stop Bullying':
+        return const Color(0xFFFF6F91);
 
       default:
         return const Color(0xFFFFB84D);
@@ -65,17 +53,8 @@ class _LearningMaterialPageState
 
   IconData _subjectIcon(String value) {
     switch (value) {
-      case 'Matematika':
-        return Icons.calculate_rounded;
-
-      case 'Bahasa Indonesia':
-        return Icons.translate_rounded;
-
-      case 'IPA':
-        return Icons.science_rounded;
-
-      case 'Logika':
-        return Icons.psychology_rounded;
+      case 'Stop Bullying':
+        return Icons.favorite_rounded;
 
       default:
         return Icons.auto_awesome_rounded;
@@ -1393,17 +1372,8 @@ class _ExplanationCard
     String subject,
   ) {
     switch (subject) {
-      case 'Matematika':
-        return const Color(0xFF4B7BEC);
-
-      case 'Bahasa Indonesia':
-        return const Color(0xFFFF718F);
-
-      case 'IPA':
-        return const Color(0xFF45C878);
-
-      case 'Logika':
-        return const Color(0xFF9B7BEA);
+      case 'Stop Bullying':
+        return const Color(0xFFFF6F91);
 
       default:
         return const Color(0xFFFFB84D);
@@ -1414,17 +1384,8 @@ class _ExplanationCard
     String subject,
   ) {
     switch (subject) {
-      case 'Matematika':
-        return Icons.calculate_rounded;
-
-      case 'Bahasa Indonesia':
-        return Icons.translate_rounded;
-
-      case 'IPA':
-        return Icons.science_rounded;
-
-      case 'Logika':
-        return Icons.psychology_rounded;
+      case 'Stop Bullying':
+        return Icons.favorite_rounded;
 
       default:
         return Icons.auto_awesome_rounded;
@@ -1447,8 +1408,7 @@ class _ExplanationCard
       ),
       decoration:
           BoxDecoration(
-        color: Colors.white
-            .withOpacity(.97),
+        color: Colors.white,
         borderRadius:
             BorderRadius.circular(
           22,

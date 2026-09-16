@@ -138,6 +138,12 @@ class _SchoolBackgroundState
 
               // =========================
               // AWAN
+              // Pakai gambar asli 'AWAN 1/2/3.png' (sama seperti
+              // splash screen), 6 awan dibagi 3 jalur (lane).
+              // Dalam satu jalur, 2 awan dimulai dengan fase
+              // berbeda setengah putaran (selisih .5) supaya
+              // TIDAK PERNAH saling tabrakan. Ukurannya dibuat
+              // variatif: ada yang sedang, ada yang kecil.
               // =========================
               AnimatedBuilder(
                 animation:
@@ -151,46 +157,94 @@ class _SchoolBackgroundState
                       _cloudController
                           .value;
 
+                  double laneX(
+                    double phase,
+                    double extra,
+                  ) {
+                    final tt =
+                        (t + phase) % 1.0;
+                    return -extra +
+                        (width + extra * 2) *
+                            tt;
+                  }
+
                   return Stack(
                     children: [
+                      // Jalur 1 (paling atas)
                       Positioned(
-                        top: 65,
-                        left:
-                            -150 +
-                                (width +
-                                        300) *
-                                    t,
-                        child:
-                            const _Cloud(
-                          scale: 1,
+                        top: 55,
+                        left: laneX(
+                          0.00,
+                          195,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 1.png',
+                          width: 210,
                         ),
                       ),
                       Positioned(
-                        top: 160,
-                        left:
-                            40 +
-                                (width +
-                                        250) *
-                                    ((t +
-                                            .38) %
-                                        1),
-                        child:
-                            const _Cloud(
-                          scale: .72,
+                        top: 40,
+                        left: laneX(
+                          0.50,
+                          110,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 2.png',
+                          width: 122,
+                        ),
+                      ),
+
+                      // Jalur 2 (tengah)
+                      Positioned(
+                        top: 150,
+                        left: laneX(
+                          0.22,
+                          170,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 3.png',
+                          width: 166,
                         ),
                       ),
                       Positioned(
-                        top: 255,
-                        left:
-                            -170 +
-                                (width +
-                                        340) *
-                                    ((t +
-                                            .72) %
-                                        1),
-                        child:
-                            const _Cloud(
-                          scale: .82,
+                        top: 168,
+                        left: laneX(
+                          0.72,
+                          92,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 1.png',
+                          width: 102,
+                        ),
+                      ),
+
+                      // Jalur 3 (bawah)
+                      Positioned(
+                        top: 245,
+                        left: laneX(
+                          0.38,
+                          140,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 2.png',
+                          width: 134,
+                        ),
+                      ),
+                      Positioned(
+                        top: 260,
+                        left: laneX(
+                          0.88,
+                          80,
+                        ),
+                        child: const _CloudAsset(
+                          asset:
+                              'assets/AWAN 3.png',
+                          width: 90,
                         ),
                       ),
                     ],
@@ -287,45 +341,11 @@ class _SchoolBackgroundState
               ),
 
               // =========================
-              // POHON BESAR
-              // =========================
-              if (widget.showSchoolIllustrations &&
-                  width >= 900) ...[
-                Positioned(
-                  left: 5,
-                  bottom:
-                      grassHeight - 12,
-                  child: Opacity(
-                    opacity: .96,
-                    child:
-                        Image.asset(
-                      'assets/Gambar pohon 2.jpeg',
-                      width: 280,
-                      height: 285,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  right: 5,
-                  bottom:
-                      grassHeight - 10,
-                  child: Opacity(
-                    opacity: .96,
-                    child:
-                        Image.asset(
-                      'assets/Gambar pohon 3.jpeg',
-                      width: 285,
-                      height: 295,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ],
-
-              // =========================
               // RUMPUT GELOMBANG
+              // (Digambar SEBELUM pohon supaya pohon tampil DI ATAS
+              // rumput. Sebelumnya rumput digambar setelah pohon
+              // sehingga menutupi bagian bawah batang pohon, membuat
+              // pohon terlihat "tenggelam".)
               // =========================
               Positioned(
                 left: 0,
@@ -338,6 +358,50 @@ class _SchoolBackgroundState
                       const _WavyGrass(),
                 ),
               ),
+
+              // =========================
+              // POHON BESAR
+              // =========================
+              if (widget.showSchoolIllustrations &&
+                  width >= 900) ...[
+                // Pohon ditanam sedikit di atas dasar rumput
+                // (bukan minus/di bawah layar) supaya batangnya
+                // terlihat penuh, tidak terpotong atau tenggelam
+                // di balik rumput.
+                Positioned(
+                  left: 5,
+                  bottom: grassHeight * .18,
+                  child: Opacity(
+                    opacity: .96,
+                    child:
+                        Image.asset(
+                      'assets/Gambar pohon 2.png',
+                      width: 280,
+                      height: 285,
+                      fit: BoxFit.contain,
+                      alignment:
+                          Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  right: 5,
+                  bottom: grassHeight * .18,
+                  child: Opacity(
+                    opacity: .96,
+                    child:
+                        Image.asset(
+                      'assets/Gambar pohon 3.png',
+                      width: 285,
+                      height: 295,
+                      fit: BoxFit.contain,
+                      alignment:
+                          Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ],
 
               if (widget.child != null)
                 widget.child!,
@@ -497,6 +561,40 @@ class _Cloud extends StatelessWidget {
             .withOpacity(.82),
         shape: BoxShape.circle,
       ),
+    );
+  }
+}
+
+class _CloudAsset extends StatelessWidget {
+  const _CloudAsset({
+    required this.asset,
+    required this.width,
+  });
+
+  final String asset;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      asset,
+      width: width,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) {
+        // Kalau asset belum ada, tetap tampil awan sederhana
+        // supaya layout tidak rusak.
+        return SizedBox(
+          width: width,
+          height: width * .45,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(.85),
+              borderRadius: BorderRadius.circular(60),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -2,6 +2,7 @@ name: belajar_ceria
 description: A simple educational quiz game for elementary students.
 publish_to: 'none'
 version: 0.0.1
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0"
@@ -22,24 +23,42 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
+    # ---------- SUARA ----------
     - assets/BENAR.mp3
     - assets/wrong.wav
-    - assets/anak sd angkat tangan.jpeg
-    - assets/anak sd tolong menolong.jpg
-    - assets/Gambar anak anak sd.jpeg
-    - assets/Gambar anak sd lagi.png
-    - assets/Gambar anak sd.png
-    - assets/Gambar guru l.jpeg
-    - assets/Gambar guru p.jpeg
-    - assets/Gambar pohon 1.jpeg
-    - assets/Gambar pohon 2.jpeg
-    - assets/Gambar pohon 3.jpeg
-    - assets/Naik bus.jpeg
-    - assets/Anak Sd Cewek.png
-    - assets/Anak Sd Cowok.png
-    - assets/Splash screen.jpeg
+
+    # ---------- SPLASH SCREEN ----------
+    # Nama file HARUS persis begini (huruf S besar di "Screen"),
+    # karena splash_page.dart memanggil 'assets/Splash Screen.jpeg'.
+    - assets/Splash Screen.jpeg
+    - assets/Matahari.png
     - assets/AWAN 1.png
     - assets/AWAN 2.png
     - assets/AWAN 3.png
-    - assets/Matahari.png
+
+    # ---------- IKON KARTU KELAS (dashboard) ----------
+    - assets/Kelas 1.png
+    - assets/Kelas 2.png
+    - assets/Kelas 3.png
+    - assets/Kelas 4.png
+    - assets/Kelas 5.png
+    - assets/Kelas 6.png
+
+    # ---------- POHON (latar belakang) ----------
+    - assets/Gambar pohon 1.png
+    - assets/Gambar pohon 2.png
+    - assets/Gambar pohon 3.png
+
+    # ---------- ILUSTRASI ANAK & GURU ----------
+    - assets/Gambar anak anak sd.png
+    - assets/Gambar anak sd.png
+    - assets/Gambar anak sd lagi.png
+    - assets/anak sd angkat tangan.png
+    - assets/anak sd tolong menolong.png
+    - assets/Gambar guru l.png
+    - assets/Gambar guru p.png
+    - assets/Naik bus.png
+    - assets/Anak Sd Cewek.png
+    - assets/Anak Sd Cowok.png

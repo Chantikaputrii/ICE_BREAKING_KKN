@@ -2,13 +2,12 @@ import '../models/question.dart';
 
 /// ============================================================
 /// BANK SOAL
-/// 6 KELAS × 50 SOAL = 300 SOAL
+/// Semua kelas (1-6) memakai kumpulan soal yang sama:
+/// 50 soal tema "Stop Bullying" (Soal Cerita, Dialog, Pilihan
+/// Gabungan, dan Jebakan - tingkat lebih sulit).
 ///
-/// Setiap kelas:
-/// - 20 Matematika
-/// - 10 Bahasa Indonesia
-/// - 10 IPA
-/// - 10 Logika
+/// Sumber: materi Sosialisasi Anti Bullying SDN 04 Begadung
+/// - KKNT Universitas Negeri Surabaya.
 ///
 /// Pretest:
 /// - Hanya mengambil 10 soal
@@ -18,7 +17,7 @@ import '../models/question.dart';
 
 final Map<int, List<Question>> questionsByGrade = {
   for (var grade = 1; grade <= 6; grade++)
-    grade: _questionsForGrade(grade),
+    grade: List<Question>.from(_stopBullyingQuestions),
 };
 
 /// ============================================================
@@ -92,44 +91,22 @@ Question _shuffleQuestionOptions(
 
   _seededShuffle(options, seed);
 
+  final matchedIndex = options.indexOf(correctAnswer);
+
+  final safeAnswer = matchedIndex >= 0
+      ? matchedIndex
+      : question.answer.clamp(0, options.length - 1);
+
   return Question(
     id: question.id,
     subject: question.subject,
     question: question.question,
     options: options,
-    answer: options.indexOf(correctAnswer),
+    answer: safeAnswer,
     explanation: question.explanation,
     visual: question.visual,
     isAnimated: question.isAnimated,
   );
-}
-
-/// ============================================================
-/// PEMBUAT 50 SOAL SETIAP KELAS
-/// ============================================================
-
-List<Question> _questionsForGrade(int grade) {
-  return [
-    ...List.generate(
-      20,
-      (index) => _mathQuestion(grade, index),
-    ),
-
-    ...List.generate(
-      10,
-      (index) => _languageQuestion(grade, index),
-    ),
-
-    ...List.generate(
-      10,
-      (index) => _scienceQuestion(grade, index),
-    ),
-
-    ...List.generate(
-      10,
-      (index) => _logicQuestion(grade, index),
-    ),
-  ];
 }
 
 /// ============================================================
@@ -162,2413 +139,610 @@ Question _makeQuestion({
 }
 
 /// ============================================================
-/// MATEMATIKA
+/// SOAL TEMA STOP BULLYING (50 SOAL)
+/// Sumber: materi Sosialisasi Anti Bullying SDN 04 Begadung
+/// - KKNT Universitas Negeri Surabaya.
 /// ============================================================
 
-Question _mathQuestion(int grade, int index) {
-  final item = _mathData(grade)[index];
-
-  return _makeQuestion(
-    id: 'k$grade-m$index',
-    subject: 'Matematika',
-    question: item[0],
-    correct: item[1],
+final List<Question> _stopBullyingQuestions = [
+  _makeQuestion(
+    id: 'sb-01',
+    subject: 'Stop Bullying',
+    question: 'Raka memanggil Beni dengan nama orang tuanya karena tahu Beni malu. Teman-teman tertawa, tetapi Beni meminta Raka berhenti. Kesimpulan paling tepat adalah ...',
+    correct: 'Bullying verbal karena sengaja menyakiti dan tetap dilakukan',
     wrong: [
-      item[2],
-      item[3],
-      item[4],
+      'Bukan bullying karena teman-teman tertawa',
+      'Bullying sosial karena terjadi di depan teman',
+      'Bukan bullying jika pelaku menyebutnya bercanda',
     ],
-    explanation: 'Jawaban yang tepat adalah ${item[1]}.',
-    visual: '🔢',
-    isAnimated: index % 4 == 0,
-  );
-}
-
-List<List<String>> _mathData(int grade) {
-  switch (grade) {
-    // ========================================================
-    // KELAS 1 - MATEMATIKA
-    // ========================================================
-
-    case 1:
-      return const [
-        [
-          'Ada 2 apel lalu datang 3 apel lagi. Jumlah apel semuanya adalah ...',
-          '5',
-          '6',
-          '7',
-          '4'
-        ],
-        [
-          'Ada 3 apel lalu datang 5 apel lagi. Jumlah apel semuanya adalah ...',
-          '8',
-          '9',
-          '10',
-          '7'
-        ],
-        [
-          'Ada 4 pensil lalu diberikan 2 pensil. Sisa pensil adalah ...',
-          '2',
-          '3',
-          '4',
-          '1'
-        ],
-        [
-          'Ada 6 permen lalu dimakan 3. Sisa permen adalah ...',
-          '3',
-          '2',
-          '4',
-          '5'
-        ],
-        [
-          '5 + 4 = ...',
-          '9',
-          '8',
-          '10',
-          '7'
-        ],
-        [
-          '7 - 2 = ...',
-          '5',
-          '4',
-          '6',
-          '3'
-        ],
-        [
-          '1 + 6 = ...',
-          '7',
-          '8',
-          '6',
-          '5'
-        ],
-        [
-          '9 - 4 = ...',
-          '5',
-          '6',
-          '4',
-          '3'
-        ],
-        [
-          '3 + 4 = ...',
-          '7',
-          '6',
-          '8',
-          '5'
-        ],
-        [
-          '8 - 5 = ...',
-          '3',
-          '4',
-          '2',
-          '5'
-        ],
-        [
-          '2 + 7 = ...',
-          '9',
-          '8',
-          '10',
-          '7'
-        ],
-        [
-          '10 - 3 = ...',
-          '7',
-          '6',
-          '8',
-          '5'
-        ],
-        [
-          '4 + 4 = ...',
-          '8',
-          '7',
-          '9',
-          '6'
-        ],
-        [
-          '9 - 6 = ...',
-          '3',
-          '2',
-          '4',
-          '5'
-        ],
-        [
-          '5 + 2 = ...',
-          '7',
-          '6',
-          '8',
-          '5'
-        ],
-        [
-          '8 - 2 = ...',
-          '6',
-          '5',
-          '7',
-          '4'
-        ],
-        [
-          '1 + 8 = ...',
-          '9',
-          '7',
-          '10',
-          '8'
-        ],
-        [
-          '10 - 7 = ...',
-          '3',
-          '2',
-          '4',
-          '5'
-        ],
-        [
-          '6 + 2 = ...',
-          '8',
-          '7',
-          '9',
-          '6'
-        ],
-        [
-          '7 - 5 = ...',
-          '2',
-          '3',
-          '1',
-          '4'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 2 - MATEMATIKA
-    // ========================================================
-
-    case 2:
-      return const [
-        [
-          'Rani memiliki 17 stiker. Ia memberikan 3 stiker. Sisa stikernya ...',
-          '14',
-          '15',
-          '16',
-          '13'
-        ],
-        [
-          '25 + 13 = ...',
-          '38',
-          '37',
-          '39',
-          '36'
-        ],
-        [
-          '42 - 15 = ...',
-          '27',
-          '28',
-          '26',
-          '25'
-        ],
-        [
-          '31 + 18 = ...',
-          '49',
-          '48',
-          '50',
-          '47'
-        ],
-        [
-          '50 - 24 = ...',
-          '26',
-          '25',
-          '27',
-          '28'
-        ],
-        [
-          '23 + 16 = ...',
-          '39',
-          '38',
-          '40',
-          '37'
-        ],
-        [
-          '45 - 17 = ...',
-          '28',
-          '27',
-          '29',
-          '26'
-        ],
-        [
-          '14 + 25 = ...',
-          '39',
-          '38',
-          '40',
-          '37'
-        ],
-        [
-          '36 - 18 = ...',
-          '18',
-          '17',
-          '19',
-          '16'
-        ],
-        [
-          '27 + 12 = ...',
-          '39',
-          '38',
-          '40',
-          '37'
-        ],
-        [
-          '48 - 23 = ...',
-          '25',
-          '24',
-          '26',
-          '27'
-        ],
-        [
-          '19 + 21 = ...',
-          '40',
-          '39',
-          '41',
-          '38'
-        ],
-        [
-          '55 - 30 = ...',
-          '25',
-          '24',
-          '26',
-          '27'
-        ],
-        [
-          '16 + 27 = ...',
-          '43',
-          '42',
-          '44',
-          '41'
-        ],
-        [
-          '60 - 28 = ...',
-          '32',
-          '31',
-          '33',
-          '34'
-        ],
-        [
-          '34 + 15 = ...',
-          '49',
-          '48',
-          '50',
-          '47'
-        ],
-        [
-          '47 - 19 = ...',
-          '28',
-          '27',
-          '29',
-          '26'
-        ],
-        [
-          '28 + 14 = ...',
-          '42',
-          '41',
-          '43',
-          '40'
-        ],
-        [
-          '52 - 26 = ...',
-          '26',
-          '25',
-          '27',
-          '28'
-        ],
-        [
-          '37 + 12 = ...',
-          '49',
-          '48',
-          '50',
-          '47'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 3 - MATEMATIKA
-    // ========================================================
-
-    case 3:
-      return const [
-        [
-          '3 × 5 = ...',
-          '15',
-          '16',
-          '14',
-          '13'
-        ],
-        [
-          '4 × 6 = ...',
-          '24',
-          '25',
-          '23',
-          '22'
-        ],
-        [
-          '7 × 3 = ...',
-          '21',
-          '20',
-          '22',
-          '24'
-        ],
-        [
-          '8 × 4 = ...',
-          '32',
-          '31',
-          '33',
-          '34'
-        ],
-        [
-          '6 × 7 = ...',
-          '42',
-          '41',
-          '43',
-          '40'
-        ],
-        [
-          '9 × 5 = ...',
-          '45',
-          '44',
-          '46',
-          '40'
-        ],
-        [
-          '7 × 8 = ...',
-          '56',
-          '55',
-          '57',
-          '54'
-        ],
-        [
-          '4 × 9 = ...',
-          '36',
-          '35',
-          '37',
-          '34'
-        ],
-        [
-          '8 × 6 = ...',
-          '48',
-          '47',
-          '49',
-          '46'
-        ],
-        [
-          '5 × 7 = ...',
-          '35',
-          '34',
-          '36',
-          '37'
-        ],
-        [
-          '9 × 6 = ...',
-          '54',
-          '53',
-          '55',
-          '52'
-        ],
-        [
-          '7 × 7 = ...',
-          '49',
-          '48',
-          '50',
-          '47'
-        ],
-        [
-          '8 × 8 = ...',
-          '64',
-          '63',
-          '65',
-          '62'
-        ],
-        [
-          '6 × 9 = ...',
-          '54',
-          '53',
-          '55',
-          '52'
-        ],
-        [
-          '3 × 8 = ...',
-          '24',
-          '23',
-          '25',
-          '22'
-        ],
-        [
-          '7 × 4 = ...',
-          '28',
-          '27',
-          '29',
-          '26'
-        ],
-        [
-          '9 × 7 = ...',
-          '63',
-          '62',
-          '64',
-          '61'
-        ],
-        [
-          '5 × 8 = ...',
-          '40',
-          '39',
-          '41',
-          '38'
-        ],
-        [
-          '6 × 6 = ...',
-          '36',
-          '35',
-          '37',
-          '34'
-        ],
-        [
-          '9 × 8 = ...',
-          '72',
-          '71',
-          '73',
-          '70'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 4 - MATEMATIKA
-    // ========================================================
-
-    case 4:
-      return const [
-        [
-          '12 ÷ 3 = ...',
-          '4',
-          '5',
-          '6',
-          '3'
-        ],
-        [
-          '20 ÷ 4 = ...',
-          '5',
-          '6',
-          '7',
-          '4'
-        ],
-        [
-          '30 ÷ 5 = ...',
-          '6',
-          '7',
-          '8',
-          '5'
-        ],
-        [
-          '42 ÷ 6 = ...',
-          '7',
-          '8',
-          '9',
-          '6'
-        ],
-        [
-          '56 ÷ 7 = ...',
-          '8',
-          '9',
-          '10',
-          '7'
-        ],
-        [
-          '72 ÷ 8 = ...',
-          '9',
-          '10',
-          '11',
-          '8'
-        ],
-        [
-          '20 ÷ 2 = ...',
-          '10',
-          '11',
-          '12',
-          '9'
-        ],
-        [
-          '33 ÷ 3 = ...',
-          '11',
-          '12',
-          '13',
-          '10'
-        ],
-        [
-          '36 ÷ 4 = ...',
-          '9',
-          '8',
-          '10',
-          '7'
-        ],
-        [
-          '45 ÷ 5 = ...',
-          '9',
-          '10',
-          '11',
-          '8'
-        ],
-        [
-          '54 ÷ 6 = ...',
-          '9',
-          '8',
-          '10',
-          '7'
-        ],
-        [
-          '63 ÷ 7 = ...',
-          '9',
-          '8',
-          '10',
-          '11'
-        ],
-        [
-          '64 ÷ 8 = ...',
-          '8',
-          '7',
-          '9',
-          '10'
-        ],
-        [
-          '16 ÷ 2 = ...',
-          '8',
-          '9',
-          '10',
-          '7'
-        ],
-        [
-          '27 ÷ 3 = ...',
-          '9',
-          '10',
-          '11',
-          '8'
-        ],
-        [
-          '40 ÷ 4 = ...',
-          '10',
-          '11',
-          '12',
-          '9'
-        ],
-        [
-          '55 ÷ 5 = ...',
-          '11',
-          '12',
-          '13',
-          '10'
-        ],
-        [
-          '18 ÷ 6 = ...',
-          '3',
-          '4',
-          '5',
-          '2'
-        ],
-        [
-          '28 ÷ 7 = ...',
-          '4',
-          '5',
-          '6',
-          '3'
-        ],
-        [
-          '40 ÷ 8 = ...',
-          '5',
-          '6',
-          '7',
-          '4'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 5 - MATEMATIKA
-    // ========================================================
-
-    case 5:
-      return const [
-        [
-          'Setengah dari 24 adalah ...',
-          '12',
-          '13',
-          '14',
-          '11'
-        ],
-        [
-          'Setengah dari 28 adalah ...',
-          '14',
-          '15',
-          '16',
-          '13'
-        ],
-        [
-          'Setengah dari 32 adalah ...',
-          '16',
-          '17',
-          '18',
-          '15'
-        ],
-        [
-          'Seperempat dari 36 adalah ...',
-          '9',
-          '10',
-          '11',
-          '8'
-        ],
-        [
-          'Setengah dari 40 adalah ...',
-          '20',
-          '21',
-          '22',
-          '19'
-        ],
-        [
-          'Setengah dari 44 adalah ...',
-          '22',
-          '23',
-          '24',
-          '21'
-        ],
-        [
-          'Setengah dari 48 adalah ...',
-          '24',
-          '25',
-          '26',
-          '23'
-        ],
-        [
-          'Seperempat dari 52 adalah ...',
-          '13',
-          '14',
-          '15',
-          '12'
-        ],
-        [
-          'Setengah dari 56 adalah ...',
-          '28',
-          '29',
-          '30',
-          '27'
-        ],
-        [
-          'Setengah dari 60 adalah ...',
-          '30',
-          '31',
-          '32',
-          '29'
-        ],
-        [
-          'Setengah dari 64 adalah ...',
-          '32',
-          '33',
-          '34',
-          '31'
-        ],
-        [
-          'Seperempat dari 68 adalah ...',
-          '17',
-          '18',
-          '19',
-          '16'
-        ],
-        [
-          'Setengah dari 72 adalah ...',
-          '36',
-          '37',
-          '38',
-          '35'
-        ],
-        [
-          'Setengah dari 76 adalah ...',
-          '38',
-          '39',
-          '40',
-          '37'
-        ],
-        [
-          'Setengah dari 80 adalah ...',
-          '40',
-          '41',
-          '42',
-          '39'
-        ],
-        [
-          'Seperempat dari 84 adalah ...',
-          '21',
-          '22',
-          '23',
-          '20'
-        ],
-        [
-          'Setengah dari 88 adalah ...',
-          '44',
-          '45',
-          '46',
-          '43'
-        ],
-        [
-          'Setengah dari 92 adalah ...',
-          '46',
-          '47',
-          '48',
-          '45'
-        ],
-        [
-          'Setengah dari 96 adalah ...',
-          '48',
-          '49',
-          '50',
-          '47'
-        ],
-        [
-          'Seperempat dari 100 adalah ...',
-          '25',
-          '26',
-          '27',
-          '24'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 6 - MATEMATIKA
-    // ========================================================
-
-    case 6:
-      return const [
-        [
-          '20% dari 55 adalah ...',
-          '11',
-          '12',
-          '13',
-          '10'
-        ],
-        [
-          '22 × 5 - 4 = ...',
-          '106',
-          '107',
-          '108',
-          '105'
-        ],
-        [
-          'Setengah dari 48 ditambah 5 = ...',
-          '29',
-          '30',
-          '31',
-          '28'
-        ],
-        [
-          '14 + (6 × 3) = ...',
-          '32',
-          '33',
-          '34',
-          '31'
-        ],
-        [
-          '10% dari 75 adalah ...',
-          '7.5',
-          '8',
-          '9',
-          '6.5'
-        ],
-        [
-          '26 × 3 - 4 = ...',
-          '74',
-          '75',
-          '76',
-          '73'
-        ],
-        [
-          'Setengah dari 64 ditambah 5 = ...',
-          '37',
-          '38',
-          '39',
-          '36'
-        ],
-        [
-          '18 + (5 × 3) = ...',
-          '33',
-          '34',
-          '35',
-          '32'
-        ],
-        [
-          '50% dari 96 adalah ...',
-          '48',
-          '49',
-          '47',
-          '46'
-        ],
-        [
-          '30 × 7 - 4 = ...',
-          '206',
-          '207',
-          '208',
-          '205'
-        ],
-        [
-          'Setengah dari 80 ditambah 5 = ...',
-          '45',
-          '46',
-          '47',
-          '44'
-        ],
-        [
-          '22 + (4 × 3) = ...',
-          '34',
-          '35',
-          '36',
-          '33'
-        ],
-        [
-          '40% dari 115 adalah ...',
-          '46',
-          '47',
-          '48',
-          '45'
-        ],
-        [
-          '34 × 5 - 4 = ...',
-          '166',
-          '167',
-          '168',
-          '165'
-        ],
-        [
-          'Setengah dari 96 ditambah 5 = ...',
-          '53',
-          '54',
-          '55',
-          '52'
-        ],
-        [
-          '26 + (3 × 3) = ...',
-          '35',
-          '36',
-          '37',
-          '34'
-        ],
-        [
-          '30% dari 135 adalah ...',
-          '40.5',
-          '41',
-          '42',
-          '39'
-        ],
-        [
-          '38 × 3 - 4 = ...',
-          '110',
-          '111',
-          '112',
-          '109'
-        ],
-        [
-          'Setengah dari 112 ditambah 5 = ...',
-          '61',
-          '62',
-          '63',
-          '60'
-        ],
-        [
-          '30 + (2 × 3) = ...',
-          '36',
-          '37',
-          '38',
-          '35'
-        ],
-      ];
-
-    default:
-      return const [];
-  }
-}
-
-/// ============================================================
-/// BAHASA INDONESIA
-/// ============================================================
-
-Question _languageQuestion(int grade, int index) {
-  final item = _languageData(grade)[index];
-
-  return _makeQuestion(
-    id: 'k$grade-b$index',
-    subject: 'Bahasa Indonesia',
-    question: item[0],
-    correct: item[1],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-02',
+    subject: 'Stop Bullying',
+    question: 'Pilih SEMUA pasangan yang tepat!\n(1) Memukul teman → bullying fisik\n(2) Mengejek → bullying verbal\n(3) Sengaja mengucilkan → bullying sosial\n(4) Menghina lewat media sosial → cyberbullying',
+    correct: '(1), (2), (3), dan (4)',
     wrong: [
-      item[2],
-      item[3],
-      item[4],
+      'Hanya (1) dan (2)',
+      'Hanya (2) dan (3)',
+      '(1), (2), dan (3)',
     ],
-    explanation: 'Jawaban yang tepat adalah "${item[1]}".',
-    visual: '📚',
-    isAnimated: index == 3 || index == 8,
-  );
-}
-
-List<List<String>> _languageData(int grade) {
-  switch (grade) {
-    // ========================================================
-    // KELAS 1
-    // ========================================================
-
-    case 1:
-      return const [
-        [
-          'Huruf pertama pada kata "Ibu" adalah ...',
-          'I',
-          'B',
-          'U',
-          'A'
-        ],
-        [
-          'Contoh huruf vokal adalah ...',
-          'A',
-          'B',
-          'C',
-          'D'
-        ],
-        [
-          'Kata "Bola" terdiri dari ... suku kata.',
-          '2',
-          '1',
-          '3',
-          '4'
-        ],
-        [
-          'Kata yang menunjukkan warna adalah ...',
-          'merah',
-          'lari',
-          'duduk',
-          'makan'
-        ],
-        [
-          'Huruf terakhir pada kata "Kucing" adalah ...',
-          'g',
-          'n',
-          'i',
-          'u'
-        ],
-        [
-          'Panggilan untuk orang tua laki-laki adalah ...',
-          'Ayah',
-          'Bunda',
-          'Kakak',
-          'Adik'
-        ],
-        [
-          'Hewan yang berbunyi "meong" adalah ...',
-          'kucing',
-          'anjing',
-          'ayam',
-          'ikan'
-        ],
-        [
-          'Lawan kata "besar" adalah ...',
-          'kecil',
-          'tinggi',
-          'panjang',
-          'banyak'
-        ],
-        [
-          'Kalimat yang benar adalah ...',
-          'Saya makan nasi.',
-          'Nasi saya makan.',
-          'Makan saya nasi.',
-          'Saya nasi makan.'
-        ],
-        [
-          'Jumlah huruf vokal dalam kata "Ibu" adalah ...',
-          '2',
-          '1',
-          '3',
-          '4'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 2
-    // ========================================================
-
-    case 2:
-      return const [
-        [
-          'Lawan kata "besar" adalah ...',
-          'kecil',
-          'tinggi',
-          'banyak',
-          'jauh'
-        ],
-        [
-          'Kata yang tepat: "Adik ... bola."',
-          'menendang',
-          'membaca',
-          'menulis',
-          'tidur'
-        ],
-        [
-          'Kalimat tanya diakhiri tanda ...',
-          '?',
-          '.',
-          '!',
-          ','
-        ],
-        [
-          'Kata dasar dari "bermain" adalah ...',
-          'main',
-          'ber',
-          'main-main',
-          'permainan'
-        ],
-        [
-          'Sinonim dari "senang" adalah ...',
-          'gembira',
-          'sedih',
-          'marah',
-          'takut'
-        ],
-        [
-          'Huruf kapital digunakan di ... kalimat.',
-          'awal',
-          'tengah',
-          'akhir',
-          'tidak digunakan'
-        ],
-        [
-          'Kata "kami" digunakan untuk menyebut ...',
-          'kita tanpa lawan bicara',
-          'lawan bicara saja',
-          'satu orang',
-          'benda'
-        ],
-        [
-          'Kalimat dengan huruf kapital yang benar adalah ...',
-          'Budi pergi ke sekolah.',
-          'budi pergi ke sekolah.',
-          'Budi Pergi ke Sekolah.',
-          'budi Pergi ke sekolah.'
-        ],
-        [
-          'Tanda baca untuk kalimat berita adalah ...',
-          '.',
-          '?',
-          '!',
-          ','
-        ],
-        [
-          'Tempat untuk belajar disebut ...',
-          'sekolah',
-          'pasar',
-          'rumah sakit',
-          'kebun'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 3
-    // ========================================================
-
-    case 3:
-      return const [
-        [
-          'Sinonim dari "cepat" adalah ...',
-          'lekas',
-          'lambat',
-          'diam',
-          'berhenti'
-        ],
-        [
-          'Antonim dari "terang" adalah ...',
-          'gelap',
-          'cerah',
-          'indah',
-          'panas'
-        ],
-        [
-          'Kalimat perintah biasanya diakhiri tanda ...',
-          '!',
-          '.',
-          '?',
-          ','
-        ],
-        [
-          'Imbuhan "ber-" pada kata "bermain" menunjukkan ...',
-          'melakukan suatu kegiatan',
-          'tempat',
-          'jumlah',
-          'waktu'
-        ],
-        [
-          'Kata baku yang benar adalah ...',
-          'apotek',
-          'apotik',
-          'apoteq',
-          'apotiik'
-        ],
-        [
-          'Ide pokok sebuah paragraf biasanya terdapat pada ...',
-          'kalimat utama',
-          'kalimat terakhir saja',
-          'judul saja',
-          'gambar'
-        ],
-        [
-          'Kata ganti orang pertama adalah ...',
-          'aku',
-          'kamu',
-          'dia',
-          'mereka'
-        ],
-        [
-          'Cerita yang berisi pesan moral biasanya disebut ...',
-          'dongeng',
-          'iklan',
-          'surat',
-          'resep'
-        ],
-        [
-          'Huruf kapital digunakan untuk menulis ...',
-          'nama orang',
-          'kata kerja',
-          'angka',
-          'kata sifat'
-        ],
-        [
-          'Kalimat yang menggunakan tanda baca dengan benar adalah ...',
-          'Kapan kamu pulang?',
-          'Kapan kamu pulang.',
-          'kapan kamu pulang?',
-          'Kapan Kamu Pulang'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 4
-    // ========================================================
-
-    case 4:
-      return const [
-        [
-          'Kata hubung untuk kalimat majemuk setara adalah ...',
-          'dan',
-          'karena',
-          'walaupun',
-          'ketika'
-        ],
-        [
-          'Imbuhan "me-kan" pada "membersihkan" bermakna ...',
-          'melakukan sesuatu agar bersih',
-          'menjadi bersih sendiri',
-          'tempat bersih',
-          'alat pembersih'
-        ],
-        [
-          'Kalimat efektif adalah kalimat yang ...',
-          'singkat dan jelas maknanya',
-          'panjang dan berulang',
-          'sulit dipahami',
-          'menggunakan banyak kata'
-        ],
-        [
-          'Sinonim dari "pintar" adalah ...',
-          'cerdas',
-          'bodoh',
-          'malas',
-          'lambat'
-        ],
-        [
-          'Antonim dari "maju" adalah ...',
-          'mundur',
-          'cepat',
-          'tinggi',
-          'besar'
-        ],
-        [
-          'Teks yang menjelaskan langkah-langkah disebut teks ...',
-          'prosedur',
-          'deskripsi',
-          'narasi',
-          'puisi'
-        ],
-        [
-          'Kata tanya untuk menanyakan tempat adalah ...',
-          'di mana',
-          'kapan',
-          'mengapa',
-          'siapa'
-        ],
-        [
-          'Paragraf yang ide pokoknya di awal disebut paragraf ...',
-          'deduktif',
-          'induktif',
-          'campuran',
-          'naratif'
-        ],
-        [
-          'Kata ulang "anak-anak" menunjukkan makna ...',
-          'jumlah banyak',
-          'satu benda',
-          'sifat benda',
-          'waktu kejadian'
-        ],
-        [
-          'Kalimat yang menggunakan huruf kapital dengan tepat adalah ...',
-          'Dia tinggal di Kota Surabaya.',
-          'dia tinggal di kota surabaya.',
-          'Dia Tinggal di kota Surabaya.',
-          'dia Tinggal Di Kota surabaya.'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 5
-    // ========================================================
-
-    case 5:
-      return const [
-        [
-          'Peribahasa "Bagai air di daun talas" bermakna orang yang ...',
-          'tidak berpendirian teguh',
-          'rajin bekerja',
-          'pandai berbicara',
-          'suka menabung'
-        ],
-        [
-          'Kalimat efektif dari "Rumah itu sangat besar sekali" adalah ...',
-          'Rumah itu sangat besar.',
-          'Rumah itu besar sekali sangat.',
-          'Rumah sangat itu besar sekali.',
-          'Besar itu rumah sangat sekali.'
-        ],
-        [
-          'Majas yang membandingkan dua hal secara langsung disebut ...',
-          'metafora',
-          'personifikasi',
-          'hiperbola',
-          'ironi'
-        ],
-        [
-          'Kata baku dari "nasehat" adalah ...',
-          'nasihat',
-          'nasehat',
-          'naseehat',
-          'nashat'
-        ],
-        [
-          'Teks yang menceritakan pengalaman pribadi disebut teks ...',
-          'narasi',
-          'eksposisi',
-          'argumentasi',
-          'prosedur'
-        ],
-        [
-          '"Hatinya membeku mendengar kabar itu" menggunakan majas ...',
-          'metafora',
-          'hiperbola',
-          'ironi',
-          'sarkasme'
-        ],
-        [
-          'Sinonim dari "mustahil" adalah ...',
-          'tidak mungkin',
-          'sangat mungkin',
-          'pasti terjadi',
-          'sudah terjadi'
-        ],
-        [
-          'Kata tanya untuk menanyakan alasan adalah ...',
-          'mengapa',
-          'kapan',
-          'di mana',
-          'siapa'
-        ],
-        [
-          'Ringkasan cerita yang mempertahankan urutan asli disebut ...',
-          'sinopsis',
-          'parafrase',
-          'kutipan',
-          'dialog'
-        ],
-        [
-          'Tanda titik dua digunakan sebelum ...',
-          'rincian atau daftar',
-          'nama orang',
-          'judul buku',
-          'angka saja'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 6
-    // ========================================================
-
-    case 6:
-      return const [
-        [
-          'Majas hiperbola terdapat pada kalimat ...',
-          'Suaranya menggelegar memecah langit.',
-          'Dia berjalan pelan.',
-          'Buku itu berwarna biru.',
-          'Ibu memasak di dapur.'
-        ],
-        [
-          'Kalimat yang menggunakan kata baku adalah ...',
-          'Ia sedang menganalisis data.',
-          'Ia sedang menganalisa data.',
-          'Ia sedang menganalisis datah.',
-          'Ia sedang menganalis data.'
-        ],
-        [
-          'Ide pokok dalam sebuah teks biasanya terdapat pada ...',
-          'kalimat utama',
-          'kalimat penjelas',
-          'judul saja',
-          'gambar ilustrasi'
-        ],
-        [
-          'Peribahasa "Tong kosong nyaring bunyinya" bermakna orang yang ...',
-          'banyak bicara tetapi kurang berilmu',
-          'pendiam dan bijaksana',
-          'rajin bekerja',
-          'jujur dan sederhana'
-        ],
-        [
-          'Kata hubung antarkalimat yang menyatakan pertentangan adalah ...',
-          'namun',
-          'dan',
-          'lalu',
-          'kemudian'
-        ],
-        [
-          'Teks yang bertujuan meyakinkan pembaca disebut teks ...',
-          'persuasi',
-          'deskripsi',
-          'narasi',
-          'laporan'
-        ],
-        [
-          'Sinonim dari "bijaksana" adalah ...',
-          'arif',
-          'ceroboh',
-          'malas',
-          'sombong'
-        ],
-        [
-          'Kalimat langsung ditandai dengan penggunaan tanda ...',
-          'petik ("...")',
-          'titik dua',
-          'tanya saja',
-          'seru saja'
-        ],
-        [
-          'Unsur intrinsik cerita yang menunjukkan waktu dan tempat disebut ...',
-          'latar',
-          'tema',
-          'amanat',
-          'sudut pandang'
-        ],
-        [
-          'Kata "walaupun" termasuk kata hubung ...',
-          'pertentangan',
-          'penjumlahan',
-          'sebab akibat',
-          'waktu'
-        ],
-      ];
-
-    default:
-      return const [];
-  }
-}
-
-/// ============================================================
-/// IPA
-/// ============================================================
-
-Question _scienceQuestion(int grade, int index) {
-  final item = _scienceData(grade)[index];
-
-  return _makeQuestion(
-    id: 'k$grade-i$index',
-    subject: 'IPA',
-    question: item[0],
-    correct: item[1],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-03',
+    subject: 'Stop Bullying',
+    question: 'Dika tidak pernah menyentuh temannya. Ia setiap hari mengejek bentuk tubuh temannya sampai korban malu dan tidak percaya diri. Pernyataan yang paling tepat adalah ...',
+    correct: 'Termasuk bullying verbal',
     wrong: [
-      item[2],
-      item[3],
-      item[4],
+      'Tidak termasuk bullying karena tidak ada sentuhan',
+      'Termasuk bullying sosial saja',
+      'Termasuk cyberbullying',
     ],
-    explanation: 'Jawaban yang tepat adalah "${item[1]}".',
-    visual: '🔬',
-    isAnimated: index == 3 || index == 8,
-  );
-}
-
-List<List<String>> _scienceData(int grade) {
-  switch (grade) {
-    // ========================================================
-    // KELAS 1
-    // ========================================================
-
-    case 1:
-      return const [
-        [
-          'Hewan berkaki empat adalah ...',
-          'kucing',
-          'burung',
-          'ikan',
-          'ayam'
-        ],
-        [
-          'Bagian tubuh untuk melihat adalah ...',
-          'mata',
-          'telinga',
-          'hidung',
-          'mulut'
-        ],
-        [
-          'Buah yang berwarna kuning adalah ...',
-          'pisang',
-          'semangka',
-          'anggur',
-          'apel'
-        ],
-        [
-          'Air yang kita minum sebaiknya ...',
-          'bersih',
-          'kotor',
-          'keruh',
-          'berbau'
-        ],
-        [
-          'Hewan yang bisa terbang adalah ...',
-          'burung',
-          'sapi',
-          'kambing',
-          'gajah'
-        ],
-        [
-          'Bagian tubuh untuk mencium bau adalah ...',
-          'hidung',
-          'mata',
-          'telinga',
-          'kaki'
-        ],
-        [
-          'Tanaman membutuhkan ... untuk tumbuh.',
-          'air dan matahari',
-          'pasir',
-          'plastik',
-          'asap'
-        ],
-        [
-          'Hewan yang hidup di air adalah ...',
-          'ikan',
-          'ayam',
-          'kucing',
-          'kambing'
-        ],
-        [
-          'Kita mandi menggunakan ...',
-          'air dan sabun',
-          'tanah',
-          'minyak',
-          'pasir'
-        ],
-        [
-          'Sebelum makan sebaiknya kita ...',
-          'cuci tangan',
-          'bermain dulu',
-          'tidur dulu',
-          'lari-lari'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 2
-    // ========================================================
-
-    case 2:
-      return const [
-        [
-          'Bagian tumbuhan yang berwarna hijau adalah ...',
-          'daun',
-          'akar',
-          'bunga',
-          'buah'
-        ],
-        [
-          'Hewan yang termasuk unggas adalah ...',
-          'ayam',
-          'kucing',
-          'sapi',
-          'ikan'
-        ],
-        [
-          'Makanan sehat untuk tubuh adalah ...',
-          'sayur dan buah',
-          'permen',
-          'gorengan',
-          'minuman soda'
-        ],
-        [
-          'Kita bernapas menghirup ...',
-          'oksigen',
-          'karbon dioksida',
-          'asap',
-          'debu'
-        ],
-        [
-          'Benda yang termasuk sumber cahaya adalah ...',
-          'matahari',
-          'batu',
-          'kayu',
-          'kertas'
-        ],
-        [
-          'Hewan peliharaan yang suka menggonggong adalah ...',
-          'anjing',
-          'kucing',
-          'burung',
-          'ikan'
-        ],
-        [
-          'Air akan membeku jika ...',
-          'didinginkan',
-          'dipanaskan',
-          'dijemur',
-          'diaduk'
-        ],
-        [
-          'Bagian tubuh untuk berjalan adalah ...',
-          'kaki',
-          'tangan',
-          'kepala',
-          'perut'
-        ],
-        [
-          'Sampah yang mudah membusuk disebut sampah ...',
-          'organik',
-          'plastik',
-          'logam',
-          'kaca'
-        ],
-        [
-          'Olahraga membuat tubuh menjadi ...',
-          'sehat dan kuat',
-          'lemas',
-          'sakit',
-          'malas'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 3
-    // ========================================================
-
-    case 3:
-      return const [
-        [
-          'Bagian tumbuhan yang menyerap air dari tanah adalah ...',
-          'akar',
-          'daun',
-          'bunga',
-          'buah'
-        ],
-        [
-          'Hewan yang mengalami metamorfosis adalah ...',
-          'kupu-kupu',
-          'kucing',
-          'ayam',
-          'sapi'
-        ],
-        [
-          'Proses tumbuhan membuat makanan disebut ...',
-          'fotosintesis',
-          'respirasi',
-          'evaporasi',
-          'pencernaan'
-        ],
-        [
-          'Benda yang termasuk sumber energi panas adalah ...',
-          'matahari',
-          'air',
-          'batu',
-          'kayu'
-        ],
-        [
-          'Hewan pemakan tumbuhan disebut ...',
-          'herbivora',
-          'karnivora',
-          'omnivora',
-          'insektivora'
-        ],
-        [
-          'Air, tanah, dan udara termasuk ...',
-          'sumber daya alam',
-          'barang buatan',
-          'hasil industri',
-          'sampah'
-        ],
-        [
-          'Rangka tubuh manusia berfungsi untuk ...',
-          'menopang tubuh',
-          'mencerna makanan',
-          'melihat benda',
-          'bernapas'
-        ],
-        [
-          'Perubahan wujud dari cair menjadi gas disebut ...',
-          'menguap',
-          'membeku',
-          'mencair',
-          'mengembun'
-        ],
-        [
-          'Contoh hewan karnivora adalah ...',
-          'harimau',
-          'sapi',
-          'kambing',
-          'kelinci'
-        ],
-        [
-          'Cara menjaga lingkungan tetap bersih adalah ...',
-          'membuang sampah pada tempatnya',
-          'membakar sampah sembarangan',
-          'membuang sampah ke sungai',
-          'menumpuk sampah di jalan'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 4
-    // ========================================================
-
-    case 4:
-      return const [
-        [
-          'Gaya yang menyebabkan benda jatuh ke bawah adalah gaya ...',
-          'gravitasi',
-          'gesek',
-          'magnet',
-          'otot'
-        ],
-        [
-          'Alat yang menghasilkan bunyi karena getaran disebut ...',
-          'sumber bunyi',
-          'sumber cahaya',
-          'sumber panas',
-          'sumber listrik'
-        ],
-        [
-          'Perpindahan panas tanpa zat perantara disebut ...',
-          'radiasi',
-          'konduksi',
-          'konveksi',
-          'isolasi'
-        ],
-        [
-          'Rantai makanan diawali oleh ...',
-          'produsen (tumbuhan)',
-          'konsumen tingkat 1',
-          'konsumen tingkat 2',
-          'pengurai'
-        ],
-        [
-          'Perubahan energi listrik menjadi cahaya terjadi pada ...',
-          'lampu',
-          'kipas angin',
-          'setrika',
-          'blender'
-        ],
-        [
-          'Sumber energi yang tidak dapat diperbarui adalah ...',
-          'minyak bumi',
-          'air',
-          'angin',
-          'matahari'
-        ],
-        [
-          'Daur hidup katak diawali dari ...',
-          'telur',
-          'kecebong',
-          'katak muda',
-          'katak dewasa'
-        ],
-        [
-          'Alat pernapasan pada ikan adalah ...',
-          'insang',
-          'paru-paru',
-          'kulit',
-          'trakea'
-        ],
-        [
-          'Gerhana matahari terjadi ketika ...',
-          'bulan berada di antara matahari dan bumi',
-          'bumi berada di antara matahari dan bulan',
-          'matahari berada di antara bumi dan bulan',
-          'bumi mengelilingi bulan'
-        ],
-        [
-          'Magnet dapat menarik benda yang terbuat dari ...',
-          'besi',
-          'kayu',
-          'plastik',
-          'kertas'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 5
-    // ========================================================
-
-    case 5:
-      return const [
-        [
-          'Organ pencernaan tempat penyerapan sari makanan adalah ...',
-          'usus halus',
-          'lambung',
-          'usus besar',
-          'kerongkongan'
-        ],
-        [
-          'Planet terdekat dengan matahari adalah ...',
-          'Merkurius',
-          'Venus',
-          'Bumi',
-          'Mars'
-        ],
-        [
-          'Peredaran darah yang melewati paru-paru disebut peredaran darah ...',
-          'kecil',
-          'besar',
-          'ganda',
-          'tunggal'
-        ],
-        [
-          'Zat yang diperlukan tumbuhan untuk fotosintesis selain air adalah ...',
-          'karbon dioksida',
-          'oksigen murni',
-          'nitrogen',
-          'karbon monoksida'
-        ],
-        [
-          'Alat pernapasan manusia yang menyaring udara adalah ...',
-          'hidung',
-          'paru-paru',
-          'trakea',
-          'diafragma'
-        ],
-        [
-          'Gerhana bulan terjadi ketika ...',
-          'bumi berada di antara matahari dan bulan',
-          'bulan berada di antara matahari dan bumi',
-          'matahari berada di antara bumi dan bulan',
-          'bulan menjauhi bumi'
-        ],
-        [
-          'Perubahan energi pada setrika listrik adalah ...',
-          'listrik menjadi panas',
-          'panas menjadi listrik',
-          'cahaya menjadi panas',
-          'gerak menjadi listrik'
-        ],
-        [
-          'Hewan yang termasuk kelompok mamalia adalah ...',
-          'paus',
-          'hiu',
-          'ubur-ubur',
-          'gurita'
-        ],
-        [
-          'Bagian jantung yang memompa darah ke seluruh tubuh adalah ...',
-          'bilik kiri',
-          'serambi kanan',
-          'serambi kiri',
-          'bilik kanan'
-        ],
-        [
-          'Organ yang membantu mengatur suhu tubuh adalah ...',
-          'kulit',
-          'tulang',
-          'otot',
-          'rambut'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 6
-    // ========================================================
-
-    case 6:
-      return const [
-        [
-          'Rangkaian listrik yang jika satu lampu mati semua lampu ikut mati disebut rangkaian ...',
-          'seri',
-          'paralel',
-          'campuran',
-          'terbuka'
-        ],
-        [
-          'Planet yang dikenal sebagai planet merah adalah ...',
-          'Mars',
-          'Venus',
-          'Jupiter',
-          'Saturnus'
-        ],
-        [
-          'Perkembangbiakan tumbuhan tanpa biji disebut ...',
-          'vegetatif',
-          'generatif',
-          'fotosintesis',
-          'respirasi'
-        ],
-        [
-          'Contoh sumber energi alternatif adalah ...',
-          'energi matahari',
-          'batu bara',
-          'minyak bumi',
-          'gas alam'
-        ],
-        [
-          'Bagian telinga yang menangkap gelombang bunyi adalah ...',
-          'daun telinga',
-          'gendang telinga',
-          'koklea',
-          'saraf pendengaran'
-        ],
-        [
-          'Contoh pembiasan cahaya adalah ...',
-          'pensil tampak patah di dalam air',
-          'bayangan di cermin datar',
-          'bayangan pada malam hari',
-          'benda diam di udara'
-        ],
-        [
-          'Ekosistem yang terbentuk secara alami disebut ekosistem ...',
-          'alami',
-          'buatan',
-          'campuran',
-          'tertutup'
-        ],
-        [
-          'Salah satu ciri masa pubertas adalah ...',
-          'tubuh mulai tumbuh lebih tinggi',
-          'tubuh berhenti tumbuh',
-          'tidak ada perubahan tubuh',
-          'selalu merasa mengantuk'
-        ],
-        [
-          'Gaya gesek dapat diperkecil dengan cara ...',
-          'memberi pelumas atau oli',
-          'memperkasar permukaan',
-          'menambah beban',
-          'memperlambat gerakan'
-        ],
-        [
-          'Perubahan energi kimia menjadi energi listrik terjadi pada ...',
-          'baterai',
-          'kipas angin',
-          'setrika',
-          'lampu pijar'
-        ],
-      ];
-
-    default:
-      return const [];
-  }
-}
-
-/// ============================================================
-/// LOGIKA
-/// ============================================================
-
-Question _logicQuestion(int grade, int index) {
-  final item = _logicData(grade)[index];
-
-  return _makeQuestion(
-    id: 'k$grade-l$index',
-    subject: 'Logika',
-    question: item[0],
-    correct: item[1],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-04',
+    subject: 'Stop Bullying',
+    question: 'Pilih situasi yang PALING jelas menunjukkan bullying sosial.',
+    correct: 'Sekelompok siswa sengaja tidak mengajak seorang teman bermain agar ia merasa sendirian',
     wrong: [
-      item[2],
-      item[3],
-      item[4],
+      'Siswa terpeleset lalu ditolong temannya',
+      'Dua siswa berbeda pendapat saat berdiskusi',
+      'Seorang siswa bercanda dengan julukan yang disukai temannya',
     ],
-    explanation: 'Perhatikan pola dan hubungan pada soal.',
-    visual: '🧩',
-    isAnimated: true,
-  );
-}
-
-List<List<String>> _logicData(int grade) {
-  switch (grade) {
-    // ========================================================
-    // KELAS 1
-    // ========================================================
-
-    case 1:
-      return const [
-        [
-          '1, 2, 3, ...',
-          '4',
-          '5',
-          '6',
-          '2'
-        ],
-        [
-          'Merah, biru, merah, biru, ...',
-          'merah',
-          'biru',
-          'hijau',
-          'kuning'
-        ],
-        [
-          'Besar - kecil, tinggi - ...',
-          'pendek',
-          'panjang',
-          'lebar',
-          'berat'
-        ],
-        [
-          'A, B, C, ...',
-          'D',
-          'E',
-          'F',
-          'C'
-        ],
-        [
-          '1 bintang, 2 bintang, 3 bintang, ...',
-          '4 bintang',
-          '1 bintang',
-          '2 bintang',
-          '5 bintang'
-        ],
-        [
-          'Siang terang, malam ...',
-          'gelap',
-          'dingin',
-          'ramai',
-          'basah'
-        ],
-        [
-          '2, 4, 6, ...',
-          '8',
-          '7',
-          '9',
-          '10'
-        ],
-        [
-          'Gajah lebih besar dari ...',
-          'tikus',
-          'singa',
-          'paus',
-          'jerapah'
-        ],
-        [
-          'Urutan: kecil, sedang, ...',
-          'besar',
-          'kecil',
-          'sedang',
-          'sedikit'
-        ],
-        [
-          'Matahari, bulan, matahari, bulan, ...',
-          'matahari',
-          'bulan',
-          'bintang',
-          'awan'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 2
-    // ========================================================
-
-    case 2:
-      return const [
-        [
-          '5, 10, 15, ...',
-          '20',
-          '18',
-          '25',
-          '30'
-        ],
-        [
-          'Pagi, siang, ...',
-          'sore',
-          'malam',
-          'pagi',
-          'subuh'
-        ],
-        [
-          '1 segitiga, 2 segitiga, 3 segitiga, ...',
-          '4 segitiga',
-          '1 segitiga',
-          '2 segitiga',
-          '5 segitiga'
-        ],
-        [
-          'Besar, sedang, ...',
-          'kecil',
-          'besar',
-          'sedang',
-          'banyak'
-        ],
-        [
-          '2, 4, 6, 8, ...',
-          '10',
-          '9',
-          '11',
-          '12'
-        ],
-        [
-          'Januari, Februari, ...',
-          'Maret',
-          'April',
-          'Mei',
-          'Desember'
-        ],
-        [
-          'Jika hari ini Senin, besok adalah ...',
-          'Selasa',
-          'Rabu',
-          'Minggu',
-          'Kamis'
-        ],
-        [
-          '10, 20, 30, ...',
-          '40',
-          '35',
-          '45',
-          '50'
-        ],
-        [
-          'Panas berlawanan dengan ...',
-          'dingin',
-          'basah',
-          'terang',
-          'keras'
-        ],
-        [
-          'Hijau, biru, hijau, biru, ...',
-          'hijau',
-          'biru',
-          'merah',
-          'kuning'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 3
-    // ========================================================
-
-    case 3:
-      return const [
-        [
-          '3, 6, 9, ...',
-          '12',
-          '10',
-          '11',
-          '15'
-        ],
-        [
-          'Dua merah, dua biru, dua merah, ...',
-          'dua biru',
-          'dua merah',
-          'dua hijau',
-          'dua kuning'
-        ],
-        [
-          '1, 4, 9, 16, ...',
-          '25',
-          '20',
-          '24',
-          '36'
-        ],
-        [
-          'Jika A=1 dan B=2, maka C=...',
-          '3',
-          '2',
-          '4',
-          '5'
-        ],
-        [
-          '100, 90, 80, ...',
-          '70',
-          '75',
-          '65',
-          '60'
-        ],
-        [
-          'Kupu-kupu berasal dari ...',
-          'ulat',
-          'telur burung',
-          'ikan',
-          'katak'
-        ],
-        [
-          '2, 6, 18, ...',
-          '54',
-          '36',
-          '44',
-          '60'
-        ],
-        [
-          'Segitiga, persegi, segilima, ...',
-          'segienam',
-          'segitiga',
-          'lingkaran',
-          'persegi'
-        ],
-        [
-          '5, 10, 20, 40, ...',
-          '80',
-          '60',
-          '70',
-          '90'
-        ],
-        [
-          'Senin, Rabu, Jumat, ...',
-          'Minggu',
-          'Sabtu',
-          'Kamis',
-          'Selasa'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 4
-    // ========================================================
-
-    case 4:
-      return const [
-        [
-          '4, 8, 12, 16, ...',
-          '20',
-          '18',
-          '22',
-          '24'
-        ],
-        [
-          '1, 1, 2, 3, 5, ...',
-          '8',
-          '6',
-          '7',
-          '9'
-        ],
-        [
-          'Semua kucing adalah hewan. Milo adalah kucing. Jadi Milo adalah ...',
-          'hewan',
-          'tumbuhan',
-          'benda',
-          'manusia'
-        ],
-        [
-          '2, 5, 10, 17, ...',
-          '26',
-          '24',
-          '28',
-          '30'
-        ],
-        [
-          'Persegi memiliki ... sisi.',
-          '4',
-          '3',
-          '5',
-          '6'
-        ],
-        [
-          '81, 27, 9, 3, ...',
-          '1',
-          '0',
-          '2',
-          '9'
-        ],
-        [
-          'Jika hari ini tanggal 10, 5 hari lagi tanggal ...',
-          '15',
-          '14',
-          '16',
-          '20'
-        ],
-        [
-          'Semua burung punya sayap. Elang adalah burung. Jadi elang punya ...',
-          'sayap',
-          'sirip',
-          'insang',
-          'kaki empat'
-        ],
-        [
-          '3, 9, 27, ...',
-          '81',
-          '54',
-          '72',
-          '90'
-        ],
-        [
-          'A1, B2, C3, ...',
-          'D4',
-          'E5',
-          'D3',
-          'C4'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 5
-    // ========================================================
-
-    case 5:
-      return const [
-        [
-          '2, 6, 12, 20, ...',
-          '30',
-          '28',
-          '26',
-          '32'
-        ],
-        [
-          'Semua siswa rajin belajar. Dodi adalah siswa. Jadi Dodi ...',
-          'rajin belajar',
-          'malas belajar',
-          'tidak belajar',
-          'bermain saja'
-        ],
-        [
-          '1, 4, 9, 16, 25, ...',
-          '36',
-          '30',
-          '32',
-          '49'
-        ],
-        [
-          'Jika kode A=2, B=4, C=6, maka D=...',
-          '8',
-          '6',
-          '7',
-          '10'
-        ],
-        [
-          '5, 11, 23, 47, ...',
-          '95',
-          '90',
-          '92',
-          '100'
-        ],
-        [
-          'Bangun datar bersisi 6 disebut ...',
-          'segienam',
-          'segilima',
-          'segiempat',
-          'segitujuh'
-        ],
-        [
-          'Jika lusa adalah Jumat, maka hari ini adalah ...',
-          'Rabu',
-          'Kamis',
-          'Sabtu',
-          'Selasa'
-        ],
-        [
-          '1000, 500, 250, ...',
-          '125',
-          '100',
-          '150',
-          '200'
-        ],
-        [
-          'Semua ikan bernapas dengan insang. Lele adalah ikan. Jadi lele bernapas dengan ...',
-          'insang',
-          'paru-paru',
-          'kulit',
-          'trakea'
-        ],
-        [
-          '2, 3, 5, 8, 13, ...',
-          '21',
-          '18',
-          '20',
-          '24'
-        ],
-      ];
-
-    // ========================================================
-    // KELAS 6
-    // ========================================================
-
-    case 6:
-      return const [
-        [
-          '1, 2, 4, 8, 16, ...',
-          '32',
-          '24',
-          '28',
-          '36'
-        ],
-        [
-          'Semua bilangan genap habis dibagi 2. 14 adalah bilangan genap. Jadi 14 ...',
-          'habis dibagi 2',
-          'tidak habis dibagi 2',
-          'adalah bilangan ganjil',
-          'tidak bisa dibagi'
-        ],
-        [
-          '3, 8, 15, 24, ...',
-          '35',
-          '30',
-          '32',
-          '40'
-        ],
-        [
-          'Jika kode BUKU = CVLV, maka kode MEJA = ...',
-          'NFKB',
-          'NFJB',
-          'MFKB',
-          'NFKC'
-        ],
-        [
-          '2, 3, 5, 7, 11, ...',
-          '13',
-          '12',
-          '14',
-          '15'
-        ],
-        [
-          '100, 81, 64, 49, ...',
-          '36',
-          '40',
-          '42',
-          '45'
-        ],
-        [
-          'Jika semua A adalah B, dan semua B adalah C, maka semua A adalah ...',
-          'C',
-          'bukan C',
-          'sebagian C',
-          'tidak berhubungan dengan C'
-        ],
-        [
-          '5, 10, 20, 40, 80, ...',
-          '160',
-          '120',
-          '140',
-          '150'
-        ],
-        [
-          'Kode: 1=A, 2=B, 3=C, ... maka 8 = ...',
-          'H',
-          'G',
-          'I',
-          'F'
-        ],
-        [
-          '7, 14, 28, 56, ...',
-          '112',
-          '84',
-          '98',
-          '120'
-        ],
-      ];
-
-    default:
-      return const [];
-  }
-}
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-05',
+    subject: 'Stop Bullying',
+    question: 'Seseorang mengirim hinaan dan ancaman melalui media sosial berkali-kali. Jika yang ditanyakan adalah MEDIA yang digunakan, jenisnya adalah ...',
+    correct: 'Cyberbullying',
+    wrong: [
+      'Fisik',
+      'Verbal langsung',
+      'Sosial',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-06',
+    subject: 'Stop Bullying',
+    question: 'Andi berkata, “Aku tidak suka kamu memanggilku dengan julukan itu. Tolong berhenti.” Setelah itu ia meminta bantuan guru. Urutan sikap Andi menunjukkan ...',
+    correct: 'Berani berkata tidak lalu mencari bantuan',
+    wrong: [
+      'Membalas pelaku lalu mengancamnya',
+      'Mengucilkan pelaku lalu menyebarkannya',
+      'Diam agar masalah cepat selesai',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-07',
+    subject: 'Stop Bullying',
+    question: 'Korban dipukul lalu memukul balik. Mengapa tindakan balasan tersebut kurang tepat menurut materi?',
+    correct: 'Karena dapat memperbesar masalah',
+    wrong: [
+      'Karena korban harus selalu diam',
+      'Karena pelaku selalu benar',
+      'Karena bullying hanya boleh dilaporkan lewat media sosial',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-08',
+    subject: 'Stop Bullying',
+    question: 'Pilih tindakan yang paling aman ketika melihat teman dipukul.',
+    correct: 'Segera melapor kepada guru atau orang dewasa',
+    wrong: [
+      'Ikut memukul pelaku',
+      'Menonton sampai selesai',
+      'Mengunggah videonya agar banyak orang tahu',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-09',
+    subject: 'Stop Bullying',
+    question: 'Mengucilkan dapat menjadi bullying sosial terutama karena ...',
+    correct: 'menyakiti melalui hubungan/pergaulan sosial',
+    wrong: [
+      'selalu terjadi di internet',
+      'selalu memakai kata-kata kasar',
+      'harus disertai pukulan',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-10',
+    subject: 'Stop Bullying',
+    question: 'Perhatikan pasangan berikut: (1) memukul–fisik, (2) mengejek–verbal, (3) mengucilkan–sosial, (4) ancaman di media sosial–cyberbullying. Pilih jawaban yang benar.',
+    correct: 'Semua pasangan benar',
+    wrong: [
+      '(1) dan (4) saja',
+      '(1), (2), dan (3) saja',
+      '(2) dan (4) saja',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-11',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. Sinta memakai julukan yang memang disukai temannya dan temannya tidak merasa tersakiti. Kesimpulan paling hati-hati adalah ...',
+    correct: 'Belum tentu bullying; perlu melihat unsur menyakiti, kesengajaan, dan pengulangan',
+    wrong: [
+      'Pasti bullying karena ada julukan',
+      'Pasti bullying karena dilakukan di depan teman',
+      'Pasti cyberbullying',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-12',
+    subject: 'Stop Bullying',
+    question: 'Awalnya sebuah ejekan dianggap bercanda. Setelah korban mengatakan sakit hati, pelaku tetap mengulanginya setiap hari. Unsur yang paling memperkuat bahwa tindakan itu merupakan bullying adalah ...',
+    correct: 'Dilakukan sengaja, berulang, dan tetap menyakiti',
+    wrong: [
+      'Dilakukan di sekolah',
+      'Ada penonton',
+      'Teman-teman tertawa',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-13',
+    subject: 'Stop Bullying',
+    question: 'Pilih SEMUA dampak yang sesuai dengan materi.',
+    correct: 'Semua benar',
+    wrong: [
+      'Malu',
+      'Tidak percaya diri',
+      'Trauma',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-14',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa sengaja tidak diajak bermain selama berhari-hari. Ia mulai merasa tidak diterima dan kehilangan percaya diri. Hubungan sebab-akibat yang paling tepat adalah ...',
+    correct: 'Bullying sosial → dampak pada perasaan/kepercayaan diri',
+    wrong: [
+      'Cyberbullying → dampak fisik',
+      'Bullying fisik → dampak sosial',
+      'Candaan → pasti membuat percaya diri',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-15',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. “Tidak ada pukulan, jadi tidak ada bullying.” Pernyataan ini ...',
+    correct: 'Kurang tepat karena bullying juga dapat berupa verbal, sosial, dan cyberbullying',
+    wrong: [
+      'Benar',
+      'Benar jika dilakukan di sekolah',
+      'Benar jika korban tidak menangis',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-16',
+    subject: 'Stop Bullying',
+    question: 'Manakah pilihan yang paling mencerminkan “menjadi teman yang baik” sekaligus mencegah bullying?',
+    correct: 'Menolong dan menyayangi teman tanpa mengejek atau mengucilkan',
+    wrong: [
+      'Memilih teman hanya dari kelompok sendiri',
+      'Ikut mengejek agar dianggap kompak',
+      'Diam ketika melihat teman disakiti',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-17',
+    subject: 'Stop Bullying',
+    question: 'Seorang anak duduk sendirian karena sengaja tidak diajak bermain. Pilih tindakan yang paling tepat.',
+    correct: 'Mengajaknya bermain dan memperlakukannya dengan baik',
+    wrong: [
+      'Membiarkannya agar tidak ikut masalah',
+      'Bertanya siapa yang salah lalu ikut mengejek',
+      'Menjauh agar aman',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-18',
+    subject: 'Stop Bullying',
+    question: 'Pilih urutan tindakan yang paling sesuai ketika mengetahui cyberbullying: (1) tetap tenang, (2) membalas dengan hinaan, (3) melapor kepada orang dewasa, (4) menyebarkan tangkapan layar untuk mempermalukan pelaku.',
+    correct: '1 dan 3',
+    wrong: [
+      '2 dan 4',
+      '1, 2, dan 3',
+      'Semua benar',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-19',
+    subject: 'Stop Bullying',
+    question: 'Mengapa membalas bullying dengan bullying bukan solusi?',
+    correct: 'Karena dapat membuat masalah berlanjut dan menambah tindakan menyakiti',
+    wrong: [
+      'Karena korban tidak boleh bicara',
+      'Karena pelaku harus dibiarkan',
+      'Karena bullying hanya terjadi sekali',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-20',
+    subject: 'Stop Bullying',
+    question: 'Pilih kelompok tindakan yang seluruhnya sesuai dengan pesan “tak ada musuh, tak ada lawan, semua saling sayang dengan teman”.',
+    correct: 'Menolong, menyayangi, tidak mengejek, melapor jika melihat bullying',
+    wrong: [
+      'Mengejek, mengucilkan, membalas',
+      'Diam, membalas diam-diam, menghindar',
+      'Membela teman dengan memukul pelaku',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-21',
+    subject: 'Stop Bullying',
+    question: 'DIALOG. Dodi: “Eh, si pendek!” Rian: “Aku tidak suka dipanggil begitu.” Dodi: “Cuma bercanda.” Jika Dodi mengulanginya terus, pilihan paling tepat adalah ...',
+    correct: 'Bullying verbal',
+    wrong: [
+      'Bukan bullying karena Dodi menyebutnya bercanda',
+      'Bullying sosial karena ada dialog',
+      'Cyberbullying',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-22',
+    subject: 'Stop Bullying',
+    question: 'DIALOG. “Dasar bodoh! Kamu bikin kelompok kita kalah.” Ucapan sengaja diulang untuk merendahkan teman secara langsung. Ini termasuk ...',
+    correct: 'Verbal',
+    wrong: [
+      'Fisik',
+      'Sosial',
+      'Cyberbullying',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-23',
+    subject: 'Stop Bullying',
+    question: 'DIALOG. “Nama ayahmu lucu. Mulai sekarang aku panggil kamu dengan nama ayahmu!” Korban tampak malu. Jika dilakukan untuk menyakiti dan berulang, jenis yang paling tepat adalah ...',
+    correct: 'Verbal',
+    wrong: [
+      'Fisik',
+      'Sosial',
+      'Permainan biasa',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-24',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. Pernyataan mana yang PALING tepat?',
+    correct: 'Tidak semua candaan adalah bullying; konteks, kesengajaan, dampak, dan pengulangan perlu diperhatikan',
+    wrong: [
+      'Semua candaan adalah bullying',
+      'Candaan pasti bukan bullying',
+      'Jika teman tertawa, berarti tidak mungkin bullying',
+    ],
+    explanation: 'Perhatikan baik-baik: bullying dilihat dari unsur kesengajaan, pengulangan, dan rasa sakit yang dirasakan korban, bukan sekadar bentuk katanya.',
+  ),
+  _makeQuestion(
+    id: 'sb-25',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa diejek dengan julukan setiap hari meskipun sudah mengatakan tidak suka. Manakah dua ciri yang paling jelas terlihat?',
+    correct: 'Disengaja dan berulang',
+    wrong: [
+      'Lucu dan ramai',
+      'Singkat dan spontan',
+      'Tidak menyakiti dan disukai',
+    ],
+    explanation: 'Ini berkaitan dengan bullying verbal, yaitu menyakiti teman dengan kata-kata seperti ejekan atau julukan.',
+  ),
+  _makeQuestion(
+    id: 'sb-26',
+    subject: 'Stop Bullying',
+    question: 'Korban mulai tidak percaya diri. Pilih tindakan teman yang paling tepat DAN paling lengkap.',
+    correct: 'Memberi dukungan, mengajak bermain, dan membantu mencari orang dewasa',
+    wrong: [
+      'Menyuruh korban membalas',
+      'Menjauhi korban agar tidak tertular masalah',
+      'Menyebarkan cerita agar pelaku malu',
+    ],
+    explanation: 'Melapor kepada guru atau orang dewasa yang dipercaya adalah sikap paling aman saat melihat atau mengalami bullying.',
+  ),
+  _makeQuestion(
+    id: 'sb-27',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa melihat temannya dipukul tetapi takut. Ia tidak aman untuk melerai secara fisik. Pilihan terbaik adalah ...',
+    correct: 'Melapor kepada guru/orang dewasa',
+    wrong: [
+      'Membalas pelaku diam-diam',
+      'Ikut tertawa agar tidak menjadi sasaran',
+      'Mengunggah video',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-28',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. “Semua korban bullying pasti mengalami dampak yang sama.” Penilaian yang paling tepat adalah ...',
+    correct: 'Salah; dampak dapat berbeda, tetapi bullying dapat menyebabkan sakit hati, malu, tidak percaya diri, atau trauma',
+    wrong: [
+      'Benar',
+      'Benar jika bullying dilakukan berulang',
+      'Benar jika terjadi di sekolah',
+    ],
+    explanation: 'Perhatikan baik-baik: bullying dilihat dari unsur kesengajaan, pengulangan, dan rasa sakit yang dirasakan korban, bukan sekadar bentuk katanya.',
+  ),
+  _makeQuestion(
+    id: 'sb-29',
+    subject: 'Stop Bullying',
+    question: 'Teman-teman tidak memukul dan tidak mengejek seorang siswa, tetapi sengaja tidak mau berbicara dan tidak mengajaknya bermain. Yang harus diperhatikan adalah ...',
+    correct: 'Bisa merupakan bullying sosial',
+    wrong: [
+      'Pasti bullying fisik',
+      'Pasti cyberbullying',
+      'Semua tindakan diam pasti bullying',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-30',
+    subject: 'Stop Bullying',
+    question: 'Pelaku meminta maaf dan mulai mengubah perilakunya. Sikap yang sesuai semangat menjadi teman baik adalah ...',
+    correct: 'Menghargai perubahan sambil tetap menjaga batas dan hubungan yang baik',
+    wrong: [
+      'Tetap membalas agar kapok',
+      'Mengajak teman lain mengucilkannya',
+      'Menyebarkan kesalahannya',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-31',
+    subject: 'Stop Bullying',
+    question: 'Pilih pernyataan yang BENAR.',
+    correct: 'Bullying dapat berbentuk fisik, verbal, sosial, atau cyberbullying',
+    wrong: [
+      'Bullying hanya berupa pukulan',
+      'Ejekan tidak pernah termasuk bullying',
+      'Pengucilan tidak mungkin menyakiti',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-32',
+    subject: 'Stop Bullying',
+    question: 'Rina memaki Siska melalui media sosial hari ini dan mengulanginya besok. Jika diminta memilih alasan yang paling kuat menunjukkan unsur bullying, jawabannya adalah ...',
+    correct: 'Diulang dan menyakiti teman',
+    wrong: [
+      'Menggunakan telepon',
+      'Memiliki akun media sosial',
+      'Dilakukan malam hari',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-33',
+    subject: 'Stop Bullying',
+    question: 'Pilih situasi yang termasuk bullying sosial.',
+    correct: 'Sengaja membuat seorang teman tidak diterima dalam kelompok',
+    wrong: [
+      'Menendang kaki teman',
+      'Menghina suara teman',
+      'Mengirim ancaman melalui media sosial',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-34',
+    subject: 'Stop Bullying',
+    question: 'Pilih pernyataan yang membedakan bullying fisik dan verbal secara tepat.',
+    correct: 'Fisik berkaitan dengan tindakan terhadap tubuh; verbal menggunakan perkataan',
+    wrong: [
+      'Fisik selalu di internet; verbal selalu di sekolah',
+      'Fisik selalu bercanda; verbal selalu serius',
+      'Fisik tidak menyakitkan; verbal pasti lebih menyakitkan',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-35',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. Pernyataan yang paling tepat tentang cyberbullying dan bullying sosial adalah ...',
+    correct: 'Cyberbullying menggunakan media digital; bullying sosial berkaitan dengan pengucilan/perlakuan dalam hubungan sosial',
+    wrong: [
+      'Cyberbullying selalu berupa pukulan',
+      'Bullying sosial selalu menggunakan internet',
+      'Keduanya hanya berupa kekerasan fisik',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-36',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa menerima ejekan melalui media sosial lalu merasa malu dan tidak percaya diri. Pilih hubungan yang tepat.',
+    correct: 'Cyberbullying → dampak emosional',
+    wrong: [
+      'Bullying fisik → dampak emosional',
+      'Bullying sosial → selalu cyberbullying',
+      'Verbal langsung → fisik',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-37',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa melihat temannya dipukul dan ikut tertawa karena takut dianggap tidak kompak. Perubahan sikap yang paling tepat adalah ...',
+    correct: 'Tetap tenang dan melaporkan kejadian',
+    wrong: [
+      'Ikut memukul',
+      'Menyembunyikan kejadian',
+      'Mengajak teman lain mengejek',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-38',
+    subject: 'Stop Bullying',
+    question: 'Keberanian berkata “tidak” penting karena ...',
+    correct: 'Menunjukkan bahwa korban tidak menerima perlakuan yang menyakitkan',
+    wrong: [
+      'Membuat pelaku takut',
+      'Memulai pertengkaran',
+      'Membolehkan korban membalas',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-39',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa mengalami bullying sampai trauma. Pilih orang yang tepat untuk diberi tahu agar bantuan dapat diperoleh.',
+    correct: 'Guru atau orang dewasa yang dapat membantu',
+    wrong: [
+      'Pelaku saja',
+      'Tidak perlu siapa pun',
+      'Hanya teman yang ikut melakukan bullying',
+    ],
+    explanation: 'Melapor kepada guru atau orang dewasa yang dipercaya adalah sikap paling aman saat melihat atau mengalami bullying.',
+  ),
+  _makeQuestion(
+    id: 'sb-40',
+    subject: 'Stop Bullying',
+    question: 'Pilih kombinasi tindakan yang sesuai materi: (1) tetap tenang, (2) berani berkata tidak, (3) melapor kepada guru, (4) membalas dengan memukul.',
+    correct: '1, 2, dan 3',
+    wrong: [
+      '1 dan 4',
+      '2 dan 4',
+      '1, 2, 3, dan 4',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-41',
+    subject: 'Stop Bullying',
+    question: 'JEBakan situasi. Teman mengajakmu mengucilkan seseorang agar kelompokmu dianggap kompak. Keputusan yang paling sesuai adalah ...',
+    correct: 'Menolak dan tetap memperlakukan teman itu dengan baik',
+    wrong: [
+      'Ikut agar tidak dikucilkan',
+      'Mengajak lebih banyak orang agar tekanan lebih kuat',
+      'Mengejeknya agar kelompok tertawa',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-42',
+    subject: 'Stop Bullying',
+    question: 'Seorang siswa melihat teman tidak diajak bermain, lalu ia mengajak anak tersebut bergabung. Tindakan itu merupakan ...',
+    correct: 'Melawan bullying dengan cara positif',
+    wrong: [
+      'Bullying sosial',
+      'Bullying verbal',
+      'Cyberbullying',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-43',
+    subject: 'Stop Bullying',
+    question: 'Pilih situasi yang menunjukkan DUA jenis bullying sekaligus.',
+    correct: 'Mengejek teman lalu sengaja mengucilkannya dari kelompok',
+    wrong: [
+      'Memukul teman sekali',
+      'Mengajak teman bermain',
+      'Menolong teman yang jatuh',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-44',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. Seseorang mengejek temannya secara langsung, lalu mengulang hinaan yang sama melalui media sosial. Jenis yang terlibat adalah ...',
+    correct: 'Verbal dan cyberbullying',
+    wrong: [
+      'Hanya fisik',
+      'Sosial dan fisik',
+      'Hanya sosial',
+    ],
+    explanation: 'Ini berkaitan dengan cyberbullying, yaitu bullying yang dilakukan lewat internet atau media sosial.',
+  ),
+  _makeQuestion(
+    id: 'sb-45',
+    subject: 'Stop Bullying',
+    question: 'Seorang anak dijauhi teman-temannya dan juga diberi julukan yang menyakitkan. Pilih pasangan jenis dan dampak yang paling sesuai.',
+    correct: 'Sosial + verbal → dapat menyebabkan sakit hati dan tidak percaya diri',
+    wrong: [
+      'Fisik + cyberbullying → selalu membuat bangga',
+      'Cyberbullying → pasti tidak berdampak',
+      'Sosial → selalu membuat korban senang',
+    ],
+    explanation: 'Ini berkaitan dengan bullying sosial, yaitu menyakiti teman lewat hubungan pertemanan, misalnya dengan mengucilkan.',
+  ),
+  _makeQuestion(
+    id: 'sb-46',
+    subject: 'Stop Bullying',
+    question: '“Saling menolong dan sayang dengan teman” paling jelas bertentangan dengan perilaku ...',
+    correct: 'Bullying',
+    wrong: [
+      'Belajar',
+      'Bermain',
+      'Berdiskusi',
+    ],
+    explanation: 'Ingat untuk selalu bersikap saling menyayangi, tidak mengejek, tidak memukul, dan saling menolong dengan teman.',
+  ),
+  _makeQuestion(
+    id: 'sb-47',
+    subject: 'Stop Bullying',
+    question: 'Jika siswa tidak mengejek, tidak memukul, saling menolong, dan menyayangi teman, lingkungan sekolah diharapkan menjadi ...',
+    correct: 'Tempat yang lebih aman untuk berteman',
+    wrong: [
+      'Penuh persaingan dan permusuhan',
+      'Tempat mencari musuh',
+      'Tempat mengucilkan teman',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+  _makeQuestion(
+    id: 'sb-48',
+    subject: 'Stop Bullying',
+    question: 'JEBakan. Seorang korban takut menghadapi bullying sendirian. Pilihan yang paling sesuai dengan materi adalah ...',
+    correct: 'Melapor kepada guru atau orang dewasa yang dipercaya',
+    wrong: [
+      'Menyimpan semuanya sendiri',
+      'Membalas diam-diam',
+      'Menyebarkan masalah ke media sosial',
+    ],
+    explanation: 'Melapor kepada guru atau orang dewasa yang dipercaya adalah sikap paling aman saat melihat atau mengalami bullying.',
+  ),
+  _makeQuestion(
+    id: 'sb-49',
+    subject: 'Stop Bullying',
+    question: 'Pilih kesimpulan yang PALING lengkap dari pernyataan “Bullying dapat membuat seseorang merasa sakit, malu, tidak percaya diri, dan trauma.”',
+    correct: 'Bullying dapat memengaruhi kondisi perasaan korban sehingga perlu diperhatikan dan dilaporkan',
+    wrong: [
+      'Dampaknya hanya sesaat',
+      'Bullying membuat korban semakin percaya diri',
+      'Bullying tidak perlu dibicarakan',
+    ],
+    explanation: 'Melapor kepada guru atau orang dewasa yang dipercaya adalah sikap paling aman saat melihat atau mengalami bullying.',
+  ),
+  _makeQuestion(
+    id: 'sb-50',
+    subject: 'Stop Bullying',
+    question: 'SOAL PILIHAN GABUNGAN. Manakah rangkaian yang seluruhnya mencerminkan prinsip “tak ada musuh, tak ada lawan, semua saling sayang dengan teman”?\n(1) Menolong teman\n(2) Tidak mengejek atau memukul\n(3) Melapor ketika melihat bullying\n(4) Membalas agar pelaku jera',
+    correct: '(1), (2), dan (3)',
+    wrong: [
+      '(1) dan (2)',
+      '(2), (3), dan (4)',
+      'Semua benar',
+    ],
+    explanation: 'Ini berkaitan dengan bullying fisik, yaitu tindakan menyakiti tubuh teman secara sengaja dan berulang.',
+  ),
+];

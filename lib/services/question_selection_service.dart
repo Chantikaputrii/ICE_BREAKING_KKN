@@ -13,15 +13,37 @@ class QuestionSelectionService {
     required String studentName,
     String? topic,
   }) async {
-    final allQuestions =
+    final gradeQuestions =
         List<Question>.from(
       questionsByGrade[grade] ??
           const <Question>[],
     );
 
-    if (allQuestions.isEmpty) {
+    if (gradeQuestions.isEmpty) {
       return [];
     }
+
+    // Jika siswa memilih tema (mis. "Stop Bullying"),
+    // utamakan soal dengan subject yang sama dengan tema
+    // tersebut. Kalau belum ada soal untuk tema itu,
+    // gunakan seluruh bank soal kelas ini sebagai cadangan
+    // supaya siswa tetap bisa mengerjakan kuis.
+    final topicMatches = topic == null ||
+            topic.trim().isEmpty
+        ? const <Question>[]
+        : gradeQuestions
+            .where(
+              (question) =>
+                  question.subject
+                      .toLowerCase() ==
+                  topic.trim().toLowerCase(),
+            )
+            .toList();
+
+    final allQuestions =
+        topicMatches.isNotEmpty
+            ? topicMatches
+            : gradeQuestions;
 
     final preferences =
         await SharedPreferences.getInstance();

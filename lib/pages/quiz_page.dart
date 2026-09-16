@@ -41,7 +41,7 @@ class _QuizPageState extends State<QuizPage>
 
   int current = 0;
   int score = 0;
-  int seconds = 15;
+  int seconds = 20;
 
   int? selected;
 
@@ -154,7 +154,7 @@ class _QuizPageState extends State<QuizPage>
     if (!mounted) return;
 
     setState(() {
-      seconds = 15;
+      seconds = 20;
     });
 
     timer = Timer.periodic(
@@ -175,6 +175,10 @@ class _QuizPageState extends State<QuizPage>
             selected = null;
             feedbackCorrect = false;
           });
+
+          unawaited(
+            playSound(false),
+          );
 
           unawaited(
             showAnswerFeedback(false),
@@ -637,8 +641,7 @@ class _QuizHeader
           const EdgeInsets.all(16),
       decoration:
           BoxDecoration(
-        color: Colors.white
-            .withOpacity(.97),
+        color: Colors.white,
         borderRadius:
             BorderRadius.circular(
           25,
@@ -945,21 +948,9 @@ class _QuestionCard
     String subject,
   ) {
     switch (subject) {
-      case 'Matematika':
+      case 'Stop Bullying':
         return const Color(
-          0xFF4B7BEC,
-        );
-      case 'Bahasa Indonesia':
-        return const Color(
-          0xFFFF718F,
-        );
-      case 'IPA':
-        return const Color(
-          0xFF45C878,
-        );
-      case 'Logika':
-        return const Color(
-          0xFF9B7BEA,
+          0xFFFF6F91,
         );
       default:
         return const Color(
@@ -1139,8 +1130,7 @@ class _QuestionCard
             ),
             decoration:
                 BoxDecoration(
-              color: Colors.white
-                  .withOpacity(.97),
+              color: Colors.white,
               borderRadius:
                   BorderRadius.circular(
                 23,
@@ -1227,8 +1217,7 @@ class _AnswerOption
                 ? const Color(
                     0xFFFFEEEE,
                   )
-                : Colors.white
-                    .withOpacity(.97);
+                : Colors.white;
 
     return Padding(
       padding:
@@ -1618,54 +1607,96 @@ class _FeedbackCard
             0xFFEF6262,
           );
 
-    return Container(
-      width: 430,
-      constraints:
-          const BoxConstraints(
-        maxWidth: 430,
-      ),
-      margin:
-          const EdgeInsets.all(22),
-      padding:
-          const EdgeInsets.fromLTRB(
-        23,
-        24,
-        23,
-        26,
-      ),
-      decoration:
-          BoxDecoration(
-        gradient:
-            const LinearGradient(
-          begin:
-              Alignment.topCenter,
-          end:
-              Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            Color(0xFFF7FBFF),
-          ],
-        ),
-        borderRadius:
-            BorderRadius.circular(
-          32,
-        ),
-        border: Border.all(
-          color: Colors.white,
-          width: 3,
-        ),
-        boxShadow:
-            const [
-          BoxShadow(
-            color:
-                Color(0x45000000),
-            blurRadius: 32,
-            offset:
-                Offset(0, 13),
+    return LayoutBuilder(
+      builder:
+          (
+        context,
+        constraints,
+      ) {
+        final availableWidth =
+            constraints.maxWidth
+                    .isFinite
+                ? constraints
+                    .maxWidth
+                : MediaQuery.of(
+                        context,
+                      )
+                      .size
+                      .width;
+
+        final availableHeight =
+            constraints.maxHeight
+                    .isFinite
+                ? constraints
+                    .maxHeight
+                : MediaQuery.of(
+                        context,
+                      )
+                      .size
+                      .height;
+
+        final cardWidth =
+            availableWidth - 44 <
+                    430
+                ? availableWidth -
+                    44
+                : 430.0;
+
+        final cardMaxHeight =
+            availableHeight - 44;
+
+        return Container(
+          width: cardWidth,
+          constraints: BoxConstraints(
+            maxWidth: cardWidth,
+            maxHeight:
+                cardMaxHeight > 0
+                    ? cardMaxHeight
+                    : availableHeight,
           ),
-        ],
-      ),
-      child: Column(
+          margin:
+              const EdgeInsets.all(22),
+          padding:
+              const EdgeInsets.fromLTRB(
+            23,
+            24,
+            23,
+            26,
+          ),
+          decoration:
+              BoxDecoration(
+            gradient:
+                const LinearGradient(
+              begin:
+                  Alignment.topCenter,
+              end:
+                  Alignment.bottomCenter,
+              colors: [
+                Colors.white,
+                Color(0xFFF7FBFF),
+              ],
+            ),
+            borderRadius:
+                BorderRadius.circular(
+              32,
+            ),
+            border: Border.all(
+              color: Colors.white,
+              width: 3,
+            ),
+            boxShadow:
+                const [
+              BoxShadow(
+                color:
+                    Color(0x45000000),
+                blurRadius: 32,
+                offset:
+                    Offset(0, 13),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: Column(
         mainAxisSize:
             MainAxisSize.min,
         children: [
@@ -1830,7 +1861,10 @@ class _FeedbackCard
             ],
           ),
         ],
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

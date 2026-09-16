@@ -1,9 +1,52 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'grade_menu_page.dart';
 import 'material_page.dart';
 import 'ranking_page.dart';
 import 'school_ui.dart';
+
+// ============================================================
+// HELPER: GAMBAR ASSET + FALLBACK IKON
+// Kalau file asset belum ada / salah nama, aplikasi tidak crash,
+// tapi otomatis balik ke ikon bawaan Flutter.
+// ============================================================
+
+class AssetIcon extends StatelessWidget {
+  const AssetIcon({
+    super.key,
+    required this.asset,
+    required this.fallbackIcon,
+    required this.size,
+    this.fallbackColor = const Color(0xFF3F6FE8),
+    this.fit = BoxFit.contain,
+  });
+
+  final String asset;
+  final IconData fallbackIcon;
+  final double size;
+  final Color fallbackColor;
+  final BoxFit fit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      asset,
+      width: size,
+      height: size,
+      fit: fit,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(
+          fallbackIcon,
+          size: size * .8,
+          color: fallbackColor,
+        );
+      },
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -133,10 +176,12 @@ class _HomeContentState extends State<_HomeContent>
   void initState() {
     super.initState();
 
+    // Disamakan dengan Splash Screen: matahari membal pelan
+    // (bounce + rotate sedikit), bukan berputar penuh.
     _sunController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 18),
-    )..repeat();
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -245,8 +290,8 @@ class _HomeContentState extends State<_HomeContent>
                                     mainAxisSpacing: 18,
                                     childAspectRatio:
                                         columns == 1
-                                            ? 3.0
-                                            : 1.55,
+                                            ? 3.6
+                                            : 2.6,
                                   ),
                                   itemBuilder:
                                       (context, index) {
@@ -268,6 +313,10 @@ class _HomeContentState extends State<_HomeContent>
                             const SizedBox(height: 28),
 
                             const _FeatureSection(),
+
+                            const SizedBox(height: 20),
+
+                            const _GaleriSection(),
                           ],
                         ),
                       ),
@@ -285,6 +334,7 @@ class _HomeContentState extends State<_HomeContent>
 
 // ============================================================
 // LANGIT + AWAN + BURUNG + MATAHARI + LAHAN HIJAU
+// Matahari, awan, dan pohon SUDAH memakai gambar asset.
 // ============================================================
 
 class _SkyAndGardenDecoration extends StatefulWidget {
@@ -334,6 +384,10 @@ class _SkyAndGardenDecorationState
     final width = size.width;
     final height = size.height;
 
+    final sunSize = width < 600 ? 120.0 : 165.0;
+
+    final treeWidth = width < 600 ? 150.0 : 230.0;
+
     return IgnorePointer(
       child: Stack(
         clipBehavior: Clip.none,
@@ -363,7 +417,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // AWAN 1
+          // AWAN 1 (asset: AWAN 1.png)
           // ==================================================
 
           AnimatedBuilder(
@@ -381,12 +435,13 @@ class _SkyAndGardenDecorationState
               );
             },
             child: const _CloudDecoration(
-              scale: 1.15,
+              asset: 'assets/AWAN 1.png',
+              width: 230,
             ),
           ),
 
           // ==================================================
-          // AWAN 2
+          // AWAN 2 (asset: AWAN 2.png)
           // ==================================================
 
           AnimatedBuilder(
@@ -404,12 +459,13 @@ class _SkyAndGardenDecorationState
               );
             },
             child: const _CloudDecoration(
-              scale: .80,
+              asset: 'assets/AWAN 2.png',
+              width: 175,
             ),
           ),
 
           // ==================================================
-          // AWAN 3
+          // AWAN 3 (asset: AWAN 3.png)
           // ==================================================
 
           AnimatedBuilder(
@@ -427,7 +483,8 @@ class _SkyAndGardenDecorationState
               );
             },
             child: const _CloudDecoration(
-              scale: .62,
+              asset: 'assets/AWAN 3.png',
+              width: 140,
             ),
           ),
 
@@ -488,68 +545,48 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // MATAHARI
+          // MATAHARI (asset: Matahari.png)
+          // Posisi tetap seperti dashboard: pojok kanan atas.
+          // Animasi disamakan dengan Splash Screen (membal).
           // ==================================================
 
           Positioned(
-            top: 18,
-            right: width < 600 ? 20 : 55,
-            child: RotationTransition(
-              turns: widget.sunAnimation,
-              child: SizedBox(
-                width: width < 600 ? 85 : 110,
-                height: width < 600 ? 85 : 110,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ...List.generate(
-                      8,
-                      (index) {
-                        final angle =
-                            index * 3.14159265359 / 4;
+            top: 10,
+            right: width < 600 ? 10 : 40,
+            child: AnimatedBuilder(
+              animation: widget.sunAnimation,
+              builder: (context, child) {
+                final bounce = math.sin(
+                      widget.sunAnimation.value * math.pi,
+                    ) *
+                    8;
 
-                        return Transform.rotate(
-                          angle: angle,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Container(
-                              width: 7,
-                              height: width < 600 ? 19 : 25,
-                              decoration: BoxDecoration(
-                                color:
-                                    const Color(0xFFFFC83D),
-                                borderRadius:
-                                    BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Container(
-                      width: width < 600 ? 62 : 80,
-                      height: width < 600 ? 62 : 80,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFFFFE66D),
-                            Color(0xFFFFB82E),
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0x44FFB82E),
-                            blurRadius: 20,
-                            spreadRadius: 3,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                final rotate = math.sin(
+                      widget.sunAnimation.value * math.pi,
+                    ) *
+                    0.05;
+
+                return Transform.translate(
+                  offset: Offset(0, -bounce),
+                  child: Transform.rotate(
+                    angle: rotate,
+                    child: child,
+                  ),
+                );
+              },
+              child: Image.asset(
+                'assets/Matahari.png',
+                width: sunSize,
+                height: sunSize,
+                fit: BoxFit.contain,
+                errorBuilder:
+                    (context, error, stackTrace) {
+                  return Icon(
+                    Icons.wb_sunny_rounded,
+                    size: sunSize * .7,
+                    color: const Color(0xFFFFC83D),
+                  );
+                },
               ),
             ),
           ),
@@ -607,22 +644,26 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // POHON KECIL
+          // POHON — dibuat sama (pakai gambar pohon kiri) di
+          // kanan & kiri saja, tanpa pohon tengah.
+          // (asset: Gambar pohon 1.png)
           // ==================================================
 
           Positioned(
-            left: width < 600 ? 8 : 35,
-            bottom: height * .13,
+            left: width < 600 ? -10 : 10,
+            bottom: -6,
             child: _TreeDecoration(
-              scale: width < 600 ? .65 : .9,
+              asset: 'assets/Gambar pohon 1.png',
+              width: treeWidth,
             ),
           ),
 
           Positioned(
-            right: width < 600 ? 5 : 30,
-            bottom: height * .12,
+            right: width < 600 ? -10 : 10,
+            bottom: -6,
             child: _TreeDecoration(
-              scale: width < 600 ? .60 : .85,
+              asset: 'assets/Gambar pohon 1.png',
+              width: treeWidth * .95,
             ),
           ),
         ],
@@ -632,78 +673,64 @@ class _SkyAndGardenDecorationState
 }
 
 // ============================================================
-// CLOUD
+// CLOUD (pakai gambar asset seperti Splash Screen)
 // ============================================================
 
 class _CloudDecoration extends StatelessWidget {
   const _CloudDecoration({
-    required this.scale,
+    required this.asset,
+    required this.width,
   });
 
-  final double scale;
+  final String asset;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: scale,
-      alignment: Alignment.center,
-      child: SizedBox(
-        width: 170,
-        height: 75,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned(
-              bottom: 5,
-              left: 10,
-              right: 0,
-              child: Container(
-                height: 38,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .88),
-                  borderRadius: BorderRadius.circular(40),
-                ),
-              ),
+    return Image.asset(
+      asset,
+      width: width,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+        return SizedBox(
+          width: width,
+          height: width * .42,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .9),
+              borderRadius: BorderRadius.circular(60),
             ),
-            Positioned(
-              bottom: 17,
-              left: 25,
-              child: Container(
-                width: 55,
-                height: 55,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .92),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              left: 70,
-              child: Container(
-                width: 65,
-                height: 65,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .94),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 17,
-              right: 20,
-              child: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .90),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ============================================================
+// TREE (pakai gambar asset)
+// ============================================================
+
+class _TreeDecoration extends StatelessWidget {
+  const _TreeDecoration({
+    required this.asset,
+    required this.width,
+  });
+
+  final String asset;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      asset,
+      width: width,
+      fit: BoxFit.contain,
+      alignment: Alignment.bottomCenter,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) {
+        return const SizedBox.shrink();
+      },
     );
   }
 }
@@ -905,79 +932,7 @@ class _FlowerDecoration extends StatelessWidget {
 }
 
 // ============================================================
-// TREE
-// ============================================================
-
-class _TreeDecoration extends StatelessWidget {
-  const _TreeDecoration({
-    required this.scale,
-  });
-
-  final double scale;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: scale,
-      alignment: Alignment.bottomCenter,
-      child: SizedBox(
-        width: 100,
-        height: 150,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Container(
-              width: 17,
-              height: 72,
-              decoration: BoxDecoration(
-                color: const Color(0xFF8B5A38),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            Positioned(
-              top: 4,
-              child: Container(
-                width: 78,
-                height: 78,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF58BD5A),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 26,
-              left: 0,
-              child: Container(
-                width: 58,
-                height: 58,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF4DAD52),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 27,
-              right: 0,
-              child: Container(
-                width: 58,
-                height: 58,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF69C961),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// HEADER
+// HEADER (ikon pakai asset "Gambar anak anak sd.png")
 // ============================================================
 
 class _Header extends StatelessWidget {
@@ -990,6 +945,7 @@ class _Header extends StatelessWidget {
         Container(
           width: 62,
           height: 62,
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -1001,10 +957,10 @@ class _Header extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.school_rounded,
-            size: 34,
-            color: Color(0xFF3F6FE8),
+          child: const AssetIcon(
+            asset: 'assets/Gambar anak anak sd.png',
+            fallbackIcon: Icons.school_rounded,
+            size: 50,
           ),
         ),
 
@@ -1036,33 +992,13 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .92),
-            shape: BoxShape.circle,
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x12000000),
-                blurRadius: 12,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.notifications_none_rounded,
-            color: Color(0xFF3F6FE8),
-            size: 23,
-          ),
-        ),
       ],
     );
   }
 }
 
 // ============================================================
-// WELCOME CARD
+// WELCOME CARD (ilustrasi pakai asset "Gambar anak sd.png")
 // ============================================================
 
 class _WelcomeCard extends StatelessWidget {
@@ -1173,8 +1109,9 @@ class _WelcomeCard extends StatelessWidget {
               const SizedBox(width: 30),
 
               Container(
-                width: 150,
-                height: 120,
+                width: 160,
+                height: 130,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
@@ -1195,29 +1132,31 @@ class _WelcomeCard extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Positioned(
-                      top: 12,
-                      right: 16,
+                      top: 6,
+                      right: 10,
                       child: Text(
                         '⭐',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                         ),
                       ),
                     ),
                     Positioned(
-                      bottom: 13,
-                      left: 18,
+                      bottom: 8,
+                      left: 10,
                       child: Text(
                         '✨',
                         style: TextStyle(
-                          fontSize: 19,
+                          fontSize: 17,
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.auto_stories_rounded,
-                      size: 65,
-                      color: Color(0xFF3F6FE8),
+                    AssetIcon(
+                      asset:
+                          'assets/Gambar anak sd.png',
+                      fallbackIcon:
+                          Icons.auto_stories_rounded,
+                      size: 112,
                     ),
                   ],
                 ),
@@ -1231,7 +1170,7 @@ class _WelcomeCard extends StatelessWidget {
 }
 
 // ============================================================
-// GRADE CARD
+// GRADE CARD (ikon pakai asset "Kelas 1.png" s/d "Kelas 6.png")
 // ============================================================
 
 class _GradeCard extends StatelessWidget {
@@ -1256,7 +1195,10 @@ class _GradeCard extends StatelessWidget {
     return colors[(grade - 1) % colors.length];
   }
 
-  IconData get gradeIcon {
+  // Nama file mengikuti isi folder assets: "Kelas 1.png" dst.
+  String get gradeAsset => 'assets/Kelas $grade.png';
+
+  IconData get fallbackIcon {
     const icons = [
       Icons.palette_rounded,
       Icons.calculate_rounded,
@@ -1287,10 +1229,13 @@ class _GradeCard extends StatelessWidget {
     return PressableCard(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 13,
+          vertical: 12,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .97),
-          borderRadius: BorderRadius.circular(26),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: cardColor.withValues(alpha: .20),
             width: 2,
@@ -1298,21 +1243,22 @@ class _GradeCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: cardColor.withValues(alpha: .13),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
             const BoxShadow(
               color: Color(0x10000000),
-              blurRadius: 8,
-              offset: Offset(0, 3),
+              blurRadius: 6,
+              offset: Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 62,
+              height: 62,
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -1323,25 +1269,31 @@ class _GradeCard extends StatelessWidget {
                   ],
                 ),
                 borderRadius:
-                    BorderRadius.circular(20),
+                    BorderRadius.circular(18),
               ),
               child: Stack(
+                clipBehavior: Clip.none,
                 alignment: Alignment.center,
                 children: [
-                  Icon(
-                    gradeIcon,
-                    size: 28,
-                    color: cardColor,
+                  AssetIcon(
+                    asset: gradeAsset,
+                    fallbackIcon: fallbackIcon,
+                    fallbackColor: cardColor,
+                    size: 50,
                   ),
                   Positioned(
-                    right: 5,
-                    top: 4,
+                    right: -4,
+                    top: -4,
                     child: Container(
-                      width: 19,
-                      height: 19,
+                      width: 20,
+                      height: 20,
                       decoration: BoxDecoration(
                         color: cardColor,
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
                       ),
                       child: Center(
                         child: Text(
@@ -1360,7 +1312,7 @@ class _GradeCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 15),
+            const SizedBox(width: 12),
 
             Expanded(
               child: Column(
@@ -1372,20 +1324,20 @@ class _GradeCard extends StatelessWidget {
                   Text(
                     'Kelas $grade SD',
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF314566),
                     ),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
 
                   Text(
                     subtitle,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF71839A),
                     ),
@@ -1394,18 +1346,18 @@ class _GradeCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
 
             Container(
-              width: 38,
-              height: 38,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
                 color: cardColor.withValues(alpha: .11),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.arrow_forward_rounded,
-                size: 20,
+                size: 17,
                 color: cardColor,
               ),
             ),
@@ -1417,7 +1369,7 @@ class _GradeCard extends StatelessWidget {
 }
 
 // ============================================================
-// FEATURE SECTION
+// FEATURE SECTION (ikon pakai asset)
 // ============================================================
 
 class _FeatureSection extends StatelessWidget {
@@ -1481,19 +1433,28 @@ class _FeatureSection extends StatelessWidget {
                 return const Column(
                   children: [
                     _FeatureItem(
-                      icon: Icons.menu_book_rounded,
+                      asset:
+                          'assets/Gambar anak sd lagi.png',
+                      fallbackIcon:
+                          Icons.menu_book_rounded,
                       title: 'Belajar',
                       color: Color(0xFF3F6FE8),
                     ),
                     SizedBox(height: 14),
                     _FeatureItem(
-                      icon: Icons.sports_esports_rounded,
+                      asset:
+                          'assets/anak sd tolong menolong.png',
+                      fallbackIcon:
+                          Icons.sports_esports_rounded,
                       title: 'Bermain',
                       color: Color(0xFF55C98A),
                     ),
                     SizedBox(height: 14),
                     _FeatureItem(
-                      icon: Icons.emoji_events_rounded,
+                      asset:
+                          'assets/anak sd angkat tangan.png',
+                      fallbackIcon:
+                          Icons.emoji_events_rounded,
                       title: 'Berprestasi',
                       color: Color(0xFFFFB84D),
                     ),
@@ -1506,17 +1467,26 @@ class _FeatureSection extends StatelessWidget {
                     MainAxisAlignment.spaceEvenly,
                 children: [
                   _FeatureItem(
-                    icon: Icons.menu_book_rounded,
+                    asset:
+                        'assets/Gambar anak sd lagi.png',
+                    fallbackIcon:
+                        Icons.menu_book_rounded,
                     title: 'Belajar',
                     color: Color(0xFF3F6FE8),
                   ),
                   _FeatureItem(
-                    icon: Icons.sports_esports_rounded,
+                    asset:
+                        'assets/anak sd tolong menolong.png',
+                    fallbackIcon:
+                        Icons.sports_esports_rounded,
                     title: 'Bermain',
                     color: Color(0xFF55C98A),
                   ),
                   _FeatureItem(
-                    icon: Icons.emoji_events_rounded,
+                    asset:
+                        'assets/anak sd angkat tangan.png',
+                    fallbackIcon:
+                        Icons.emoji_events_rounded,
                     title: 'Berprestasi',
                     color: Color(0xFFFFB84D),
                   ),
@@ -1531,17 +1501,184 @@ class _FeatureSection extends StatelessWidget {
 }
 
 // ============================================================
+// GALERI SEKOLAH
+// Menampilkan sisa gambar asset supaya semua ilustrasi terpakai.
+// ============================================================
+
+class _GaleriSection extends StatelessWidget {
+  const _GaleriSection();
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      _GaleriItem(
+        asset: 'assets/Gambar guru l.png',
+        label: 'Pak Guru',
+        color: Color(0xFF3F6FE8),
+      ),
+      _GaleriItem(
+        asset: 'assets/Gambar guru p.png',
+        label: 'Bu Guru',
+        color: Color(0xFFFF718F),
+      ),
+      _GaleriItem(
+        asset: 'assets/Anak Sd Cowok.png',
+        label: 'Teman Cowok',
+        color: Color(0xFF36B8C9),
+      ),
+      _GaleriItem(
+        asset: 'assets/Anak Sd Cewek.png',
+        label: 'Teman Cewek',
+        color: Color(0xFF9A7BE3),
+      ),
+      _GaleriItem(
+        asset: 'assets/Naik bus.png',
+        label: 'Berangkat Sekolah',
+        color: Color(0xFFFFB84D),
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFFFFF),
+            Color(0xFFFFFBF2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x15000000),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Kenalan Dulu Yuk! 🙌',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF283B63),
+            ),
+          ),
+
+          const SizedBox(height: 7),
+
+          const Text(
+            'Ini teman-teman dan guru yang menemani kamu belajar.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF71839A),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          const Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 16,
+            runSpacing: 16,
+            children: items,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GaleriItem extends StatelessWidget {
+  const _GaleriItem({
+    required this.asset,
+    required this.label,
+    required this.color,
+  });
+
+  final String asset;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 120,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 110,
+            height: 110,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: .16),
+                  color.withValues(alpha: .06),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: color.withValues(alpha: .18),
+                width: 2,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: AssetIcon(
+                asset: asset,
+                fallbackIcon: Icons.person_rounded,
+                fallbackColor: color,
+                size: 94,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF526B84),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
 // FEATURE ITEM
 // ============================================================
 
 class _FeatureItem extends StatelessWidget {
   const _FeatureItem({
-    required this.icon,
+    required this.asset,
+    required this.fallbackIcon,
     required this.title,
     required this.color,
   });
 
-  final IconData icon;
+  final String asset;
+  final IconData fallbackIcon;
   final String title;
   final Color color;
 
@@ -1551,8 +1688,9 @@ class _FeatureItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 64,
+          height: 64,
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -1563,12 +1701,13 @@ class _FeatureItem extends StatelessWidget {
               ],
             ),
             borderRadius:
-                BorderRadius.circular(17),
+                BorderRadius.circular(18),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 26,
+          child: AssetIcon(
+            asset: asset,
+            fallbackIcon: fallbackIcon,
+            fallbackColor: color,
+            size: 52,
           ),
         ),
 

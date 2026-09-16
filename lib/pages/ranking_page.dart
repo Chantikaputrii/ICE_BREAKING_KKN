@@ -85,26 +85,14 @@ class _RankingPageState
   Widget build(
     BuildContext context,
   ) {
-    final title =
-        widget.grade == null
-            ? 'Peringkat'
-            : 'Peringkat Kelas ${widget.grade}';
-
     return Scaffold(
       backgroundColor:
           const Color(0xFFEAF7FF),
 
       appBar: AppBar(
-        title: Text(
-          title,
-          style:
-              const TextStyle(
-            fontWeight:
-                FontWeight.w900,
-            color:
-                Color(0xFF283B63),
-          ),
-        ),
+        // Tulisan judul "Peringkat" di pojok kiri atas
+        // dihapus sesuai revisi (sudah ada judul yang sama
+        // di dalam body lewat _RankingHeader).
         backgroundColor:
             Colors.transparent,
         foregroundColor:
@@ -798,8 +786,7 @@ class _RankingCard
       ),
       decoration:
           BoxDecoration(
-        color: Colors.white
-            .withOpacity(.97),
+        color: Colors.white,
         borderRadius:
             BorderRadius.circular(
           23,

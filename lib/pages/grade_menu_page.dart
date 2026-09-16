@@ -15,7 +15,7 @@ class GradeMenuPage extends StatelessWidget {
 
   final int grade;
 
-  bool get hasTopicSelection => grade == 5 || grade == 6;
+  bool get hasTopicSelection => true;
 
   Future<void> _start(
     BuildContext context, {
@@ -107,221 +107,254 @@ class GradeMenuPage extends StatelessWidget {
             horizontal: 24,
             vertical: 24,
           ),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              25,
-              24,
-              20,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x30000000),
-                  blurRadius: 30,
-                  offset: Offset(0, 14),
+          child: Center(
+            child: ConstrainedBox(
+              // Dibatasi supaya di layar lebar (web/desktop)
+              // dialognya tidak melar hampir sepanjang layar.
+              constraints: const BoxConstraints(
+                maxWidth: 380,
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(
+                  22,
+                  24,
+                  22,
+                  18,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF65CFFF),
-                        Color(0xFF4B7BEC),
-                      ],
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x30000000),
+                      blurRadius: 30,
+                      offset: Offset(0, 14),
                     ),
-                    borderRadius: BorderRadius.circular(23),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x334B7BEC),
-                        blurRadius: 18,
-                        offset: Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.person_rounded,
-                    color: Colors.white,
-                    size: 38,
-                  ),
+                  ],
                 ),
-
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Siapa nama kamu? 👋',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF283B63),
-                  ),
-                ),
-
-                const SizedBox(height: 7),
-
-                const Text(
-                  'Tulis namamu sebelum memulai petualangan kuis.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.45,
-                    color: Color(0xFF7B8CA0),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  textCapitalization:
-                      TextCapitalization.words,
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan nama kamu',
-                    prefixIcon: const Icon(
-                      Icons.person_outline_rounded,
-                      color: Color(0xFF4B7BEC),
-                    ),
-                    filled: true,
-                    fillColor: const Color(0xFFF4FAFF),
-                    contentPadding:
-                        const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 17,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(18),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder:
-                        OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(18),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFDCEAF6),
-                        width: 1.3,
-                      ),
-                    ),
-                    focusedBorder:
-                        OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(18),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF4B7BEC),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  onSubmitted: (_) {
-                    final value =
-                        controller.text.trim();
-
-                    if (value.isNotEmpty) {
-                      Navigator.pop(
-                        dialogContext,
-                        value,
-                      );
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 18),
-
-                Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pop(
-                            dialogContext,
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              const Color(0xFF71839A),
-                          side: const BorderSide(
-                            color: Color(0xFFD8E6F1),
-                          ),
-                          minimumSize:
-                              const Size(0, 52),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              16,
-                            ),
-                          ),
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF65CFFF),
+                            Color(0xFF4B7BEC),
+                          ],
                         ),
-                        child: const Text(
-                          'Batal',
-                          style: TextStyle(
-                            fontWeight:
-                                FontWeight.w800,
+                        borderRadius:
+                            BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x334B7BEC),
+                            blurRadius: 16,
+                            offset: Offset(0, 7),
                           ),
-                        ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.person_rounded,
+                        color: Colors.white,
+                        size: 32,
                       ),
                     ),
 
-                    const SizedBox(width: 12),
+                    const SizedBox(height: 14),
 
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () {
-                          final value =
-                              controller.text.trim();
+                    const Text(
+                      'Siapa nama kamu? 👋',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF283B63),
+                      ),
+                    ),
 
-                          if (value.isEmpty) {
-                            return;
-                          }
+                    const SizedBox(height: 5),
 
+                    const Text(
+                      'Tulis namamu sebelum memulai petualangan kuis.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: Color(0xFF7B8CA0),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      textCapitalization:
+                          TextCapitalization.words,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF283B63),
+                      ),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: 'Masukkan nama kamu',
+                        hintStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFA9B7C7),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.person_outline_rounded,
+                          color: Color(0xFF4B7BEC),
+                          size: 20,
+                        ),
+                        prefixIconConstraints:
+                            const BoxConstraints(
+                          minWidth: 42,
+                          minHeight: 20,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF4FAFF),
+                        contentPadding:
+                            const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 13,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder:
+                            OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFDCEAF6),
+                            width: 1.2,
+                          ),
+                        ),
+                        focusedBorder:
+                            OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF4B7BEC),
+                            width: 1.8,
+                          ),
+                        ),
+                      ),
+                      onSubmitted: (_) {
+                        final value =
+                            controller.text.trim();
+
+                        if (value.isNotEmpty) {
                           Navigator.pop(
                             dialogContext,
                             value,
                           );
-                        },
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                        ),
-                        label: const Text(
-                          'Mulai',
-                        ),
-                        style:
-                            FilledButton.styleFrom(
-                          backgroundColor:
-                              const Color(0xFF4B7BEC),
-                          foregroundColor:
-                              Colors.white,
-                          minimumSize:
-                              const Size(0, 52),
-                          elevation: 3,
-                          shadowColor:
-                              const Color(0x334B7BEC),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              16,
+                        }
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pop(
+                                dialogContext,
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor:
+                                  const Color(0xFF71839A),
+                              side: const BorderSide(
+                                color: Color(0xFFD8E6F1),
+                              ),
+                              minimumSize:
+                                  const Size(0, 46),
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                  14,
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'Batal',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight:
+                                    FontWeight.w800,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          flex: 2,
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              final value =
+                                  controller.text.trim();
+
+                              if (value.isEmpty) {
+                                return;
+                              }
+
+                              Navigator.pop(
+                                dialogContext,
+                                value,
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 19,
+                            ),
+                            label: const Text(
+                              'Mulai',
+                              style: TextStyle(
+                                fontSize: 13,
+                              ),
+                            ),
+                            style:
+                                FilledButton.styleFrom(
+                              backgroundColor:
+                                  const Color(0xFF4B7BEC),
+                              foregroundColor:
+                                  Colors.white,
+                              minimumSize:
+                                  const Size(0, 46),
+                              elevation: 3,
+                              shadowColor:
+                                  const Color(0x334B7BEC),
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                  14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -345,7 +378,12 @@ class GradeMenuPage extends StatelessWidget {
             horizontal: 24,
             vertical: 24,
           ),
-          child: Container(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 380,
+              ),
+              child: Container(
             padding: const EdgeInsets.fromLTRB(
               22,
               24,
@@ -461,6 +499,8 @@ class GradeMenuPage extends StatelessWidget {
                 ),
               ],
             ),
+              ),
+            ),
           ),
         );
       },
@@ -499,6 +539,20 @@ class GradeMenuPage extends StatelessWidget {
                 80,
               ),
               children: [
+                // Header (tombol kembali + logo + judul kelas)
+                // sengaja DILEPAS dari ConstrainedBox(maxWidth: 900)
+                // di bawah supaya menempel ke pojok kiri layar,
+                // bukan ikut ke tengah saat layar lebar (web/desktop).
+                Align(
+                  alignment:
+                      Alignment.centerLeft,
+                  child: _Header(
+                    grade: grade,
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
                 Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
@@ -506,19 +560,12 @@ class GradeMenuPage extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _Header(
-                          grade: grade,
-                        ),
-
-                        const SizedBox(height: 25),
-
                         Container(
                           width: double.infinity,
                           padding:
                               const EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                            color: Colors.white
-                                .withOpacity(.97),
+                            color: Colors.white,
                             borderRadius:
                                 BorderRadius.circular(
                               30,
@@ -539,8 +586,12 @@ class GradeMenuPage extends StatelessWidget {
                           child: Column(
                             children: [
                               Container(
-                                width: 84,
-                                height: 84,
+                                width: 100,
+                                height: 100,
+                                padding:
+                                    const EdgeInsets.all(
+                                  12,
+                                ),
                                 decoration: BoxDecoration(
                                   gradient:
                                       const LinearGradient(
@@ -555,7 +606,7 @@ class GradeMenuPage extends StatelessWidget {
                                   ),
                                   borderRadius:
                                       BorderRadius.circular(
-                                    27,
+                                    30,
                                   ),
                                   boxShadow: const [
                                     BoxShadow(
@@ -567,15 +618,30 @@ class GradeMenuPage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                child: Icon(
-                                  hasTopicSelection
-                                      ? Icons
-                                          .category_rounded
-                                      : Icons
-                                          .quiz_rounded,
-                                  size: 43,
-                                  color:
-                                      Colors.white,
+                                // Ikon geometris diganti gambar
+                                // ilustrasi "Kelas N" dari assets
+                                // supaya senada dengan kartu di
+                                // dashboard. Kalau file belum ada,
+                                // otomatis balik ke ikon lama.
+                                child: Image.asset(
+                                  'assets/Kelas $grade.png',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (
+                                    context,
+                                    error,
+                                    stackTrace,
+                                  ) {
+                                    return Icon(
+                                      hasTopicSelection
+                                          ? Icons
+                                              .category_rounded
+                                          : Icons
+                                              .quiz_rounded,
+                                      size: 43,
+                                      color:
+                                          Colors.white,
+                                    );
+                                  },
                                 ),
                               ),
 
@@ -600,7 +666,7 @@ class GradeMenuPage extends StatelessWidget {
 
                               Text(
                                 hasTopicSelection
-                                    ? 'Untuk kelas 5 dan 6, pilih tema soal terlebih dahulu.'
+                                    ? 'Untuk kelas $grade, pilih tema soal terlebih dahulu.'
                                     : 'Masukkan nama dan mulai menjawab soal sesuai tingkat kelasmu.',
                                 textAlign:
                                     TextAlign.center,
@@ -1142,8 +1208,7 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool topic =
-        grade == 5 || grade == 6;
+    const bool topic = true;
 
     return Container(
       width: double.infinity,
