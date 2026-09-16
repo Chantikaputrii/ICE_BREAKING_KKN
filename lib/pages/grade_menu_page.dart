@@ -40,9 +40,28 @@ class GradeMenuPage extends StatelessWidget {
 
     if (questions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Soal untuk kelas ini belum tersedia.',
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF314566),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: const Row(
+            children: [
+              Icon(
+                Icons.info_rounded,
+                color: Color(0xFFFFD45A),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Soal untuk kelas ini belum tersedia.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -82,71 +101,229 @@ class GradeMenuPage extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(
-            'Siapa nama kamu?',
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF243B5A),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(
+              24,
+              25,
+              24,
+              20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x30000000),
+                  blurRadius: 30,
+                  offset: Offset(0, 14),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF65CFFF),
+                        Color(0xFF4B7BEC),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(23),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x334B7BEC),
+                        blurRadius: 18,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.person_rounded,
+                    color: Colors.white,
+                    size: 38,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                const Text(
+                  'Siapa nama kamu? 👋',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF283B63),
+                  ),
+                ),
+
+                const SizedBox(height: 7),
+
+                const Text(
+                  'Tulis namamu sebelum memulai petualangan kuis.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.45,
+                    color: Color(0xFF7B8CA0),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  textCapitalization:
+                      TextCapitalization.words,
+                  decoration: InputDecoration(
+                    hintText: 'Masukkan nama kamu',
+                    prefixIcon: const Icon(
+                      Icons.person_outline_rounded,
+                      color: Color(0xFF4B7BEC),
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFFF4FAFF),
+                    contentPadding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 17,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(18),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder:
+                        OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFDCEAF6),
+                        width: 1.3,
+                      ),
+                    ),
+                    focusedBorder:
+                        OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF4B7BEC),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  onSubmitted: (_) {
+                    final value =
+                        controller.text.trim();
+
+                    if (value.isNotEmpty) {
+                      Navigator.pop(
+                        dialogContext,
+                        value,
+                      );
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 18),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            dialogContext,
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor:
+                              const Color(0xFF71839A),
+                          side: const BorderSide(
+                            color: Color(0xFFD8E6F1),
+                          ),
+                          minimumSize:
+                              const Size(0, 52),
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              16,
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          'Batal',
+                          style: TextStyle(
+                            fontWeight:
+                                FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () {
+                          final value =
+                              controller.text.trim();
+
+                          if (value.isEmpty) {
+                            return;
+                          }
+
+                          Navigator.pop(
+                            dialogContext,
+                            value,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.play_arrow_rounded,
+                        ),
+                        label: const Text(
+                          'Mulai',
+                        ),
+                        style:
+                            FilledButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF4B7BEC),
+                          foregroundColor:
+                              Colors.white,
+                          minimumSize:
+                              const Size(0, 52),
+                          elevation: 3,
+                          shadowColor:
+                              const Color(0x334B7BEC),
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            textCapitalization:
-                TextCapitalization.words,
-            decoration: InputDecoration(
-              hintText: 'Masukkan nama kamu',
-              prefixIcon: const Icon(
-                Icons.person_rounded,
-              ),
-              border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(16),
-              ),
-            ),
-            onSubmitted: (_) {
-              final value =
-                  controller.text.trim();
-
-              if (value.isNotEmpty) {
-                Navigator.pop(
-                  dialogContext,
-                  value,
-                );
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(
-                  dialogContext,
-                );
-              },
-              child: const Text(
-                'Batal',
-              ),
-            ),
-            FilledButton(
-              onPressed: () {
-                final value =
-                    controller.text.trim();
-
-                if (value.isEmpty) {
-                  return;
-                }
-
-                Navigator.pop(
-                  dialogContext,
-                  value,
-                );
-              },
-              child: const Text(
-                'Mulai Kuis',
-              ),
-            ),
-          ],
         );
       },
     );
@@ -162,59 +339,129 @@ class GradeMenuPage extends StatelessWidget {
     final topic = await showDialog<String>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(
-            'Pilih Tema Kuis',
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF243B5A),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(
+              22,
+              24,
+              22,
+              20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x30000000),
+                  blurRadius: 30,
+                  offset: Offset(0, 14),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFFFFD96B),
+                        Color(0xFFFFB84D),
+                      ],
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(23),
+                  ),
+                  child: const Icon(
+                    Icons.category_rounded,
+                    color: Colors.white,
+                    size: 37,
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                const Text(
+                  'Pilih Tema Kuis 🎯',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF283B63),
+                  ),
+                ),
+
+                const SizedBox(height: 7),
+
+                const Text(
+                  'Pilih tema yang ingin kamu kerjakan terlebih dahulu.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF7B8CA0),
+                    height: 1.45,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                _TopicButton(
+                  icon: Icons.favorite_rounded,
+                  color: const Color(0xFFFF6F91),
+                  title: 'Stop Bullying',
+                  subtitle:
+                      'Belajar tentang sikap saling menghargai',
+                  onTap: () {
+                    Navigator.pop(
+                      dialogContext,
+                      'Stop Bullying',
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                _TopicButton(
+                  icon: Icons.eco_rounded,
+                  color: const Color(0xFF45C878),
+                  title: 'Adiwiyata',
+                  subtitle:
+                      'Belajar tentang lingkungan sekolah',
+                  onTap: () {
+                    Navigator.pop(
+                      dialogContext,
+                      'Adiwiyata',
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                    },
+                    child: const Text(
+                      'Nanti saja',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          content: const Text(
-            'Pilih tema yang ingin kamu kerjakan terlebih dahulu.',
-            style: TextStyle(
-              color: Color(0xFF71869A),
-              height: 1.4,
-            ),
-          ),
-          actionsPadding:
-              const EdgeInsets.fromLTRB(
-            18,
-            0,
-            18,
-            18,
-          ),
-          actions: [
-            _TopicButton(
-              icon: Icons.favorite_rounded,
-              color: const Color(0xFFFF6F91),
-              title: 'Stop Bullying',
-              subtitle:
-                  'Belajar tentang sikap saling menghargai',
-              onTap: () {
-                Navigator.pop(
-                  dialogContext,
-                  'Stop Bullying',
-                );
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            _TopicButton(
-              icon: Icons.eco_rounded,
-              color: const Color(0xFF45C878),
-              title: 'Adiwiyata',
-              subtitle:
-                  'Belajar tentang lingkungan sekolah',
-              onTap: () {
-                Navigator.pop(
-                  dialogContext,
-                  'Adiwiyata',
-                );
-              },
-            ),
-          ],
         );
       },
     );
@@ -223,9 +470,6 @@ class GradeMenuPage extends StatelessWidget {
       return;
     }
 
-    // Sesuai instruksi:
-    // pilih tema terlebih dahulu,
-    // baru muncul pengisian nama.
     await _start(
       context,
       topic: topic,
@@ -239,13 +483,14 @@ class GradeMenuPage extends StatelessWidget {
         child: SafeArea(
           child: Scrollbar(
             thumbVisibility:
-                MediaQuery.sizeOf(context).width >= 900,
+                MediaQuery.sizeOf(context).width >=
+                    900,
             trackVisibility:
-                MediaQuery.sizeOf(context).width >= 900,
+                MediaQuery.sizeOf(context).width >=
+                    900,
             interactive: true,
             thickness: 8,
-            radius:
-                const Radius.circular(20),
+            radius: const Radius.circular(20),
             child: ListView(
               padding: const EdgeInsets.fromLTRB(
                 20,
@@ -256,8 +501,7 @@ class GradeMenuPage extends StatelessWidget {
               children: [
                 Center(
                   child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(
+                    constraints: const BoxConstraints(
                       maxWidth: 900,
                     ),
                     child: Column(
@@ -266,79 +510,93 @@ class GradeMenuPage extends StatelessWidget {
                           grade: grade,
                         ),
 
-                        const SizedBox(
-                          height: 25,
-                        ),
+                        const SizedBox(height: 25),
 
                         Container(
-                          width:
-                              double.infinity,
+                          width: double.infinity,
                           padding:
-                              const EdgeInsets.all(
-                            25,
-                          ),
-                          decoration:
-                              BoxDecoration(
+                              const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
                             color: Colors.white
-                                .withOpacity(.96),
+                                .withOpacity(.97),
                             borderRadius:
-                                BorderRadius
-                                    .circular(
-                              28,
+                                BorderRadius.circular(
+                              30,
                             ),
-                            boxShadow: [
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                            boxShadow: const [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(
-                                  .07,
-                                ),
-                                blurRadius: 20,
-                                offset:
-                                    const Offset(
-                                  0,
-                                  8,
-                                ),
+                                color:
+                                    Color(0x18000000),
+                                blurRadius: 25,
+                                offset: Offset(0, 10),
                               ),
                             ],
                           ),
                           child: Column(
                             children: [
-                              Icon(
-                                hasTopicSelection
-                                    ? Icons
-                                        .category_rounded
-                                    : Icons
-                                        .quiz_rounded,
-                                size: 55,
-                                color:
-                                    const Color(
-                                  0xFF4F8FF7,
+                              Container(
+                                width: 84,
+                                height: 84,
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      const LinearGradient(
+                                    begin:
+                                        Alignment.topLeft,
+                                    end: Alignment
+                                        .bottomRight,
+                                    colors: [
+                                      Color(0xFF6CD4FF),
+                                      Color(0xFF4B7BEC),
+                                    ],
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                    27,
+                                  ),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color:
+                                          Color(0x334B7BEC),
+                                      blurRadius: 20,
+                                      offset:
+                                          Offset(0, 9),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  hasTopicSelection
+                                      ? Icons
+                                          .category_rounded
+                                      : Icons
+                                          .quiz_rounded,
+                                  size: 43,
+                                  color:
+                                      Colors.white,
                                 ),
                               ),
 
-                              const SizedBox(
-                                height: 12,
-                              ),
+                              const SizedBox(height: 16),
 
                               Text(
                                 hasTopicSelection
                                     ? 'Pilih Tema Kuis'
-                                    : 'Siap untuk Kuis?',
-                                style:
-                                    const TextStyle(
-                                  fontSize: 24,
+                                    : 'Siap untuk Kuis? 🚀',
+                                textAlign:
+                                    TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 25,
                                   fontWeight:
                                       FontWeight.w900,
                                   color:
-                                      Color(
-                                    0xFF243B5A,
-                                  ),
+                                      Color(0xFF283B63),
                                 ),
                               ),
 
-                              const SizedBox(
-                                height: 8,
-                              ),
+                              const SizedBox(height: 8),
 
                               Text(
                                 hasTopicSelection
@@ -346,71 +604,129 @@ class GradeMenuPage extends StatelessWidget {
                                     : 'Masukkan nama dan mulai menjawab soal sesuai tingkat kelasmu.',
                                 textAlign:
                                     TextAlign.center,
-                                style:
-                                    const TextStyle(
+                                style: const TextStyle(
                                   color:
-                                      Color(
-                                    0xFF71869A,
-                                  ),
-                                  height: 1.45,
+                                      Color(0xFF7B8CA0),
+                                  height: 1.5,
+                                  fontSize: 13,
+                                  fontWeight:
+                                      FontWeight.w600,
                                 ),
                               ),
 
                               const SizedBox(
-                                height: 22,
+                                height: 24,
                               ),
 
                               if (hasTopicSelection)
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child:
+                                LayoutBuilder(
+                                  builder:
+                                      (
+                                    context,
+                                    constraints,
+                                  ) {
+                                    if (constraints
+                                            .maxWidth <
+                                        560) {
+                                      return Column(
+                                        children: [
                                           _TopicCard(
-                                        icon: Icons
-                                            .favorite_rounded,
-                                        color:
-                                            const Color(
-                                          0xFFFF6F91,
-                                        ),
-                                        title:
-                                            'Stop Bullying',
-                                        subtitle:
-                                            'Sikap saling menghargai',
-                                        onTap: () {
-                                          _start(
-                                            context,
-                                            topic:
+                                            icon: Icons
+                                                .favorite_rounded,
+                                            color:
+                                                const Color(
+                                              0xFFFF6F91,
+                                            ),
+                                            title:
                                                 'Stop Bullying',
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    Expanded(
-                                      child:
+                                            subtitle:
+                                                'Sikap saling menghargai',
+                                            onTap: () {
+                                              _start(
+                                                context,
+                                                topic:
+                                                    'Stop Bullying',
+                                              );
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
                                           _TopicCard(
-                                        icon: Icons
-                                            .eco_rounded,
-                                        color:
-                                            const Color(
-                                          0xFF45C878,
-                                        ),
-                                        title:
-                                            'Adiwiyata',
-                                        subtitle:
-                                            'Peduli lingkungan',
-                                        onTap: () {
-                                          _start(
-                                            context,
-                                            topic:
+                                            icon: Icons
+                                                .eco_rounded,
+                                            color:
+                                                const Color(
+                                              0xFF45C878,
+                                            ),
+                                            title:
                                                 'Adiwiyata',
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                                            subtitle:
+                                                'Peduli lingkungan',
+                                            onTap: () {
+                                              _start(
+                                                context,
+                                                topic:
+                                                    'Adiwiyata',
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    }
+
+                                    return Row(
+                                      children: [
+                                        Expanded(
+                                          child:
+                                              _TopicCard(
+                                            icon: Icons
+                                                .favorite_rounded,
+                                            color:
+                                                const Color(
+                                              0xFFFF6F91,
+                                            ),
+                                            title:
+                                                'Stop Bullying',
+                                            subtitle:
+                                                'Sikap saling menghargai',
+                                            onTap: () {
+                                              _start(
+                                                context,
+                                                topic:
+                                                    'Stop Bullying',
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        Expanded(
+                                          child:
+                                              _TopicCard(
+                                            icon: Icons
+                                                .eco_rounded,
+                                            color:
+                                                const Color(
+                                              0xFF45C878,
+                                            ),
+                                            title:
+                                                'Adiwiyata',
+                                            subtitle:
+                                                'Peduli lingkungan',
+                                            onTap: () {
+                                              _start(
+                                                context,
+                                                topic:
+                                                    'Adiwiyata',
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 )
                               else
                                 SizedBox(
@@ -423,24 +739,27 @@ class GradeMenuPage extends StatelessWidget {
                                         context,
                                       );
                                     },
-                                    icon:
-                                        const Icon(
+                                    icon: const Icon(
                                       Icons
                                           .play_arrow_rounded,
+                                      size: 24,
                                     ),
-                                    label:
-                                        const Text(
+                                    label: const Text(
                                       'Mulai Kuis',
                                     ),
                                     style:
-                                        FilledButton
-                                            .styleFrom(
+                                        FilledButton.styleFrom(
                                       backgroundColor:
                                           const Color(
-                                        0xFF4F8FF7,
+                                        0xFF4B7BEC,
                                       ),
                                       foregroundColor:
                                           Colors.white,
+                                      elevation: 4,
+                                      shadowColor:
+                                          const Color(
+                                        0x334B7BEC,
+                                      ),
                                       padding:
                                           const EdgeInsets
                                               .symmetric(
@@ -461,9 +780,7 @@ class GradeMenuPage extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(
-                          height: 20,
-                        ),
+                        const SizedBox(height: 20),
 
                         _InfoCard(
                           grade: grade,
@@ -492,25 +809,47 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_rounded,
-            color: Color(0xFF243B5A),
+        Material(
+          color: Colors.white.withOpacity(.92),
+          shape: const CircleBorder(),
+          elevation: 2,
+          shadowColor:
+              const Color(0x22000000),
+          child: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              color: Color(0xFF283B63),
+            ),
+            tooltip: 'Kembali',
           ),
         ),
-        const SizedBox(
-          width: 5,
-        ),
+
+        const SizedBox(width: 10),
+
         Container(
           width: 58,
           height: 58,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFC94A),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFFE47A),
+                Color(0xFFFFB84D),
+              ],
+            ),
             borderRadius:
-                BorderRadius.circular(18),
+                BorderRadius.circular(19),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x30FFB84D),
+                blurRadius: 14,
+                offset: Offset(0, 6),
+              ),
+            ],
           ),
           child: const Icon(
             Icons.school_rounded,
@@ -518,29 +857,33 @@ class _Header extends StatelessWidget {
             size: 32,
           ),
         ),
-        const SizedBox(
-          width: 13,
-        ),
-        Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Kelas $grade SD',
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF243B5A),
+
+        const SizedBox(width: 13),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Kelas $grade SD',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF283B63),
+                ),
               ),
-            ),
-            const Text(
-              'Petualangan belajar dimulai!',
-              style: TextStyle(
-                color: Color(0xFF71869A),
-                fontWeight: FontWeight.w600,
+              const SizedBox(height: 2),
+              const Text(
+                'Petualangan belajar dimulai! ✨',
+                style: TextStyle(
+                  color: Color(0xFF71839A),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -569,37 +912,66 @@ class _TopicCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius:
-            BorderRadius.circular(22),
+            BorderRadius.circular(24),
         child: Container(
           padding:
               const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: color.withOpacity(.08),
-            borderRadius:
-                BorderRadius.circular(22),
-            border: Border.all(
-              color: color.withOpacity(.25),
-              width: 1.5,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withOpacity(.13),
+                Colors.white,
+              ],
             ),
+            borderRadius:
+                BorderRadius.circular(24),
+            border: Border.all(
+              color: color.withOpacity(.30),
+              width: 1.7,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(.12),
+                blurRadius: 16,
+                offset: const Offset(0, 7),
+              ),
+            ],
           ),
           child: Column(
             children: [
               Container(
-                width: 65,
-                height: 65,
+                width: 70,
+                height: 70,
                 decoration: BoxDecoration(
-                  color: color,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color,
+                      color.withOpacity(.78),
+                    ],
+                  ),
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(.28),
+                      blurRadius: 15,
+                      offset:
+                          const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   icon,
                   color: Colors.white,
-                  size: 32,
+                  size: 34,
                 ),
               ),
-              const SizedBox(
-                height: 12,
-              ),
+
+              const SizedBox(height: 13),
+
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -610,25 +982,36 @@ class _TopicCard extends StatelessWidget {
                   color: color,
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+
+              const SizedBox(height: 5),
+
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF71869A),
+                  color: Color(0xFF71839A),
                   fontWeight:
                       FontWeight.w600,
+                  height: 1.35,
                 ),
               ),
-              const SizedBox(
-                height: 12,
-              ),
-              Icon(
-                Icons.arrow_forward_rounded,
-                color: color,
+
+              const SizedBox(height: 13),
+
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color:
+                      color.withOpacity(.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  color: color,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -655,71 +1038,95 @@ class _TopicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius:
+            BorderRadius.circular(18),
+        child: Container(
+          width: double.infinity,
           padding:
-              const EdgeInsets.all(15),
-          alignment: Alignment.centerLeft,
-          side: BorderSide(
-            color: color.withOpacity(.35),
-          ),
-          shape:
-              RoundedRectangleBorder(
+              const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: color.withOpacity(.07),
             borderRadius:
                 BorderRadius.circular(18),
+            border: Border.all(
+              color: color.withOpacity(.25),
+              width: 1.3,
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(
-              width: 12,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight:
-                          FontWeight.w900,
-                      color: color,
-                    ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      color,
+                      color.withOpacity(.78),
+                    ],
                   ),
-                  Text(
-                    subtitle,
-                    style:
-                        const TextStyle(
-                      fontSize: 11,
-                      color:
-                          Color(0xFF71869A),
-                    ),
-                  ),
-                ],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 23,
+                ),
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 15,
-              color: color,
-            ),
-          ],
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.w900,
+                        color: color,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style:
+                          const TextStyle(
+                        fontSize: 11,
+                        color:
+                            Color(0xFF7B8CA0),
+                        fontWeight:
+                            FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color:
+                      color.withOpacity(.10),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons
+                      .arrow_forward_ios_rounded,
+                  size: 14,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -735,39 +1142,86 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool topic =
+        grade == 5 || grade == 6;
+
     return Container(
       width: double.infinity,
       padding:
           const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white
-            .withOpacity(.90),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFFCF1),
+            Color(0xFFFFF8D8),
+          ],
+        ),
         borderRadius:
             BorderRadius.circular(22),
+        border: Border.all(
+          color: const Color(0xFFFFD66B)
+              .withOpacity(.45),
+          width: 1.3,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 12,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment:
             CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.lightbulb_rounded,
-            color: Color(0xFFFFB93F),
-            size: 28,
+          Container(
+            width: 45,
+            height: 45,
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFD66B),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.lightbulb_rounded,
+              color: Colors.white,
+              size: 25,
+            ),
           ),
-          const SizedBox(
-            width: 12,
-          ),
+
+          const SizedBox(width: 13),
+
           Expanded(
-            child: Text(
-              grade == 5 || grade == 6
-                  ? 'Untuk kelas $grade, kamu dapat memilih tema Stop Bullying atau Adiwiyata sebelum memasukkan nama dan mengerjakan kuis.'
-                  : 'Kamu akan mendapatkan 10 soal secara acak dari kumpulan soal kelas $grade.',
-              style: const TextStyle(
-                color: Color(0xFF5F7085),
-                height: 1.45,
-                fontWeight:
-                    FontWeight.w600,
-              ),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Info Kuis',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF765A18),
+                  ),
+                ),
+
+                const SizedBox(height: 5),
+
+                Text(
+                  topic
+                      ? 'Untuk kelas $grade, kamu dapat memilih tema Stop Bullying atau Adiwiyata sebelum memasukkan nama dan mengerjakan kuis.'
+                      : 'Kamu akan mendapatkan 10 soal secara acak dari kumpulan soal kelas $grade.',
+                  style: const TextStyle(
+                    color: Color(0xFF6F6549),
+                    height: 1.45,
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -18,7 +18,8 @@ class RankingPage extends StatefulWidget {
 
 class _RankingPageState
     extends State<RankingPage> {
-  late Future<List<ScoreRecord>> _recordsFuture;
+  late Future<List<ScoreRecord>>
+      _recordsFuture;
 
   @override
   void initState() {
@@ -41,19 +42,25 @@ class _RankingPageState
     await _recordsFuture;
   }
 
-  int _percentage(ScoreRecord record) {
+  int _percentage(
+    ScoreRecord record,
+  ) {
     if (record.total <= 0) {
       return 0;
     }
 
     final value =
-        ((record.score / record.total) * 100)
+        ((record.score /
+                    record.total) *
+                100)
             .round();
 
     return value.clamp(0, 100);
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(
+    DateTime date,
+  ) {
     const months = [
       'Januari',
       'Februari',
@@ -75,40 +82,68 @@ class _RankingPageState
   }
 
   @override
-  Widget build(BuildContext context) {
-    final title = widget.grade == null
-        ? 'Peringkat'
-        : 'Peringkat Kelas ${widget.grade}';
+  Widget build(
+    BuildContext context,
+  ) {
+    final title =
+        widget.grade == null
+            ? 'Peringkat'
+            : 'Peringkat Kelas ${widget.grade}';
 
     return Scaffold(
       backgroundColor:
           const Color(0xFFEAF7FF),
+
       appBar: AppBar(
         title: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w900,
+          style:
+              const TextStyle(
+            fontWeight:
+                FontWeight.w900,
+            color:
+                Color(0xFF283B63),
           ),
         ),
         backgroundColor:
-            const Color(0xFF4F8FF7),
-        foregroundColor: Colors.white,
+            Colors.transparent,
+        foregroundColor:
+            const Color(
+          0xFF283B63,
+        ),
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
+
       body: SafeArea(
-        child: RefreshIndicator(
+        child:
+            RefreshIndicator(
+          color:
+              const Color(
+            0xFF4B7BEC,
+          ),
           onRefresh: _refresh,
-          child: FutureBuilder<
-              List<ScoreRecord>>(
+          child:
+              FutureBuilder<
+                  List<ScoreRecord>>(
             future: _recordsFuture,
-            builder: (
+            builder:
+                (
               context,
               snapshot,
             ) {
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
+              if (snapshot
+                      .connectionState ==
+                  ConnectionState
+                      .waiting) {
                 return const Center(
                   child:
-                      CircularProgressIndicator(),
+                      CircularProgressIndicator(
+                    color:
+                        Color(
+                      0xFF4B7BEC,
+                    ),
+                  ),
                 );
               }
 
@@ -116,36 +151,101 @@ class _RankingPageState
                 return ListView(
                   physics:
                       const AlwaysScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets
+                          .all(
+                    24,
+                  ),
                   children: [
-                    SizedBox(
-                      height:
-                          MediaQuery.sizeOf(context)
-                              .height *
-                          .30,
+                    const SizedBox(
+                      height: 120,
                     ),
-                    const Icon(
-                      Icons
-                          .error_outline_rounded,
-                      size: 65,
-                      color:
-                          Color(0xFFE65353),
-                    ),
-                    const SizedBox(height: 14),
-                    const Center(
-                      child: Text(
-                        'Gagal memuat peringkat.',
-                        style: TextStyle(
-                          fontWeight:
-                              FontWeight.w900,
-                          fontSize: 18,
+
+                    Container(
+                      width: 95,
+                      height: 95,
+                      margin:
+                          const EdgeInsets
+                              .all(0),
+                      decoration:
+                          const BoxDecoration(
+                        color:
+                            Color(
+                          0xFFFFE8E8,
+                        ),
+                        shape:
+                            BoxShape
+                                .circle,
+                      ),
+                      child:
+                          const Icon(
+                        Icons
+                            .error_outline_rounded,
+                        size: 55,
+                        color:
+                            Color(
+                          0xFFE65353,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
+
+                    const SizedBox(
+                      height: 18,
+                    ),
+
+                    const Text(
+                      'Gagal memuat peringkat.',
+                      textAlign:
+                          TextAlign.center,
+                      style:
+                          TextStyle(
+                        fontWeight:
+                            FontWeight
+                                .w900,
+                        fontSize: 18,
+                        color:
+                            Color(
+                          0xFF263E5D,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 7,
+                    ),
+
+                    const Text(
+                      'Coba muat ulang untuk melihat data peringkat.',
+                      textAlign:
+                          TextAlign.center,
+                      style:
+                          TextStyle(
+                        color:
+                            Color(
+                          0xFF71869A,
+                        ),
+                        fontWeight:
+                            FontWeight
+                                .w600,
+                        fontSize: 12,
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+
                     Center(
-                      child: FilledButton(
-                        onPressed: _refresh,
-                        child:
+                      child:
+                          FilledButton.icon(
+                        onPressed:
+                            _refresh,
+                        icon:
+                            const Icon(
+                          Icons
+                              .refresh_rounded,
+                        ),
+                        label:
                             const Text(
                           'Coba Lagi',
                         ),
@@ -164,17 +264,20 @@ class _RankingPageState
                 (a, b) {
                   final aPercent =
                       _percentage(a);
+
                   final bPercent =
                       _percentage(b);
 
                   if (aPercent !=
                       bPercent) {
-                    return bPercent.compareTo(
+                    return bPercent
+                        .compareTo(
                       aPercent,
                     );
                   }
 
-                  return b.score.compareTo(
+                  return b.score
+                      .compareTo(
                     a.score,
                   );
                 },
@@ -185,41 +288,110 @@ class _RankingPageState
                   physics:
                       const AlwaysScrollableScrollPhysics(),
                   padding:
-                      const EdgeInsets.all(24),
+                      const EdgeInsets
+                          .all(
+                    22,
+                  ),
                   children: [
-                    const SizedBox(height: 100),
-                    const Icon(
-                      Icons
-                          .emoji_events_outlined,
-                      size: 80,
-                      color:
-                          Color(0xFFFFB93F),
+                    const SizedBox(
+                      height: 70,
                     ),
-                    const SizedBox(height: 18),
+
+                    Container(
+                      width: 115,
+                      height: 115,
+                      margin:
+                          const EdgeInsets
+                              .all(0),
+                      decoration:
+                          const BoxDecoration(
+                        gradient:
+                            LinearGradient(
+                          colors: [
+                            Color(
+                              0xFFFFE99A,
+                            ),
+                            Color(
+                              0xFFFFC95C,
+                            ),
+                          ],
+                        ),
+                        shape:
+                            BoxShape
+                                .circle,
+                      ),
+                      child:
+                          const Icon(
+                        Icons
+                            .emoji_events_rounded,
+                        size: 65,
+                        color:
+                            Colors.white,
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
                     const Text(
                       'Belum ada peringkat',
                       textAlign:
                           TextAlign.center,
-                      style: TextStyle(
+                      style:
+                          TextStyle(
                         fontSize: 23,
                         fontWeight:
-                            FontWeight.w900,
+                            FontWeight
+                                .w900,
                         color:
-                            Color(0xFF263E5D),
+                            Color(
+                          0xFF263E5D,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+
+                    const SizedBox(
+                      height: 8,
+                    ),
+
                     Text(
-                      widget.grade == null
+                      widget.grade ==
+                              null
                           ? 'Belum ada siswa yang menyelesaikan kuis.'
                           : 'Belum ada siswa kelas ${widget.grade} yang menyelesaikan kuis.',
                       textAlign:
                           TextAlign.center,
-                      style: const TextStyle(
+                      style:
+                          const TextStyle(
                         color:
-                            Color(0xFF71869A),
+                            Color(
+                          0xFF71869A,
+                        ),
                         fontWeight:
-                            FontWeight.w600,
+                            FontWeight
+                                .w600,
+                        fontSize: 12,
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 15,
+                    ),
+
+                    const Text(
+                      'Yuk jadi yang pertama! 🚀',
+                      textAlign:
+                          TextAlign.center,
+                      style:
+                          TextStyle(
+                        color:
+                            Color(
+                          0xFF4B7BEC,
+                        ),
+                        fontWeight:
+                            FontWeight
+                                .w900,
                       ),
                     ),
                   ],
@@ -228,62 +400,159 @@ class _RankingPageState
 
               return Scrollbar(
                 thumbVisibility:
-                    MediaQuery.sizeOf(context)
-                        .width >=
+                    MediaQuery.sizeOf(
+                              context,
+                            ).width >=
                         900,
                 trackVisibility:
-                    MediaQuery.sizeOf(context)
-                        .width >=
+                    MediaQuery.sizeOf(
+                              context,
+                            ).width >=
                         900,
                 interactive: true,
                 thickness: 8,
                 radius:
-                    const Radius.circular(20),
+                    const Radius.circular(
+                  20,
+                ),
                 child: ListView(
                   physics:
                       const AlwaysScrollableScrollPhysics(),
                   padding:
-                      const EdgeInsets.fromLTRB(
-                    20,
-                    20,
-                    20,
-                    40,
+                      const EdgeInsets
+                          .fromLTRB(
+                    18,
+                    16,
+                    18,
+                    45,
                   ),
                   children: [
                     Center(
-                      child: ConstrainedBox(
+                      child:
+                          ConstrainedBox(
                         constraints:
                             const BoxConstraints(
                           maxWidth: 1000,
                         ),
-                        child: Column(
+                        child:
+                            Column(
                           children: [
+                            // ==================================================
+                            // HEADER
+                            // ==================================================
+
                             _RankingHeader(
-                              grade: widget.grade,
+                              grade:
+                                  widget.grade,
                               total:
                                   records.length,
                             ),
 
                             const SizedBox(
-                              height: 18,
+                              height: 15,
                             ),
+
+                            // ==================================================
+                            // INFO
+                            // ==================================================
+
+                            Container(
+                              width:
+                                  double.infinity,
+                              padding:
+                                  const EdgeInsets
+                                      .symmetric(
+                                horizontal:
+                                    15,
+                                vertical:
+                                    13,
+                              ),
+                              decoration:
+                                  BoxDecoration(
+                                color: Colors
+                                    .white
+                                    .withOpacity(
+                                  .94,
+                                ),
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  19,
+                                ),
+                                border:
+                                    Border.all(
+                                  color:
+                                      const Color(
+                                    0xFFE0EBF4,
+                                  ),
+                                ),
+                              ),
+                              child:
+                                  const Row(
+                                children: [
+                                  Icon(
+                                    Icons
+                                        .info_outline_rounded,
+                                    size:
+                                        20,
+                                    color:
+                                        Color(
+                                      0xFF4B7BEC,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        9,
+                                  ),
+                                  Expanded(
+                                    child:
+                                        Text(
+                                      'Peringkat diurutkan berdasarkan persentase nilai, lalu skor.',
+                                      style:
+                                          TextStyle(
+                                        fontSize:
+                                            11,
+                                        color:
+                                            Color(
+                                          0xFF667D92,
+                                        ),
+                                        fontWeight:
+                                            FontWeight
+                                                .w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // ==================================================
+                            // LIST
+                            // ==================================================
 
                             ...List.generate(
                               records.length,
                               (index) {
                                 final record =
-                                    records[index];
+                                    records[
+                                        index];
 
                                 return Padding(
                                   padding:
                                       const EdgeInsets
                                           .only(
-                                    bottom: 12,
+                                    bottom:
+                                        11,
                                   ),
                                   child:
                                       _RankingCard(
                                     rank:
-                                        index + 1,
+                                        index +
+                                            1,
                                     record:
                                         record,
                                     percentage:
@@ -314,6 +583,10 @@ class _RankingPageState
   }
 }
 
+// ============================================================
+// RANKING HEADER
+// ============================================================
+
 class _RankingHeader
     extends StatelessWidget {
   const _RankingHeader({
@@ -325,73 +598,120 @@ class _RankingHeader
   final int total;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
+      padding:
+          const EdgeInsets.all(
+        21,
+      ),
+      decoration:
+          BoxDecoration(
+        gradient:
+            const LinearGradient(
+          begin:
+              Alignment.topLeft,
+          end:
+              Alignment.bottomRight,
           colors: [
-            Color(0xFF4F8FF7),
-            Color(0xFF6BCBFF),
+            Color(0xFF4B7BEC),
+            Color(0xFF62C9F7),
+            Color(0xFF72D7B0),
           ],
         ),
         borderRadius:
-            BorderRadius.circular(26),
-        boxShadow: [
+            BorderRadius.circular(
+          28,
+        ),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+        boxShadow:
+            const [
           BoxShadow(
             color:
-                Colors.black.withOpacity(.08),
-            blurRadius: 18,
+                Color(0x284B7BEC),
+            blurRadius: 22,
             offset:
-                const Offset(0, 8),
+                Offset(0, 10),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 62,
-            height: 62,
-            decoration: BoxDecoration(
-              color:
-                  Colors.white.withOpacity(.20),
+            width: 65,
+            height: 65,
+            decoration:
+                BoxDecoration(
+              color: Colors.white
+                  .withOpacity(
+                .19,
+              ),
               borderRadius:
-                  BorderRadius.circular(18),
+                  BorderRadius.circular(
+                20,
+              ),
+              border: Border.all(
+                color: Colors.white
+                    .withOpacity(
+                  .35,
+                ),
+              ),
             ),
-            child: const Icon(
-              Icons.emoji_events_rounded,
-              color: Colors.white,
-              size: 35,
+            child:
+                const Icon(
+              Icons
+                  .emoji_events_rounded,
+              color:
+                  Colors.white,
+              size: 38,
             ),
           ),
 
-          const SizedBox(width: 15),
+          const SizedBox(
+            width: 14,
+          ),
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   grade == null
                       ? 'Peringkat Semua Kelas'
                       : 'Peringkat Kelas $grade',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 21,
+                  style:
+                      const TextStyle(
+                    color:
+                        Colors.white,
+                    fontSize: 20,
                     fontWeight:
                         FontWeight.w900,
                   ),
                 ),
-                const SizedBox(height: 4),
+
+                const SizedBox(
+                  height: 5,
+                ),
+
                 Text(
                   '$total siswa telah mengerjakan kuis',
-                  style: TextStyle(
-                    color: Colors.white
-                        .withOpacity(.90),
+                  style:
+                      TextStyle(
+                    color: Colors
+                        .white
+                        .withOpacity(
+                      .90,
+                    ),
                     fontWeight:
-                        FontWeight.w600,
+                        FontWeight.w700,
+                    fontSize: 11,
                   ),
                 ),
               ],
@@ -402,6 +722,10 @@ class _RankingHeader
     );
   }
 }
+
+// ============================================================
+// RANKING CARD
+// ============================================================
 
 class _RankingCard
     extends StatelessWidget {
@@ -417,102 +741,240 @@ class _RankingCard
   final int percentage;
   final String date;
 
+  Color get medalColor {
+    if (rank == 1) {
+      return const Color(
+        0xFFFFC83D,
+      );
+    }
+
+    if (rank == 2) {
+      return const Color(
+        0xFFB9C4CF,
+      );
+    }
+
+    if (rank == 3) {
+      return const Color(
+        0xFFCD8A54,
+      );
+    }
+
+    return const Color(
+      0xFFEAF2FF,
+    );
+  }
+
+  Color get percentageColor {
+    if (percentage >= 80) {
+      return const Color(
+        0xFF36B96D,
+      );
+    }
+
+    if (percentage >= 60) {
+      return const Color(
+        0xFFF0A23A,
+      );
+    }
+
+    return const Color(
+      0xFFEF6262,
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
-    final medalColor = rank == 1
-        ? const Color(0xFFFFC83D)
-        : rank == 2
-            ? const Color(0xFFB9C4CF)
-            : rank == 3
-                ? const Color(0xFFCD8A54)
-                : const Color(0xFFEAF2FF);
+  Widget build(
+    BuildContext context,
+  ) {
+    final topThree =
+        rank <= 3;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      padding:
+          const EdgeInsets.all(
+        15,
+      ),
+      decoration:
+          BoxDecoration(
+        color: Colors.white
+            .withOpacity(.97),
         borderRadius:
-            BorderRadius.circular(22),
-        border: Border.all(
-          color: const Color(0xFFE0EAF2),
+            BorderRadius.circular(
+          23,
         ),
-        boxShadow: [
+        border: Border.all(
+          color: topThree
+              ? medalColor
+                  .withOpacity(
+                  .35,
+                )
+              : const Color(
+                  0xFFE0EAF2,
+                ),
+          width: topThree
+              ? 1.5
+              : 1,
+        ),
+        boxShadow:
+            const [
           BoxShadow(
             color:
-                Colors.black.withOpacity(.045),
+                Color(0x10000000),
             blurRadius: 14,
             offset:
-                const Offset(0, 6),
+                Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: medalColor,
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              '$rank',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight:
-                    FontWeight.w900,
-                color: rank <= 3
-                    ? Colors.white
-                    : const Color(
-                        0xFF4F8FF7,
-                      ),
+          // ==================================================
+          // RANK NUMBER
+          // ==================================================
+
+          Stack(
+            clipBehavior:
+                Clip.none,
+            children: [
+              Container(
+                width: 53,
+                height: 53,
+                alignment:
+                    Alignment.center,
+                decoration:
+                    BoxDecoration(
+                  gradient:
+                      topThree
+                          ? LinearGradient(
+                              colors: [
+                                medalColor,
+                                medalColor
+                                    .withOpacity(
+                                  .75,
+                                ),
+                              ],
+                            )
+                          : null,
+                  color: topThree
+                      ? null
+                      : const Color(
+                          0xFFEAF3FF,
+                        ),
+                  shape:
+                      BoxShape.circle,
+                ),
+                child: Text(
+                  '$rank',
+                  style:
+                      TextStyle(
+                    fontSize: 18,
+                    fontWeight:
+                        FontWeight.w900,
+                    color: topThree
+                        ? Colors.white
+                        : const Color(
+                            0xFF4F8FF7,
+                          ),
+                  ),
+                ),
               ),
-            ),
+
+              if (rank == 1)
+                const Positioned(
+                  top: -8,
+                  right: -3,
+                  child: Text(
+                    '👑',
+                    style:
+                        TextStyle(
+                      fontSize: 19,
+                    ),
+                  ),
+                ),
+            ],
           ),
 
-          const SizedBox(width: 13),
+          const SizedBox(
+            width: 13,
+          ),
+
+          // ==================================================
+          // NAME + SCORE
+          // ==================================================
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   record.name,
                   maxLines: 1,
                   overflow:
-                      TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 17,
+                      TextOverflow
+                          .ellipsis,
+                  style:
+                      const TextStyle(
+                    fontSize: 16,
                     fontWeight:
                         FontWeight.w900,
                     color:
-                        Color(0xFF263E5D),
+                        Color(
+                      0xFF263E5D,
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 4),
-
-                Text(
-                  'Skor ${record.score}/${record.total}',
-                  style: const TextStyle(
-                    color:
-                        Color(0xFF71869A),
-                    fontWeight:
-                        FontWeight.w600,
-                  ),
+                const SizedBox(
+                  height: 4,
                 ),
 
-                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons
+                          .stars_rounded,
+                      size: 15,
+                      color:
+                          Color(
+                        0xFFFFB84D,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      'Skor ${record.score}/${record.total}',
+                      style:
+                          const TextStyle(
+                        color:
+                            Color(
+                          0xFF71869A,
+                        ),
+                        fontWeight:
+                            FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                  height: 3,
+                ),
 
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style:
+                      const TextStyle(
+                    fontSize: 10,
                     color:
-                        Color(0xFF9AA9B5),
+                        Color(
+                      0xFF9AA9B5,
+                    ),
                     fontWeight:
                         FontWeight.w600,
                   ),
@@ -521,28 +983,66 @@ class _RankingCard
             ),
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(
+            width: 8,
+          ),
+
+          // ==================================================
+          // PERCENTAGE
+          // ==================================================
 
           Container(
             padding:
-                const EdgeInsets.symmetric(
+                const EdgeInsets
+                    .symmetric(
               horizontal: 12,
               vertical: 9,
             ),
-            decoration: BoxDecoration(
+            decoration:
+                BoxDecoration(
               color:
-                  const Color(0xFFE9FFF2),
-              borderRadius:
-                  BorderRadius.circular(15),
-            ),
-            child: Text(
-              '$percentage%',
-              style: const TextStyle(
-                fontWeight:
-                    FontWeight.w900,
-                color:
-                    Color(0xFF2EAE68),
+                  percentageColor
+                      .withOpacity(
+                .11,
               ),
+              borderRadius:
+                  BorderRadius.circular(
+                15,
+              ),
+            ),
+            child:
+                Column(
+              mainAxisSize:
+                  MainAxisSize.min,
+              children: [
+                Text(
+                  '$percentage%',
+                  style:
+                      TextStyle(
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        percentageColor,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(
+                  height: 1,
+                ),
+                const Text(
+                  'nilai',
+                  style:
+                      TextStyle(
+                    fontSize: 8,
+                    fontWeight:
+                        FontWeight.w700,
+                    color:
+                        Color(
+                      0xFF8A9AAA,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -22,13 +22,17 @@ class QuizPage extends StatefulWidget {
 
   final int grade;
   final String studentName;
-  final Future<void> Function(int score, int total) onFinished;
+  final Future<void> Function(
+    int score,
+    int total,
+  ) onFinished;
   final List<Question>? questions;
   final String? subject;
   final String? topic;
 
   @override
-  State<QuizPage> createState() => _QuizPageState();
+  State<QuizPage> createState() =>
+      _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage>
@@ -48,51 +52,70 @@ class _QuizPageState extends State<QuizPage>
 
   Timer? timer;
 
-  late final AnimationController feedbackController;
-  late final Animation<double> scaleAnimation;
-  late final Animation<double> opacityAnimation;
+  late final AnimationController
+      feedbackController;
 
-  final AudioPlayer audio = AudioPlayer();
+  late final Animation<double>
+      scaleAnimation;
+
+  late final Animation<double>
+      opacityAnimation;
+
+  final AudioPlayer audio =
+      AudioPlayer();
 
   @override
   void initState() {
     super.initState();
 
-    feedbackController = AnimationController(
+    feedbackController =
+        AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 850),
+      duration:
+          const Duration(milliseconds: 850),
     );
 
-    scaleAnimation = CurvedAnimation(
+    scaleAnimation =
+        CurvedAnimation(
       parent: feedbackController,
       curve: Curves.easeOutBack,
     );
 
-    opacityAnimation = CurvedAnimation(
+    opacityAnimation =
+        CurvedAnimation(
       parent: feedbackController,
       curve: Curves.easeOut,
     );
 
     unawaited(
-      audio.setReleaseMode(ReleaseMode.stop),
+      audio.setReleaseMode(
+        ReleaseMode.stop,
+      ),
     );
 
-    final allQuestions = List<Question>.from(
+    final allQuestions =
+        List<Question>.from(
       widget.questions ??
-          questionsByGrade[widget.grade] ??
+          questionsByGrade[
+              widget.grade] ??
           <Question>[],
     );
 
-    final filteredQuestions = widget.subject == null
-        ? allQuestions
-        : allQuestions
-            .where(
-              (question) =>
-                  question.subject == widget.subject,
-            )
-            .toList();
+    final filteredQuestions =
+        widget.subject == null
+            ? allQuestions
+            : allQuestions
+                .where(
+                  (question) =>
+                      question.subject ==
+                      widget.subject,
+                )
+                .toList();
 
-    questions = _shuffleQuestions(filteredQuestions);
+    questions =
+        _shuffleQuestions(
+      filteredQuestions,
+    );
 
     if (questions.isNotEmpty) {
       startTimer();
@@ -104,15 +127,21 @@ class _QuizPageState extends State<QuizPage>
   ) {
     final random = Random();
 
-    final result = source.map((question) {
-      final options = List<String>.from(
-        question.options,
-      );
+    final result =
+        source.map(
+      (question) {
+        final options =
+            List<String>.from(
+          question.options,
+        );
 
-      options.shuffle(random);
+        options.shuffle(random);
 
-      return question.withOptions(options);
-    }).toList();
+        return question.withOptions(
+          options,
+        );
+      },
+    ).toList();
 
     result.shuffle(random);
 
@@ -159,16 +188,20 @@ class _QuizPageState extends State<QuizPage>
     );
   }
 
-  void chooseAnswer(int index) {
+  void chooseAnswer(
+    int index,
+  ) {
     if (answered || showFeedback) {
       return;
     }
 
     timer?.cancel();
 
-    final question = questions[current];
+    final question =
+        questions[current];
 
-    final correct = index == question.answer;
+    final correct =
+        index == question.answer;
 
     setState(() {
       selected = index;
@@ -190,15 +223,19 @@ class _QuizPageState extends State<QuizPage>
     );
   }
 
-  Future<void> playSound(bool correct) async {
+  Future<void> playSound(
+    bool correct,
+  ) async {
     try {
       await audio.play(
         AssetSource(
-          correct ? 'BENAR.mp3' : 'wrong.wav',
+          correct
+              ? 'BENAR.mp3'
+              : 'wrong.wav',
         ),
       );
     } catch (_) {
-      // Jika audio gagal, kuis tetap berjalan.
+      // Audio gagal tidak menghentikan kuis.
     }
   }
 
@@ -218,7 +255,6 @@ class _QuizPageState extends State<QuizPage>
 
     if (!mounted) return;
 
-    // Dibuat 5 detik supaya pembahasan bisa dibaca.
     await Future.delayed(
       const Duration(seconds: 5),
     );
@@ -241,10 +277,12 @@ class _QuizPageState extends State<QuizPage>
       return;
     }
 
-    if (current >= questions.length - 1) {
+    if (current >=
+        questions.length - 1) {
       timer?.cancel();
 
-      final total = questions.length * 10;
+      final total =
+          questions.length * 10;
 
       await widget.onFinished(
         score,
@@ -256,11 +294,13 @@ class _QuizPageState extends State<QuizPage>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ResultPage(
+          builder: (context) =>
+              ResultPage(
             grade: widget.grade,
             score: score,
             total: total,
-            studentName: widget.studentName,
+            studentName:
+                widget.studentName,
           ),
         ),
       );
@@ -288,25 +328,64 @@ class _QuizPageState extends State<QuizPage>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     if (questions.isEmpty) {
       return Scaffold(
         body: SchoolBackground(
           child: Center(
             child: Container(
-              margin: const EdgeInsets.all(24),
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
+              margin:
+                  const EdgeInsets.all(24),
+              padding:
+                  const EdgeInsets.all(28),
+              decoration:
+                  BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: const Text(
-                'Soal belum tersedia.',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF263E5D),
+                borderRadius:
+                    BorderRadius.circular(
+                  28,
                 ),
+                boxShadow: const [
+                  BoxShadow(
+                    color:
+                        Color(0x18000000),
+                    blurRadius: 22,
+                    offset:
+                        Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: const Column(
+                mainAxisSize:
+                    MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons
+                        .menu_book_rounded,
+                    size: 62,
+                    color:
+                        Color(0xFF4B7BEC),
+                  ),
+                  SizedBox(
+                    height: 14,
+                  ),
+                  Text(
+                    'Soal belum tersedia.',
+                    textAlign:
+                        TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight:
+                          FontWeight.w900,
+                      color:
+                          Color(
+                        0xFF263E5D,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -314,10 +393,12 @@ class _QuizPageState extends State<QuizPage>
       );
     }
 
-    final question = questions[current];
+    final question =
+        questions[current];
 
     final progress =
-        (current + 1) / questions.length;
+        (current + 1) /
+            questions.length;
 
     return Scaffold(
       body: SchoolBackground(
@@ -326,86 +407,135 @@ class _QuizPageState extends State<QuizPage>
         child: SafeArea(
           child: Stack(
             children: [
-              // Scrollbar dibuat selebar layar,
-              // sehingga berada di pinggir kanan desktop.
               Scrollbar(
                 thumbVisibility:
-                    MediaQuery.sizeOf(context).width >= 900,
+                    MediaQuery.sizeOf(
+                              context,
+                            ).width >=
+                        900,
                 trackVisibility:
-                    MediaQuery.sizeOf(context).width >= 900,
+                    MediaQuery.sizeOf(
+                              context,
+                            ).width >=
+                        900,
                 interactive: true,
                 thickness: 8,
-                radius: const Radius.circular(20),
+                radius:
+                    const Radius.circular(
+                  20,
+                ),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                    20,
-                    14,
-                    20,
-                    80,
+                  padding:
+                      const EdgeInsets
+                          .fromLTRB(
+                    18,
+                    15,
+                    18,
+                    90,
                   ),
                   children: [
                     Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 1180,
+                      child:
+                          ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(
+                          maxWidth: 1050,
                         ),
-                        child: Column(
+                        child:
+                            Column(
                           children: [
                             _QuizHeader(
-                              grade: widget.grade,
-                              name: widget.studentName,
-                              current: current + 1,
-                              total: questions.length,
-                              progress: progress,
-                              topic: widget.topic,
+                              grade:
+                                  widget.grade,
+                              name:
+                                  widget.studentName,
+                              current:
+                                  current + 1,
+                              total:
+                                  questions.length,
+                              progress:
+                                  progress,
+                              topic:
+                                  widget.topic,
                             ),
 
-                            const SizedBox(height: 15),
+                            const SizedBox(
+                              height: 13,
+                            ),
 
-                            _Timer(seconds),
+                            _Timer(
+                              seconds,
+                            ),
 
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 15,
+                            ),
 
-                            // Kotak soal TANPA gambar.
                             _QuestionCard(
-                              question: question,
-                              topic: widget.topic,
+                              question:
+                                  question,
+                              topic:
+                                  widget.topic,
                             ),
 
-                            const SizedBox(height: 16),
+                            const SizedBox(
+                              height: 15,
+                            ),
 
                             ...List.generate(
-                              question.options.length,
+                              question
+                                  .options
+                                  .length,
                               (index) {
                                 return _AnswerOption(
-                                  question: question,
-                                  index: index,
-                                  selected: selected,
-                                  answered: answered,
-                                  onTap: chooseAnswer,
+                                  question:
+                                      question,
+                                  index:
+                                      index,
+                                  selected:
+                                      selected,
+                                  answered:
+                                      answered,
+                                  onTap:
+                                      chooseAnswer,
                                 );
                               },
                             ),
 
                             if (answered)
                               _ExplanationCard(
-                                question: question,
-                                selected: selected,
-                                timedOut: timedOut,
+                                question:
+                                    question,
+                                selected:
+                                    selected,
+                                timedOut:
+                                    timedOut,
                               ),
 
                             if (answered)
                               const Padding(
-                                padding: EdgeInsets.only(
-                                  top: 14,
+                                padding:
+                                    EdgeInsets
+                                        .only(
+                                  top: 13,
                                 ),
-                                child: Text(
-                                  'Soal berikutnya akan terbuka otomatis...',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF667D92),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
+                                child:
+                                    Text(
+                                  '✨ Soal berikutnya akan terbuka otomatis...',
+                                  textAlign:
+                                      TextAlign
+                                          .center,
+                                  style:
+                                      TextStyle(
+                                    color:
+                                        Color(
+                                      0xFF667D92,
+                                    ),
+                                    fontSize:
+                                        12,
+                                    fontWeight:
+                                        FontWeight
+                                            .w800,
                                   ),
                                 ),
                               ),
@@ -419,30 +549,49 @@ class _QuizPageState extends State<QuizPage>
 
               if (showFeedback)
                 Positioned.fill(
-                  child: IgnorePointer(
-                    child: Container(
-                      color: const Color(0x3324445D),
-                      alignment: Alignment.center,
-                      child: AnimatedBuilder(
-                        animation: feedbackController,
-                        builder: (
+                  child:
+                      IgnorePointer(
+                    child:
+                        Container(
+                      color:
+                          const Color(
+                        0x5524445D,
+                      ),
+                      alignment:
+                          Alignment
+                              .center,
+                      child:
+                          AnimatedBuilder(
+                        animation:
+                            feedbackController,
+                        builder:
+                            (
                           context,
                           child,
                         ) {
                           return Opacity(
                             opacity:
-                                opacityAnimation.value,
-                            child: Transform.scale(
+                                opacityAnimation
+                                    .value,
+                            child:
+                                Transform
+                                    .scale(
                               scale:
-                                  scaleAnimation.value,
-                              child: child,
+                                  scaleAnimation
+                                      .value,
+                              child:
+                                  child,
                             ),
                           );
                         },
-                        child: _FeedbackCard(
-                          correct: feedbackCorrect,
-                          question: question,
-                          timedOut: timedOut,
+                        child:
+                            _FeedbackCard(
+                          correct:
+                              feedbackCorrect,
+                          question:
+                              question,
+                          timedOut:
+                              timedOut,
                         ),
                       ),
                     ),
@@ -456,7 +605,12 @@ class _QuizPageState extends State<QuizPage>
   }
 }
 
-class _QuizHeader extends StatelessWidget {
+// ============================================================
+// HEADER
+// ============================================================
+
+class _QuizHeader
+    extends StatelessWidget {
   const _QuizHeader({
     required this.grade,
     required this.name,
@@ -474,79 +628,141 @@ class _QuizHeader extends StatelessWidget {
   final String? topic;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(.95),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
+      padding:
+          const EdgeInsets.all(16),
+      decoration:
+          BoxDecoration(
+        color: Colors.white
+            .withOpacity(.97),
+        borderRadius:
+            BorderRadius.circular(
+          25,
+        ),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(.06),
-            blurRadius: 16,
-            offset: const Offset(0, 7),
+            color: Color(0x16000000),
+            blurRadius: 18,
+            offset: Offset(0, 7),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFD66B),
-              borderRadius: BorderRadius.circular(15),
+            width: 53,
+            height: 53,
+            decoration:
+                const BoxDecoration(
+              gradient:
+                  LinearGradient(
+                colors: [
+                  Color(0xFFFFD66B),
+                  Color(0xFFFFA94D),
+                ],
+              ),
+              borderRadius:
+                  BorderRadius.all(
+                Radius.circular(17),
+              ),
             ),
             child: const Icon(
-              Icons.school_rounded,
+              Icons
+                  .school_rounded,
               color: Colors.white,
+              size: 29,
             ),
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(
+            width: 12,
+          ),
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   'Kelas $grade • $name',
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  overflow:
+                      TextOverflow
+                          .ellipsis,
+                  style:
+                      const TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF243B5A),
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        Color(
+                      0xFF243B5A,
+                    ),
                   ),
                 ),
 
-                if (topic != null) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    topic!,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF4F8FF7),
+                if (topic != null)
+                  Padding(
+                    padding:
+                        const EdgeInsets
+                            .only(
+                      top: 3,
+                    ),
+                    child: Text(
+                      topic!,
+                      maxLines: 1,
+                      overflow:
+                          TextOverflow
+                              .ellipsis,
+                      style:
+                          const TextStyle(
+                        fontSize: 11,
+                        fontWeight:
+                            FontWeight.w800,
+                        color:
+                            Color(
+                          0xFF4F8FF7,
+                        ),
+                      ),
                     ),
                   ),
-                ],
 
-                const SizedBox(height: 7),
+                const SizedBox(
+                  height: 7,
+                ),
 
                 ClipRRect(
                   borderRadius:
-                      BorderRadius.circular(20),
-                  child: LinearProgressIndicator(
-                    value: progress.clamp(0.0, 1.0),
+                      BorderRadius
+                          .circular(
+                    20,
+                  ),
+                  child:
+                      LinearProgressIndicator(
+                    value: progress
+                        .clamp(
+                      0.0,
+                      1.0,
+                    ),
                     minHeight: 9,
                     backgroundColor:
-                        const Color(0xFFE5EDF4),
+                        const Color(
+                      0xFFE7EEF5,
+                    ),
                     valueColor:
                         const AlwaysStoppedAnimation(
-                      Color(0xFF45C77A),
+                      Color(
+                        0xFF45C77A,
+                      ),
                     ),
                   ),
                 ),
@@ -554,13 +770,39 @@ class _QuizHeader extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(
+            width: 12,
+          ),
 
-          Text(
-            '$current/$total',
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF4F8FF7),
+          Container(
+            padding:
+                const EdgeInsets
+                    .symmetric(
+              horizontal: 11,
+              vertical: 8,
+            ),
+            decoration:
+                BoxDecoration(
+              color:
+                  const Color(
+                0xFFEAF3FF,
+              ),
+              borderRadius:
+                  BorderRadius.circular(
+                13,
+              ),
+            ),
+            child: Text(
+              '$current/$total',
+              style:
+                  const TextStyle(
+                fontWeight:
+                    FontWeight.w900,
+                color:
+                    Color(
+                  0xFF4F8FF7,
+                ),
+              ),
             ),
           ),
         ],
@@ -569,50 +811,113 @@ class _QuizHeader extends StatelessWidget {
   }
 }
 
-class _Timer extends StatelessWidget {
+// ============================================================
+// TIMER
+// ============================================================
+
+class _Timer
+    extends StatelessWidget {
   const _Timer(this.seconds);
 
   final int seconds;
 
   @override
-  Widget build(BuildContext context) {
-    final danger = seconds <= 5;
+  Widget build(
+    BuildContext context,
+  ) {
+    final danger =
+        seconds <= 5;
 
     return Center(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 9,
+      child:
+          AnimatedContainer(
+        duration:
+            const Duration(
+          milliseconds: 250,
         ),
-        decoration: BoxDecoration(
-          color: danger
-              ? const Color(0xFFFFE6E6)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(30),
+        padding:
+            const EdgeInsets
+                .symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration:
+            BoxDecoration(
+          gradient: LinearGradient(
+            colors: danger
+                ? const [
+                    Color(0xFFFFEBEB),
+                    Color(0xFFFFDADA),
+                  ]
+                : const [
+                    Color(0xFFFFFFFF),
+                    Color(0xFFF0F7FF),
+                  ],
+          ),
+          borderRadius:
+              BorderRadius.circular(
+            30,
+          ),
           border: Border.all(
             color: danger
-                ? const Color(0xFFFF7373)
-                : const Color(0xFFD8E8F4),
+                ? const Color(
+                    0xFFFF7373,
+                  )
+                : const Color(
+                    0xFFBFD8F4,
+                  ),
+            width: 1.5,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: danger
+                  ? const Color(
+                      0x25EF6262,
+                    )
+                  : const Color(
+                      0x124B7BEC,
+                    ),
+              blurRadius: 12,
+              offset:
+                  const Offset(0, 5),
+            ),
+          ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize:
+              MainAxisSize.min,
           children: [
             Icon(
-              Icons.timer_rounded,
+              danger
+                  ? Icons
+                      .timer_off_rounded
+                  : Icons
+                      .timer_rounded,
               color: danger
-                  ? const Color(0xFFE65353)
-                  : const Color(0xFF4F8FF7),
+                  ? const Color(
+                      0xFFE65353,
+                    )
+                  : const Color(
+                      0xFF4F8FF7,
+                    ),
+              size: 22,
             ),
-            const SizedBox(width: 7),
+            const SizedBox(
+              width: 8,
+            ),
             Text(
               '$seconds detik',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
+              style:
+                  TextStyle(
+                fontWeight:
+                    FontWeight.w900,
                 color: danger
-                    ? const Color(0xFFE65353)
-                    : const Color(0xFF3B5974),
+                    ? const Color(
+                        0xFFE65353,
+                      )
+                    : const Color(
+                        0xFF3B5974,
+                      ),
               ),
             ),
           ],
@@ -622,7 +927,12 @@ class _Timer extends StatelessWidget {
   }
 }
 
-class _QuestionCard extends StatelessWidget {
+// ============================================================
+// QUESTION CARD
+// ============================================================
+
+class _QuestionCard
+    extends StatelessWidget {
   const _QuestionCard({
     required this.question,
     this.topic,
@@ -631,33 +941,79 @@ class _QuestionCard extends StatelessWidget {
   final Question question;
   final String? topic;
 
+  Color _subjectColor(
+    String subject,
+  ) {
+    switch (subject) {
+      case 'Matematika':
+        return const Color(
+          0xFF4B7BEC,
+        );
+      case 'Bahasa Indonesia':
+        return const Color(
+          0xFFFF718F,
+        );
+      case 'IPA':
+        return const Color(
+          0xFF45C878,
+        );
+      case 'Logika':
+        return const Color(
+          0xFF9B7BEA,
+        );
+      default:
+        return const Color(
+          0xFFFFB84D,
+        );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
+    final color =
+        _subjectColor(
+      question.subject,
+    );
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        20,
+      padding:
+          const EdgeInsets.fromLTRB(
+        17,
+        17,
+        17,
         18,
-        20,
-        22,
       ),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
+      decoration:
+          BoxDecoration(
+        gradient:
+            const LinearGradient(
+          begin:
+              Alignment.topLeft,
+          end:
+              Alignment.bottomRight,
           colors: [
-            Color(0xFFFFD969),
-            Color(0xFFFFA85E),
+            Color(0xFF65CFFF),
+            Color(0xFF4B7BEC),
+            Color(0xFF726BEA),
           ],
         ),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius:
+            BorderRadius.circular(
+          30,
+        ),
         border: Border.all(
           color: Colors.white,
           width: 3,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x26B57B36),
-            blurRadius: 22,
-            offset: Offset(0, 9),
+            color: Color(0x304B7BEC),
+            blurRadius: 25,
+            offset:
+                Offset(0, 10),
           ),
         ],
       ),
@@ -666,48 +1022,91 @@ class _QuestionCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
+                padding:
+                    const EdgeInsets
+                        .symmetric(
                   horizontal: 13,
                   vertical: 7,
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
+                decoration:
+                    BoxDecoration(
+                  color:
+                      Colors.white,
                   borderRadius:
-                      BorderRadius.circular(30),
-                ),
-                child: Text(
-                  question.subject,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF72531A),
+                      BorderRadius
+                          .circular(
+                    30,
                   ),
+                ),
+                child: Row(
+                  mainAxisSize:
+                      MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons
+                          .auto_awesome_rounded,
+                      size: 15,
+                      color: color,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      question.subject,
+                      style:
+                          TextStyle(
+                        fontSize: 11,
+                        fontWeight:
+                            FontWeight.w900,
+                        color: color,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
               if (topic != null) ...[
-                const SizedBox(width: 8),
+                const SizedBox(
+                  width: 8,
+                ),
                 Flexible(
-                  child: Container(
+                  child:
+                      Container(
                     padding:
-                        const EdgeInsets.symmetric(
-                      horizontal: 12,
+                        const EdgeInsets
+                            .symmetric(
+                      horizontal: 11,
                       vertical: 7,
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white
-                          .withOpacity(.75),
+                    decoration:
+                        BoxDecoration(
+                      color: Colors
+                          .white
+                          .withOpacity(
+                        .78,
+                      ),
                       borderRadius:
-                          BorderRadius.circular(30),
+                          BorderRadius
+                              .circular(
+                        30,
+                      ),
                     ),
-                    child: Text(
+                    child:
+                        Text(
                       topic!,
                       overflow:
-                          TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF72531A),
+                          TextOverflow
+                              .ellipsis,
+                      style:
+                          const TextStyle(
+                        fontSize: 10,
+                        fontWeight:
+                            FontWeight
+                                .w800,
+                        color:
+                            Color(
+                          0xFF425675,
+                        ),
                       ),
                     ),
                   ),
@@ -716,35 +1115,51 @@ class _QuestionCard extends StatelessWidget {
 
               const Spacer(),
 
-              const Icon(
-                Icons.auto_awesome_rounded,
-                color: Colors.white,
+              const Text(
+                '✨',
+                style:
+                    TextStyle(
+                  fontSize: 23,
+                ),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(
+            height: 13,
+          ),
 
           Container(
             width: double.infinity,
             padding:
-                const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 26,
+                const EdgeInsets
+                    .symmetric(
+              horizontal: 19,
+              vertical: 24,
             ),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.94),
+            decoration:
+                BoxDecoration(
+              color: Colors.white
+                  .withOpacity(.97),
               borderRadius:
-                  BorderRadius.circular(22),
+                  BorderRadius.circular(
+                23,
+              ),
             ),
             child: Text(
               question.question,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF263B54),
-                height: 1.3,
+              textAlign:
+                  TextAlign.center,
+              style:
+                  const TextStyle(
+                fontSize: 21,
+                fontWeight:
+                    FontWeight.w900,
+                color:
+                    Color(
+                  0xFF263B54,
+                ),
+                height: 1.35,
               ),
             ),
           ),
@@ -754,7 +1169,12 @@ class _QuestionCard extends StatelessWidget {
   }
 }
 
-class _AnswerOption extends StatelessWidget {
+// ============================================================
+// ANSWER OPTION
+// ============================================================
+
+class _AnswerOption
+    extends StatelessWidget {
   const _AnswerOption({
     required this.question,
     required this.index,
@@ -770,7 +1190,9 @@ class _AnswerOption extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final isCorrect =
         index == question.answer;
 
@@ -780,97 +1202,215 @@ class _AnswerOption extends StatelessWidget {
         !isCorrect;
 
     final isGood =
-        answered && isCorrect;
+        answered &&
+        isCorrect;
 
-    final borderColor = isGood
-        ? const Color(0xFF43C77A)
-        : isWrong
-            ? const Color(0xFFEF6262)
-            : const Color(0xFFDCE8F2);
+    final borderColor =
+        isGood
+            ? const Color(
+                0xFF43C77A,
+              )
+            : isWrong
+                ? const Color(
+                    0xFFEF6262,
+                  )
+                : const Color(
+                    0xFFD7E5F1,
+                  );
 
-    final backgroundColor = isGood
-        ? const Color(0xFFE9FFF2)
-        : isWrong
-            ? const Color(0xFFFFEEEE)
-            : Colors.white.withOpacity(.95);
+    final backgroundColor =
+        isGood
+            ? const Color(
+                0xFFE9FFF2,
+              )
+            : isWrong
+                ? const Color(
+                    0xFFFFEEEE,
+                  )
+                : Colors.white
+                    .withOpacity(.97);
 
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 11,
+      padding:
+          const EdgeInsets.only(
+        bottom: 10,
       ),
       child: PressableCard(
         onTap: answered
             ? () {}
             : () => onTap(index),
-        child: AnimatedContainer(
+        child:
+            AnimatedContainer(
           duration:
-              const Duration(milliseconds: 220),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
+              const Duration(
+            milliseconds: 220,
           ),
-          decoration: BoxDecoration(
-            color: backgroundColor,
+          padding:
+              const EdgeInsets
+                  .symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
+          decoration:
+              BoxDecoration(
+            color:
+                backgroundColor,
             borderRadius:
-                BorderRadius.circular(21),
+                BorderRadius.circular(
+              20,
+            ),
             border: Border.all(
               color: borderColor,
-              width: isGood || isWrong
-                  ? 2
-                  : 1.5,
+              width:
+                  isGood ||
+                          isWrong
+                      ? 2
+                      : 1.5,
             ),
+            boxShadow:
+                isGood ||
+                        isWrong
+                    ? [
+                        BoxShadow(
+                          color:
+                              borderColor
+                                  .withOpacity(
+                            .18,
+                          ),
+                          blurRadius:
+                              12,
+                          offset:
+                              const Offset(
+                            0,
+                            5,
+                          ),
+                        ),
+                      ]
+                    : const [
+                        BoxShadow(
+                          color:
+                              Color(
+                            0x0D000000,
+                          ),
+                          blurRadius:
+                              7,
+                          offset:
+                              Offset(
+                            0,
+                            3,
+                          ),
+                        ),
+                      ],
           ),
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isGood
-                      ? const Color(0xFF43C77A)
-                      : isWrong
-                          ? const Color(0xFFEF6262)
-                          : const Color(0xFFEAF2FF),
+                width: 45,
+                height: 45,
+                alignment:
+                    Alignment.center,
+                decoration:
+                    BoxDecoration(
+                  gradient:
+                      isGood
+                          ? const LinearGradient(
+                              colors: [
+                                Color(
+                                  0xFF55D887,
+                                ),
+                                Color(
+                                  0xFF36B96D,
+                                ),
+                              ],
+                            )
+                          : isWrong
+                              ? const LinearGradient(
+                                  colors: [
+                                    Color(
+                                      0xFFFF8181,
+                                    ),
+                                    Color(
+                                      0xFFEF6262,
+                                    ),
+                                  ],
+                                )
+                              : const LinearGradient(
+                                  colors: [
+                                    Color(
+                                      0xFFEAF3FF,
+                                    ),
+                                    Color(
+                                      0xFFDCEAFF,
+                                    ),
+                                  ],
+                                ),
                   borderRadius:
-                      BorderRadius.circular(14),
+                      BorderRadius
+                          .circular(
+                    14,
+                  ),
                 ),
                 child: Text(
                   String.fromCharCode(
                     65 + index,
                   ),
-                  style: TextStyle(
-                    color: isGood || isWrong
+                  style:
+                      TextStyle(
+                    color: isGood ||
+                            isWrong
                         ? Colors.white
-                        : const Color(0xFF4F8FF7),
-                    fontWeight: FontWeight.w900,
+                        : const Color(
+                            0xFF4F8FF7,
+                          ),
+                    fontWeight:
+                        FontWeight.w900,
+                    fontSize: 15,
                   ),
                 ),
               ),
 
-              const SizedBox(width: 13),
+              const SizedBox(
+                width: 12,
+              ),
 
               Expanded(
                 child: Text(
-                  question.options[index],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF2D455F),
+                  question
+                      .options[index],
+                  style:
+                      const TextStyle(
+                    fontSize: 15,
+                    fontWeight:
+                        FontWeight.w700,
+                    color:
+                        Color(
+                      0xFF2D455F,
+                    ),
+                    height: 1.35,
                   ),
                 ),
               ),
 
               if (isGood)
                 const Icon(
-                  Icons.check_circle_rounded,
-                  color: Color(0xFF43C77A),
+                  Icons
+                      .check_circle_rounded,
+                  color:
+                      Color(
+                    0xFF43C77A,
+                  ),
+                  size: 25,
                 ),
 
               if (isWrong)
                 const Icon(
-                  Icons.cancel_rounded,
-                  color: Color(0xFFEF6262),
+                  Icons
+                      .cancel_rounded,
+                  color:
+                      Color(
+                    0xFFEF6262,
+                  ),
+                  size: 25,
                 ),
             ],
           ),
@@ -880,7 +1420,12 @@ class _AnswerOption extends StatelessWidget {
   }
 }
 
-class _ExplanationCard extends StatelessWidget {
+// ============================================================
+// EXPLANATION
+// ============================================================
+
+class _ExplanationCard
+    extends StatelessWidget {
   const _ExplanationCard({
     required this.question,
     required this.selected,
@@ -892,70 +1437,136 @@ class _ExplanationCard extends StatelessWidget {
   final bool timedOut;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final correct =
         selected != null &&
-        selected == question.answer;
+        selected ==
+            question.answer;
 
     final title = correct
-        ? 'Jawaban benar!'
+        ? '🎉 Jawaban benar!'
         : timedOut
-            ? 'Waktu habis'
-            : 'Belum tepat, yuk pelajari lagi';
+            ? '⏰ Waktu habis'
+            : '💡 Belum tepat, yuk belajar lagi';
 
-    final explanation = correct
-        ? question.explanation
-        : 'Jawaban yang benar adalah '
-            '"${question.options[question.answer]}". '
-            '${question.explanation}';
+    final explanation =
+        correct
+            ? question.explanation
+            : 'Jawaban yang benar adalah '
+                '"${question.options[question.answer]}". '
+                '${question.explanation}';
+
+    final color = correct
+        ? const Color(
+            0xFF43C77A,
+          )
+        : const Color(
+            0xFFF0A35A,
+          );
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 5),
-      padding: const EdgeInsets.all(17),
-      decoration: BoxDecoration(
-        color: correct
-            ? const Color(0xFFE9FFF2)
-            : const Color(0xFFFFF1E9),
-        borderRadius: BorderRadius.circular(21),
+      margin:
+          const EdgeInsets.only(
+        top: 5,
+      ),
+      padding:
+          const EdgeInsets.all(
+        17,
+      ),
+      decoration:
+          BoxDecoration(
+        gradient:
+            LinearGradient(
+          colors: correct
+              ? const [
+                  Color(0xFFE9FFF2),
+                  Color(0xFFF5FFFA),
+                ]
+              : const [
+                  Color(0xFFFFF1E9),
+                  Color(0xFFFFF9F3),
+                ],
+        ),
+        borderRadius:
+            BorderRadius.circular(
+          22,
+        ),
+        border: Border.all(
+          color: color.withOpacity(
+            .25,
+          ),
+        ),
       ),
       child: Row(
         crossAxisAlignment:
-            CrossAxisAlignment.start,
+            CrossAxisAlignment
+                .start,
         children: [
-          Icon(
-            correct
-                ? Icons.check_circle_rounded
-                : Icons.lightbulb_rounded,
-            color: correct
-                ? const Color(0xFF43C77A)
-                : const Color(0xFFF0A35A),
-            size: 38,
+          Container(
+            width: 42,
+            height: 42,
+            decoration:
+                BoxDecoration(
+              color:
+                  color.withOpacity(
+                .15,
+              ),
+              shape:
+                  BoxShape.circle,
+            ),
+            child: Icon(
+              correct
+                  ? Icons
+                      .check_rounded
+                  : Icons
+                      .lightbulb_rounded,
+              color: color,
+              size: 24,
+            ),
           ),
 
-          const SizedBox(width: 11),
+          const SizedBox(
+            width: 11,
+          ),
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF29435F),
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight.w900,
+                    color:
+                        Color(
+                      0xFF29435F,
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(
+                  height: 7,
+                ),
 
                 Text(
                   explanation,
-                  style: const TextStyle(
-                    color: Color(0xFF5E7183),
-                    height: 1.4,
-                    fontWeight: FontWeight.w600,
+                  style:
+                      const TextStyle(
+                    color:
+                        Color(
+                      0xFF5E7183,
+                    ),
+                    height: 1.45,
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -967,7 +1578,12 @@ class _ExplanationCard extends StatelessWidget {
   }
 }
 
-class _FeedbackCard extends StatelessWidget {
+// ============================================================
+// FEEDBACK POPUP
+// ============================================================
+
+class _FeedbackCard
+    extends StatelessWidget {
   const _FeedbackCard({
     required this.correct,
     required this.question,
@@ -979,12 +1595,14 @@ class _FeedbackCard extends StatelessWidget {
   final bool timedOut;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final title = correct
-        ? 'Jawaban Benar!'
+        ? 'Jawaban Benar! 🎉'
         : timedOut
-            ? 'Waktu Habis'
-            : 'Belum Tepat';
+            ? 'Waktu Habis ⏰'
+            : 'Belum Tepat 💪';
 
     final subtitle = correct
         ? question.explanation
@@ -992,100 +1610,224 @@ class _FeedbackCard extends StatelessWidget {
             '"${question.options[question.answer]}". '
             '${question.explanation}';
 
+    final mainColor = correct
+        ? const Color(
+            0xFF36B96D,
+          )
+        : const Color(
+            0xFFEF6262,
+          );
+
     return Container(
-      width: 420,
-      constraints: const BoxConstraints(
+      width: 430,
+      constraints:
+          const BoxConstraints(
         maxWidth: 430,
       ),
-      margin: const EdgeInsets.all(24),
-      padding: const EdgeInsets.fromLTRB(
-        25,
-        25,
-        25,
-        28,
+      margin:
+          const EdgeInsets.all(22),
+      padding:
+          const EdgeInsets.fromLTRB(
+        23,
+        24,
+        23,
+        26,
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: const [
+      decoration:
+          BoxDecoration(
+        gradient:
+            const LinearGradient(
+          begin:
+              Alignment.topCenter,
+          end:
+              Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Color(0xFFF7FBFF),
+          ],
+        ),
+        borderRadius:
+            BorderRadius.circular(
+          32,
+        ),
+        border: Border.all(
+          color: Colors.white,
+          width: 3,
+        ),
+        boxShadow:
+            const [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 30,
-            offset: Offset(0, 12),
+            color:
+                Color(0x45000000),
+            blurRadius: 32,
+            offset:
+                Offset(0, 13),
           ),
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize:
+            MainAxisSize.min,
         children: [
           Container(
-            width: 78,
-            height: 78,
-            decoration: BoxDecoration(
-              color: correct
-                  ? const Color(0xFF43C77A)
-                  : const Color(0xFFEF6262),
-              shape: BoxShape.circle,
+            width: 84,
+            height: 84,
+            decoration:
+                BoxDecoration(
+              gradient:
+                  LinearGradient(
+                colors: correct
+                    ? const [
+                        Color(
+                          0xFF55D887,
+                        ),
+                        Color(
+                          0xFF36B96D,
+                        ),
+                      ]
+                    : const [
+                        Color(
+                          0xFFFF8181,
+                        ),
+                        Color(
+                          0xFFEF6262,
+                        ),
+                      ],
+              ),
+              shape:
+                  BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: mainColor
+                      .withOpacity(
+                    .25,
+                  ),
+                  blurRadius: 17,
+                  offset:
+                      const Offset(
+                    0,
+                    7,
+                  ),
+                ),
+              ],
             ),
             child: Icon(
               correct
-                  ? Icons.check_rounded
+                  ? Icons
+                      .check_rounded
                   : timedOut
-                      ? Icons.timer_off_rounded
-                      : Icons.close_rounded,
-              color: Colors.white,
-              size: 48,
+                      ? Icons
+                          .timer_off_rounded
+                      : Icons
+                          .close_rounded,
+              color:
+                  Colors.white,
+              size: 50,
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(
+            height: 14,
+          ),
 
           Text(
             title,
-            textAlign: TextAlign.center,
+            textAlign:
+                TextAlign.center,
             style: TextStyle(
               fontSize: 25,
-              fontWeight: FontWeight.w900,
-              color: correct
-                  ? const Color(0xFF2EAE68)
-                  : const Color(0xFFE65353),
+              fontWeight:
+                  FontWeight.w900,
+              color: mainColor,
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(
+            height: 11,
+          ),
 
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            width:
+                double.infinity,
+            padding:
+                const EdgeInsets
+                    .all(16),
+            decoration:
+                BoxDecoration(
               color: correct
-                  ? const Color(0xFFE9FFF2)
-                  : const Color(0xFFFFF1E9),
+                  ? const Color(
+                      0xFFE9FFF2,
+                    )
+                  : const Color(
+                      0xFFFFF1F1,
+                    ),
               borderRadius:
-                  BorderRadius.circular(18),
+                  BorderRadius.circular(
+                19,
+              ),
             ),
             child: Text(
               subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
+              textAlign:
+                  TextAlign.center,
+              style:
+                  const TextStyle(
+                fontSize: 13,
                 height: 1.5,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF4E6478),
+                fontWeight:
+                    FontWeight.w600,
+                color:
+                    Color(
+                  0xFF4E6478,
+                ),
               ),
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(
+            height: 14,
+          ),
 
-          const Text(
-            'Sebentar lagi lanjut ke soal berikutnya...',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF8798A7),
-            ),
+          const Row(
+            mainAxisSize:
+                MainAxisSize.min,
+            children: [
+              Text(
+                '✨',
+                style:
+                    TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text(
+                'Sebentar lagi lanjut...',
+                textAlign:
+                    TextAlign.center,
+                style:
+                    TextStyle(
+                  fontSize: 11,
+                  fontWeight:
+                      FontWeight.w700,
+                  color:
+                      Color(
+                    0xFF8798A7,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text(
+                '✨',
+                style:
+                    TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ],
       ),

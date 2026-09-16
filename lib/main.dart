@@ -1,7 +1,10 @@
-import 'package:flutter/widgets.dart';
-
+import 'package:flutter/material.dart';
 import 'app.dart';
 
 void main() {
-  runApp(const BelajarCeriaApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    const BelajarCeriaApp(),
+  );
 }

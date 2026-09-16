@@ -40,74 +40,293 @@ class ResultPage extends StatelessWidget {
 
   String get message {
     if (percentage >= 80) {
-      return 'Hebat sekali! Kamu luar biasa!';
+      return 'Hebat sekali! Kamu luar biasa! 🎉';
     }
 
     if (percentage >= 60) {
-      return 'Bagus! Terus tingkatkan lagi!';
+      return 'Bagus! Terus tingkatkan lagi! 🌟';
     }
 
-    return 'Tidak apa-apa, ayo coba lagi!';
+    return 'Tidak apa-apa, ayo coba lagi! 💪';
+  }
+
+  Color get scoreColor {
+    if (percentage >= 80) {
+      return const Color(
+        0xFF36B96D,
+      );
+    }
+
+    if (percentage >= 60) {
+      return const Color(
+        0xFFFFA83D,
+      );
+    }
+
+    return const Color(
+      0xFFEF6262,
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       body: SchoolBackground(
         child: SafeArea(
           child: Scrollbar(
             thumbVisibility:
-                MediaQuery.sizeOf(context)
-                    .width >=
+                MediaQuery.sizeOf(
+                          context,
+                        ).width >=
                     900,
             trackVisibility:
-                MediaQuery.sizeOf(context)
-                    .width >=
+                MediaQuery.sizeOf(
+                          context,
+                        ).width >=
                     900,
             interactive: true,
             thickness: 8,
             radius:
-                const Radius.circular(20),
+                const Radius.circular(
+              20,
+            ),
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(
+              padding:
+                  const EdgeInsets
+                      .fromLTRB(
+                20,
                 22,
-                25,
-                22,
+                20,
                 60,
               ),
               children: [
                 Center(
-                  child: ConstrainedBox(
+                  child:
+                      ConstrainedBox(
                     constraints:
                         const BoxConstraints(
                       maxWidth: 760,
                     ),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 155,
-                          child: Image.asset(
-                            'assets/Gambar anak sd .jpeg',
-                            fit: BoxFit.contain,
+                        // ==================================================
+                        // TOP DECORATION
+                        // ==================================================
+
+                        Container(
+                          width: double
+                              .infinity,
+                          padding:
+                              const EdgeInsets
+                                  .fromLTRB(
+                            20,
+                            17,
+                            20,
+                            15,
+                          ),
+                          decoration:
+                              BoxDecoration(
+                            color: Colors
+                                .white
+                                .withOpacity(
+                              .94,
+                            ),
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              24,
+                            ),
+                            boxShadow:
+                                const [
+                              BoxShadow(
+                                color:
+                                    Color(
+                                  0x14000000,
+                                ),
+                                blurRadius:
+                                    15,
+                                offset:
+                                    Offset(
+                                  0,
+                                  7,
+                                ),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration:
+                                    const BoxDecoration(
+                                  gradient:
+                                      LinearGradient(
+                                    colors: [
+                                      Color(
+                                        0xFFFFD66B,
+                                      ),
+                                      Color(
+                                        0xFFFFA94D,
+                                      ),
+                                    ],
+                                  ),
+                                  borderRadius:
+                                      BorderRadius
+                                          .all(
+                                    Radius
+                                        .circular(
+                                      15,
+                                    ),
+                                  ),
+                                ),
+                                child:
+                                    const Icon(
+                                  Icons
+                                      .emoji_events_rounded,
+                                  color:
+                                      Colors.white,
+                                  size: 27,
+                                ),
+                              ),
+
+                              const SizedBox(
+                                width: 11,
+                              ),
+
+                              const Expanded(
+                                child:
+                                    Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    Text(
+                                      'Hasil Belajar',
+                                      style:
+                                          TextStyle(
+                                        fontSize:
+                                            17,
+                                        fontWeight:
+                                            FontWeight
+                                                .w900,
+                                        color:
+                                            Color(
+                                          0xFF283B63,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          3,
+                                    ),
+                                    Text(
+                                      'Lihat hasil kuismu di sini ✨',
+                                      style:
+                                          TextStyle(
+                                        fontSize:
+                                            11,
+                                        color:
+                                            Color(
+                                          0xFF71869A,
+                                        ),
+                                        fontWeight:
+                                            FontWeight
+                                                .w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
 
-                        const SizedBox(height: 8),
+                        const SizedBox(
+                          height: 18,
+                        ),
+
+                        // ==================================================
+                        // IMAGE
+                        // ==================================================
+
+                        Container(
+                          width: 185,
+                          height: 155,
+                          padding:
+                              const EdgeInsets
+                                  .all(10),
+                          decoration:
+                              BoxDecoration(
+                            color:
+                                Colors.white
+                                    .withOpacity(
+                              .82,
+                            ),
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              30,
+                            ),
+                            boxShadow:
+                                const [
+                              BoxShadow(
+                                color:
+                                    Color(
+                                  0x18000000,
+                                ),
+                                blurRadius:
+                                    18,
+                                offset:
+                                    Offset(
+                                  0,
+                                  8,
+                                ),
+                              ),
+                            ],
+                          ),
+                          child:
+                              ClipRRect(
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              23,
+                            ),
+                            child:
+                                Image.asset(
+                              'assets/Gambar anak sd .jpeg',
+                              fit: BoxFit
+                                  .contain,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 15,
+                        ),
 
                         const Text(
-                          'Kuis Selesai!',
+                          'Kuis Selesai! 🎉',
                           textAlign:
                               TextAlign.center,
-                          style: TextStyle(
+                          style:
+                              TextStyle(
                             color:
-                                Color(0xFF243B5A),
-                            fontSize: 32,
+                                Color(
+                              0xFF243B5A,
+                            ),
+                            fontSize: 31,
                             fontWeight:
-                                FontWeight.w900,
+                                FontWeight
+                                    .w900,
                           ),
                         ),
 
-                        const SizedBox(height: 6),
+                        const SizedBox(
+                          height: 6,
+                        ),
 
                         Text(
                           '$studentName • Kelas $grade SD',
@@ -116,32 +335,55 @@ class ResultPage extends StatelessWidget {
                           style:
                               const TextStyle(
                             color:
-                                Color(0xFF71859A),
+                                Color(
+                              0xFF71859A,
+                            ),
                             fontWeight:
-                                FontWeight.w700,
+                                FontWeight
+                                    .w700,
+                            fontSize: 13,
                           ),
                         ),
 
-                        const SizedBox(height: 22),
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        // ==================================================
+                        // SCORE CARD
+                        // ==================================================
 
                         Container(
-                          width: double.infinity,
+                          width:
+                              double.infinity,
                           padding:
-                              const EdgeInsets.fromLTRB(
+                              const EdgeInsets
+                                  .fromLTRB(
+                            24,
+                            25,
+                            24,
                             28,
-                            28,
-                            28,
-                            30,
                           ),
                           decoration:
                               BoxDecoration(
                             gradient:
                                 const LinearGradient(
+                              begin:
+                                  Alignment
+                                      .topLeft,
+                              end:
+                                  Alignment
+                                      .bottomRight,
                               colors: [
                                 Color(
-                                    0xFF4F8FF7),
+                                  0xFF4B7BEC,
+                                ),
                                 Color(
-                                    0xFF6C69E8),
+                                  0xFF6D68E8,
+                                ),
+                                Color(
+                                  0xFF8A65DE,
+                                ),
                               ],
                             ),
                             borderRadius:
@@ -149,15 +391,21 @@ class ResultPage extends StatelessWidget {
                                     .circular(
                               32,
                             ),
+                            border:
+                                Border.all(
+                              color:
+                                  Colors.white,
+                              width: 2,
+                            ),
                             boxShadow:
                                 const [
                               BoxShadow(
                                 color:
                                     Color(
-                                  0x334F8FF7,
+                                  0x354B7BEC,
                                 ),
                                 blurRadius:
-                                    28,
+                                    30,
                                 offset:
                                     Offset(
                                   0,
@@ -166,14 +414,57 @@ class ResultPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Column(
+                          child:
+                              Column(
                             children: [
+                              Container(
+                                padding:
+                                    const EdgeInsets
+                                        .symmetric(
+                                  horizontal:
+                                      15,
+                                  vertical:
+                                      7,
+                                ),
+                                decoration:
+                                    BoxDecoration(
+                                  color: Colors
+                                      .white
+                                      .withOpacity(
+                                    .16,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius
+                                          .circular(
+                                    30,
+                                  ),
+                                ),
+                                child:
+                                    const Text(
+                                  '🏆 HASIL KUIS',
+                                  style:
+                                      TextStyle(
+                                    color:
+                                        Colors.white,
+                                    fontSize:
+                                        11,
+                                    fontWeight:
+                                        FontWeight
+                                            .w900,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(
+                                height: 13,
+                              ),
+
                               const Text(
                                 'Nilai Kamu',
                                 style:
                                     TextStyle(
-                                  color: Colors
-                                      .white70,
+                                  color:
+                                      Colors.white70,
                                   fontWeight:
                                       FontWeight
                                           .w700,
@@ -181,7 +472,7 @@ class ResultPage extends StatelessWidget {
                               ),
 
                               const SizedBox(
-                                height: 3,
+                                height: 2,
                               ),
 
                               Text(
@@ -190,11 +481,18 @@ class ResultPage extends StatelessWidget {
                                     const TextStyle(
                                   color:
                                       Colors.white,
-                                  fontSize: 76,
+                                  fontSize:
+                                      76,
+                                  height:
+                                      1,
                                   fontWeight:
                                       FontWeight
                                           .w900,
                                 ),
+                              ),
+
+                              const SizedBox(
+                                height: 6,
                               ),
 
                               const Text(
@@ -206,50 +504,81 @@ class ResultPage extends StatelessWidget {
                                   fontWeight:
                                       FontWeight
                                           .w800,
+                                  fontSize:
+                                      12,
                                 ),
                               ),
 
                               const SizedBox(
-                                height: 12,
+                                height: 13,
                               ),
 
-                              Row(
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children:
-                                    List.generate(
-                                  3,
-                                  (index) {
-                                    return Icon(
-                                      index <
-                                              stars
-                                          ? Icons
-                                              .star_rounded
-                                          : Icons
-                                              .star_border_rounded,
-                                      color:
-                                          const Color(
-                                        0xFFFFD66B,
-                                      ),
-                                      size: 35,
-                                    );
-                                  },
+                              // STARS
+                              Container(
+                                padding:
+                                    const EdgeInsets
+                                        .symmetric(
+                                  horizontal:
+                                      17,
+                                  vertical:
+                                      8,
+                                ),
+                                decoration:
+                                    BoxDecoration(
+                                  color: Colors
+                                      .white
+                                      .withOpacity(
+                                    .13,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius
+                                          .circular(
+                                    25,
+                                  ),
+                                ),
+                                child:
+                                    Row(
+                                  mainAxisSize:
+                                      MainAxisSize
+                                          .min,
+                                  children:
+                                      List.generate(
+                                    3,
+                                    (index) {
+                                      return Icon(
+                                        index <
+                                                stars
+                                            ? Icons
+                                                .star_rounded
+                                            : Icons
+                                                .star_border_rounded,
+                                        color:
+                                            const Color(
+                                          0xFFFFD66B,
+                                        ),
+                                        size:
+                                            35,
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
 
                               const SizedBox(
-                                height: 10,
+                                height: 13,
                               ),
 
                               Text(
                                 message,
                                 textAlign:
-                                    TextAlign.center,
+                                    TextAlign
+                                        .center,
                                 style:
                                     const TextStyle(
                                   color:
                                       Colors.white,
-                                  fontSize: 18,
+                                  fontSize:
+                                      17,
                                   fontWeight:
                                       FontWeight
                                           .w900,
@@ -260,24 +589,34 @@ class ResultPage extends StatelessWidget {
                         ),
 
                         const SizedBox(
-                          height: 15,
+                          height: 14,
                         ),
+
+                        // ==================================================
+                        // STATISTICS
+                        // ==================================================
 
                         Row(
                           children: [
                             Expanded(
                               child:
                                   _ResultCard(
-                                title: 'Poin',
+                                title:
+                                    'Poin',
                                 value:
                                     '$score',
-                                icon: Icons
-                                    .bolt_rounded,
+                                icon:
+                                    Icons
+                                        .bolt_rounded,
+                                color:
+                                    const Color(
+                                  0xFFFFB84D,
+                                ),
                               ),
                             ),
 
                             const SizedBox(
-                              width: 12,
+                              width: 11,
                             ),
 
                             Expanded(
@@ -287,30 +626,156 @@ class ResultPage extends StatelessWidget {
                                     'Persentase',
                                 value:
                                     '$percentage%',
-                                icon: Icons
-                                    .percent_rounded,
+                                icon:
+                                    Icons
+                                        .percent_rounded,
+                                color:
+                                    const Color(
+                                  0xFF4B7BEC,
+                                ),
                               ),
                             ),
                           ],
                         ),
 
                         const SizedBox(
-                          height: 20,
+                          height: 14,
                         ),
 
+                        // ==================================================
+                        // MESSAGE
+                        // ==================================================
+
+                        Container(
+                          width:
+                              double.infinity,
+                          padding:
+                              const EdgeInsets
+                                  .all(
+                            17,
+                          ),
+                          decoration:
+                              BoxDecoration(
+                            color: Colors
+                                .white
+                                .withOpacity(
+                              .95,
+                            ),
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              21,
+                            ),
+                            border:
+                                Border.all(
+                              color:
+                                  scoreColor
+                                      .withOpacity(
+                                .20,
+                              ),
+                            ),
+                            boxShadow:
+                                const [
+                              BoxShadow(
+                                color:
+                                    Color(
+                                  0x10000000,
+                                ),
+                                blurRadius:
+                                    12,
+                                offset:
+                                    Offset(
+                                  0,
+                                  5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 43,
+                                height: 43,
+                                decoration:
+                                    BoxDecoration(
+                                  color:
+                                      scoreColor
+                                          .withOpacity(
+                                    .12,
+                                  ),
+                                  shape:
+                                      BoxShape
+                                          .circle,
+                                ),
+                                child:
+                                    Icon(
+                                  percentage >=
+                                          80
+                                      ? Icons
+                                          .celebration_rounded
+                                      : percentage >=
+                                              60
+                                          ? Icons
+                                              .thumb_up_alt_rounded
+                                          : Icons
+                                              .sentiment_satisfied_alt_rounded,
+                                  color:
+                                      scoreColor,
+                                ),
+                              ),
+
+                              const SizedBox(
+                                width: 11,
+                              ),
+
+                              Expanded(
+                                child:
+                                    Text(
+                                  message,
+                                  style:
+                                      const TextStyle(
+                                    color:
+                                        Color(
+                                      0xFF425A72,
+                                    ),
+                                    fontWeight:
+                                        FontWeight
+                                            .w800,
+                                    fontSize:
+                                        12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 19,
+                        ),
+
+                        // ==================================================
+                        // BACK HOME
+                        // ==================================================
+
                         SizedBox(
-                          width: double.infinity,
+                          width:
+                              double.infinity,
                           child:
                               FilledButton.icon(
-                            onPressed: () {
+                            onPressed:
+                                () {
                               Navigator.pop(
                                 context,
                               );
                             },
-                            icon: const Icon(
-                              Icons.home_rounded,
+                            icon:
+                                const Icon(
+                              Icons
+                                  .home_rounded,
                             ),
-                            label: const Text(
+                            label:
+                                const Text(
                               'Kembali ke Beranda',
                             ),
                             style:
@@ -325,17 +790,39 @@ class ResultPage extends StatelessWidget {
                               padding:
                                   const EdgeInsets
                                       .symmetric(
-                                vertical: 17,
+                                vertical:
+                                    17,
                               ),
                               shape:
                                   RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius
                                         .circular(
-                                  18,
+                                  19,
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        const Text(
+                          '✨ Tetap semangat belajar dan bermain! ✨',
+                          textAlign:
+                              TextAlign.center,
+                          style:
+                              TextStyle(
+                            color:
+                                Color(
+                              0xFF71869A,
+                            ),
+                            fontSize: 11,
+                            fontWeight:
+                                FontWeight
+                                    .w700,
                           ),
                         ),
                       ],
@@ -351,79 +838,120 @@ class ResultPage extends StatelessWidget {
   }
 }
 
-class _ResultCard extends StatelessWidget {
+// ============================================================
+// RESULT SMALL CARD
+// ============================================================
+
+class _ResultCard
+    extends StatelessWidget {
   const _ResultCard({
     required this.title,
     required this.value,
     required this.icon,
+    required this.color,
   });
 
   final String title;
   final String value;
   final IconData icon;
+  final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      padding:
+          const EdgeInsets.all(
+        17,
+      ),
+      decoration:
+          BoxDecoration(
+        color: Colors.white
+            .withOpacity(.97),
         borderRadius:
-            BorderRadius.circular(22),
-        boxShadow: [
+            BorderRadius.circular(
+          21,
+        ),
+        border: Border.all(
+          color:
+              color.withOpacity(
+            .14,
+          ),
+        ),
+        boxShadow:
+            const [
           BoxShadow(
             color:
-                Colors.black.withOpacity(.06),
-            blurRadius: 15,
+                Color(0x10000000),
+            blurRadius: 13,
             offset:
-                const Offset(0, 7),
+                Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
+            width: 46,
+            height: 46,
+            decoration:
+                BoxDecoration(
               color:
-                  const Color(0xFFEAF2FF),
+                  color.withOpacity(
+                .12,
+              ),
               borderRadius:
-                  BorderRadius.circular(15),
+                  BorderRadius.circular(
+                14,
+              ),
             ),
             child: Icon(
               icon,
-              color:
-                  const Color(0xFF4F8FF7),
+              color: color,
+              size: 23,
             ),
           ),
 
-          const SizedBox(width: 11),
+          const SizedBox(
+            width: 10,
+          ),
 
           Expanded(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style:
+                      const TextStyle(
+                    fontSize: 11,
                     color:
-                        Color(0xFF71869A),
+                        Color(
+                      0xFF71869A,
+                    ),
                     fontWeight:
-                        FontWeight.w700,
+                        FontWeight
+                            .w700,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(
+                  height: 2,
+                ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style:
+                      const TextStyle(
                     fontSize: 20,
                     fontWeight:
-                        FontWeight.w900,
+                        FontWeight
+                            .w900,
                     color:
-                        Color(0xFF263E5D),
+                        Color(
+                      0xFF263E5D,
+                    ),
                   ),
                 ),
               ],

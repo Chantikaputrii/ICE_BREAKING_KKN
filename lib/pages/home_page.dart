@@ -40,20 +40,26 @@ class _HomePageState extends State<HomePage> {
       body: pages[index],
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          indicatorColor: const Color(0xFFD7EAFF),
+          backgroundColor: Colors.white.withValues(alpha: .98),
+          elevation: 12,
+          shadowColor: const Color(0x22000000),
+          indicatorColor: const Color(0xFFFFE49A),
+          height: 76,
           labelTextStyle:
               WidgetStateProperty.resolveWith<TextStyle?>(
             (states) {
               if (states.contains(WidgetState.selected)) {
                 return const TextStyle(
-                  color: Color(0xFF1976F3),
-                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF356AE6),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 12,
                 );
               }
 
               return const TextStyle(
-                color: Color(0xFF4F5F73),
-                fontWeight: FontWeight.w600,
+                color: Color(0xFF71839A),
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
               );
             },
           ),
@@ -62,13 +68,13 @@ class _HomePageState extends State<HomePage> {
             (states) {
               if (states.contains(WidgetState.selected)) {
                 return const IconThemeData(
-                  color: Color(0xFF1976F3),
-                  size: 26,
+                  color: Color(0xFF356AE6),
+                  size: 27,
                 );
               }
 
               return const IconThemeData(
-                color: Color(0xFF4F5F73),
+                color: Color(0xFF71839A),
                 size: 24,
               );
             },
@@ -150,7 +156,6 @@ class _HomeContentState extends State<_HomeContent>
               sunAnimation: _sunController,
             ),
           ),
-
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -184,15 +189,16 @@ class _HomeContentState extends State<_HomeContent>
 
                             const _WelcomeCard(),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 28),
 
                             const Text(
-                              'Pilih Kelasmu',
+                              'Pilih Kelasmu 🎒',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: 29,
                                 fontWeight: FontWeight.w900,
-                                color: Color(0xFF243B5A),
+                                color: Color(0xFF283B63),
+                                letterSpacing: -.4,
                               ),
                             ),
 
@@ -204,11 +210,12 @@ class _HomeContentState extends State<_HomeContent>
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF637D96),
+                                color: Color(0xFF71839A),
+                                height: 1.4,
                               ),
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 22),
 
                             LayoutBuilder(
                               builder:
@@ -234,8 +241,8 @@ class _HomeContentState extends State<_HomeContent>
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: columns,
-                                    crossAxisSpacing: 16,
-                                    mainAxisSpacing: 16,
+                                    crossAxisSpacing: 18,
+                                    mainAxisSpacing: 18,
                                     childAspectRatio:
                                         columns == 1
                                             ? 3.0
@@ -258,7 +265,7 @@ class _HomeContentState extends State<_HomeContent>
                               },
                             ),
 
-                            const SizedBox(height: 26),
+                            const SizedBox(height: 28),
 
                             const _FeatureSection(),
                           ],
@@ -332,7 +339,7 @@ class _SkyAndGardenDecorationState
         clipBehavior: Clip.none,
         children: [
           // ==================================================
-          // LANGIT BIRU
+          // LANGIT
           // ==================================================
 
           Positioned(
@@ -346,9 +353,9 @@ class _SkyAndGardenDecorationState
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFF35BDF6),
-                    Color(0xFF6DD5FA),
-                    Color(0xFFBDEEFF),
+                    Color(0xFF4FC7F5),
+                    Color(0xFF7DDBFA),
+                    Color(0xFFD7F2FF),
                   ],
                 ),
               ),
@@ -356,7 +363,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // AWAN BERJALAN 1
+          // AWAN 1
           // ==================================================
 
           AnimatedBuilder(
@@ -379,7 +386,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // AWAN BERJALAN 2
+          // AWAN 2
           // ==================================================
 
           AnimatedBuilder(
@@ -402,7 +409,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // AWAN BERJALAN 3
+          // AWAN 3
           // ==================================================
 
           AnimatedBuilder(
@@ -425,7 +432,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // BURUNG BERJALAN 1
+          // BURUNG 1
           // ==================================================
 
           AnimatedBuilder(
@@ -453,7 +460,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // BURUNG BERJALAN 2
+          // BURUNG 2
           // ==================================================
 
           AnimatedBuilder(
@@ -481,7 +488,7 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // MATAHARI BERPUTAR
+          // MATAHARI
           // ==================================================
 
           Positioned(
@@ -495,25 +502,51 @@ class _SkyAndGardenDecorationState
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    ...List.generate(
+                      8,
+                      (index) {
+                        final angle =
+                            index * 3.14159265359 / 4;
+
+                        return Transform.rotate(
+                          angle: angle,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Container(
+                              width: 7,
+                              height: width < 600 ? 19 : 25,
+                              decoration: BoxDecoration(
+                                color:
+                                    const Color(0xFFFFC83D),
+                                borderRadius:
+                                    BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                     Container(
                       width: width < 600 ? 62 : 80,
                       height: width < 600 ? 62 : 80,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFFFE66D),
+                            Color(0xFFFFB82E),
+                          ],
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFFD54F)
-                                .withValues(alpha: .40),
-                            blurRadius: 35,
-                            spreadRadius: 10,
+                            color: Color(0x44FFB82E),
+                            blurRadius: 20,
+                            spreadRadius: 3,
                           ),
                         ],
                       ),
-                    ),
-                    Icon(
-                      Icons.wb_sunny_rounded,
-                      size: width < 600 ? 58 : 76,
-                      color: const Color(0xFFFFC928),
                     ),
                   ],
                 ),
@@ -522,40 +555,54 @@ class _SkyAndGardenDecorationState
           ),
 
           // ==================================================
-          // LAHAN HIJAU BERGELOMBANG
+          // TAMAN / RUMPUT
           // ==================================================
 
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: height * .42,
-            child: CustomPaint(
-              painter: _RollingGrassPainter(),
+            height: height * .23,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF9BE27D),
+                    Color(0xFF62C95D),
+                    Color(0xFF42AA50),
+                  ],
+                ),
+              ),
             ),
           ),
 
           // ==================================================
-          // POHON KIRI
+          // BUNGA
           // ==================================================
 
           Positioned(
-            left: width < 600 ? 8 : 35,
-            bottom: height * .25,
-            child: _TreeDecoration(
-              scale: width < 600 ? .65 : 1.0,
+            left: width * .08,
+            bottom: height * .08,
+            child: const _FlowerDecoration(
+              scale: .9,
             ),
           ),
 
-          // ==================================================
-          // POHON KANAN
-          // ==================================================
+          Positioned(
+            right: width * .12,
+            bottom: height * .06,
+            child: const _FlowerDecoration(
+              scale: .7,
+            ),
+          ),
 
           Positioned(
-            right: width < 600 ? 8 : 40,
-            bottom: height * .23,
-            child: _TreeDecoration(
-              scale: width < 600 ? .58 : .90,
+            left: width * .42,
+            bottom: height * .03,
+            child: const _FlowerDecoration(
+              scale: .55,
             ),
           ),
 
@@ -564,163 +611,18 @@ class _SkyAndGardenDecorationState
           // ==================================================
 
           Positioned(
-            left: width * .27,
-            bottom: height * .19,
-            child: const _TreeDecoration(
-              scale: .48,
+            left: width < 600 ? 8 : 35,
+            bottom: height * .13,
+            child: _TreeDecoration(
+              scale: width < 600 ? .65 : .9,
             ),
           ),
 
           Positioned(
-            right: width * .27,
-            bottom: height * .17,
-            child: const _TreeDecoration(
-              scale: .42,
-            ),
-          ),
-
-          // ==================================================
-          // RUMPUT KECIL
-          // ==================================================
-
-          Positioned(
-            left: width * .08,
-            bottom: height * .11,
-            child: const _GrassDecoration(
-              size: 28,
-            ),
-          ),
-
-          Positioned(
-            left: width * .18,
-            bottom: height * .08,
-            child: const _GrassDecoration(
-              size: 22,
-            ),
-          ),
-
-          Positioned(
-            left: width * .36,
+            right: width < 600 ? 5 : 30,
             bottom: height * .12,
-            child: const _GrassDecoration(
-              size: 25,
-            ),
-          ),
-
-          Positioned(
-            left: width * .52,
-            bottom: height * .10,
-            child: const _GrassDecoration(
-              size: 24,
-            ),
-          ),
-
-          Positioned(
-            right: width * .08,
-            bottom: height * .11,
-            child: const _GrassDecoration(
-              size: 28,
-            ),
-          ),
-
-          Positioned(
-            right: width * .19,
-            bottom: height * .07,
-            child: const _GrassDecoration(
-              size: 22,
-            ),
-          ),
-
-          Positioned(
-            left: width * .70,
-            bottom: height * .12,
-            child: const _GrassDecoration(
-              size: 24,
-            ),
-          ),
-
-          // ==================================================
-          // BUNGA-BUNGA KECIL
-          // ==================================================
-
-          Positioned(
-            left: 15,
-            bottom: height * .06,
-            child: const _FlowerDecoration(
-              size: 28,
-              color: Color(0xFFFF6FAE),
-            ),
-          ),
-
-          Positioned(
-            left: width * .13,
-            bottom: height * .04,
-            child: const _FlowerDecoration(
-              size: 20,
-              color: Color(0xFFFFD34E),
-            ),
-          ),
-
-          Positioned(
-            left: width * .25,
-            bottom: height * .07,
-            child: const _FlowerDecoration(
-              size: 22,
-              color: Color(0xFFFF8FA3),
-            ),
-          ),
-
-          Positioned(
-            left: width * .42,
-            bottom: height * .04,
-            child: const _FlowerDecoration(
-              size: 18,
-              color: Color(0xFFFFD34E),
-            ),
-          ),
-
-          Positioned(
-            left: width * .58,
-            bottom: height * .06,
-            child: const _FlowerDecoration(
-              size: 22,
-              color: Color(0xFFFF70A6),
-            ),
-          ),
-
-          Positioned(
-            left: width * .72,
-            bottom: height * .04,
-            child: const _FlowerDecoration(
-              size: 19,
-              color: Color(0xFFFFD34E),
-            ),
-          ),
-
-          Positioned(
-            right: width * .22,
-            bottom: height * .04,
-            child: const _FlowerDecoration(
-              size: 19,
-              color: Color(0xFFFFD34E),
-            ),
-          ),
-
-          Positioned(
-            right: width * .11,
-            bottom: height * .07,
-            child: const _FlowerDecoration(
-              size: 25,
-              color: Color(0xFFFF8BB5),
-            ),
-          ),
-
-          Positioned(
-            right: 12,
-            bottom: height * .05,
-            child: const _FlowerDecoration(
-              size: 30,
-              color: Color(0xFFFFD34E),
+            child: _TreeDecoration(
+              scale: width < 600 ? .60 : .85,
             ),
           ),
         ],
@@ -730,12 +632,12 @@ class _SkyAndGardenDecorationState
 }
 
 // ============================================================
-// AWAN
+// CLOUD
 // ============================================================
 
 class _CloudDecoration extends StatelessWidget {
   const _CloudDecoration({
-    this.scale = 1,
+    required this.scale,
   });
 
   final double scale;
@@ -752,49 +654,49 @@ class _CloudDecoration extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           children: [
             Positioned(
-              bottom: 0,
-              left: 15,
+              bottom: 5,
+              left: 10,
+              right: 0,
               child: Container(
-                width: 135,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .92),
-                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.white.withValues(alpha: .88),
+                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
             ),
             Positioned(
-              left: 38,
-              bottom: 22,
+              bottom: 17,
+              left: 25,
               child: Container(
                 width: 55,
                 height: 55,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .95),
+                  color: Colors.white.withValues(alpha: .92),
                   shape: BoxShape.circle,
                 ),
               ),
             ),
             Positioned(
-              left: 78,
-              bottom: 25,
+              bottom: 20,
+              left: 70,
               child: Container(
                 width: 65,
                 height: 65,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .95),
+                  color: Colors.white.withValues(alpha: .94),
                   shape: BoxShape.circle,
                 ),
               ),
             ),
             Positioned(
-              right: 18,
-              bottom: 18,
+              bottom: 17,
+              right: 20,
               child: Container(
-                width: 48,
-                height: 48,
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .94),
+                  color: Colors.white.withValues(alpha: .90),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -807,12 +709,12 @@ class _CloudDecoration extends StatelessWidget {
 }
 
 // ============================================================
-// BURUNG
+// BIRD
 // ============================================================
 
 class _BirdDecoration extends StatelessWidget {
   const _BirdDecoration({
-    this.scale = 1,
+    required this.scale,
   });
 
   final double scale;
@@ -822,8 +724,8 @@ class _BirdDecoration extends StatelessWidget {
     return Transform.scale(
       scale: scale,
       child: SizedBox(
-        width: 70,
-        height: 35,
+        width: 45,
+        height: 25,
         child: CustomPaint(
           painter: _BirdPainter(),
         ),
@@ -834,176 +736,52 @@ class _BirdDecoration extends StatelessWidget {
 
 class _BirdPainter extends CustomPainter {
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
     final paint = Paint()
-      ..color = const Color(0xFF38516B)
+      ..color = const Color(0xFF45627D)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
 
-    path.moveTo(5, 18);
+    path.moveTo(2, 12);
     path.quadraticBezierTo(
-      18,
-      5,
-      32,
-      18,
+      10,
+      4,
+      20,
+      12,
     );
 
-    path.moveTo(32, 18);
+    path.moveTo(20, 12);
     path.quadraticBezierTo(
-      47,
-      5,
-      62,
-      18,
+      30,
+      4,
+      40,
+      12,
     );
 
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+  bool shouldRepaint(
+    covariant CustomPainter oldDelegate,
+  ) {
     return false;
   }
 }
 
 // ============================================================
-// LAHAN HIJAU BERGELOMBANG
+// FLOWER
 // ============================================================
 
-class _RollingGrassPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final backPaint = Paint()
-      ..color = const Color(0xFF4FB84B)
-      ..style = PaintingStyle.fill;
-
-    final backPath = Path();
-
-    backPath.moveTo(0, size.height * .38);
-
-    backPath.cubicTo(
-      size.width * .18,
-      size.height * .22,
-      size.width * .30,
-      size.height * .45,
-      size.width * .48,
-      size.height * .34,
-    );
-
-    backPath.cubicTo(
-      size.width * .64,
-      size.height * .22,
-      size.width * .78,
-      size.height * .43,
-      size.width,
-      size.height * .30,
-    );
-
-    backPath.lineTo(size.width, size.height);
-    backPath.lineTo(0, size.height);
-    backPath.close();
-
-    canvas.drawPath(backPath, backPaint);
-
-    final paint = Paint()
-      ..color = const Color(0xFF65C85A)
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-
-    path.moveTo(0, size.height * .22);
-
-    path.cubicTo(
-      size.width * .12,
-      size.height * .05,
-      size.width * .23,
-      size.height * .34,
-      size.width * .36,
-      size.height * .20,
-    );
-
-    path.cubicTo(
-      size.width * .50,
-      size.height * .05,
-      size.width * .60,
-      size.height * .35,
-      size.width * .73,
-      size.height * .18,
-    );
-
-    path.cubicTo(
-      size.width * .84,
-      size.height * .05,
-      size.width * .92,
-      size.height * .30,
-      size.width,
-      size.height * .15,
-    );
-
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-
-    // Gelombang kecil tambahan
-    final frontPaint = Paint()
-      ..color = const Color(0xFF78D669)
-      ..style = PaintingStyle.fill;
-
-    final frontPath = Path();
-
-    frontPath.moveTo(0, size.height * .58);
-
-    frontPath.cubicTo(
-      size.width * .15,
-      size.height * .46,
-      size.width * .28,
-      size.height * .65,
-      size.width * .42,
-      size.height * .55,
-    );
-
-    frontPath.cubicTo(
-      size.width * .57,
-      size.height * .44,
-      size.width * .70,
-      size.height * .65,
-      size.width * .84,
-      size.height * .52,
-    );
-
-    frontPath.cubicTo(
-      size.width * .92,
-      size.height * .46,
-      size.width * .97,
-      size.height * .55,
-      size.width,
-      size.height * .51,
-    );
-
-    frontPath.lineTo(size.width, size.height);
-    frontPath.lineTo(0, size.height);
-    frontPath.close();
-
-    canvas.drawPath(frontPath, frontPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-// ============================================================
-// POHON
-// ============================================================
-
-class _TreeDecoration extends StatelessWidget {
-  const _TreeDecoration({
-    this.scale = 1,
+class _FlowerDecoration extends StatelessWidget {
+  const _FlowerDecoration({
+    required this.scale,
   });
 
   final double scale;
@@ -1014,97 +792,92 @@ class _TreeDecoration extends StatelessWidget {
       scale: scale,
       alignment: Alignment.bottomCenter,
       child: SizedBox(
-        width: 105,
-        height: 165,
+        width: 55,
+        height: 90,
         child: Stack(
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.topCenter,
           children: [
-            // Batang
             Positioned(
               bottom: 0,
               child: Container(
-                width: 22,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8B5A35),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-
-            // Dahan
-            Positioned(
-              bottom: 52,
-              child: Container(
-                width: 70,
-                height: 15,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8B5A35),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-
-            // Daun kiri
-            Positioned(
-              top: 32,
-              left: 0,
-              child: Container(
-                width: 58,
+                width: 4,
                 height: 58,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF46B84D),
-                  shape: BoxShape.circle,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF379B4C),
+                  borderRadius: BorderRadius.circular(5),
                 ),
               ),
             ),
-
-            // Daun tengah
             Positioned(
-              top: 5,
-              left: 12,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF3EAD4A),
-                  shape: BoxShape.circle,
+              bottom: 26,
+              left: 9,
+              child: Transform.rotate(
+                angle: -.5,
+                child: Container(
+                  width: 24,
+                  height: 11,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF58B957),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
                 ),
               ),
             ),
-
-            // Daun kanan
             Positioned(
-              top: 35,
-              right: 5,
-              child: Container(
-                width: 65,
-                height: 65,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF51BD55),
-                  shape: BoxShape.circle,
+              bottom: 45,
+              right: 7,
+              child: Transform.rotate(
+                angle: .5,
+                child: Container(
+                  width: 24,
+                  height: 11,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF58B957),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                  ),
                 ),
               ),
             ),
-
-            // Buah
-            const Positioned(
-              top: 38,
-              left: 35,
-              child: Icon(
-                Icons.circle,
-                size: 9,
-                color: Color(0xFFFFD34E),
-              ),
-            ),
-
-            const Positioned(
-              top: 55,
-              right: 28,
-              child: Icon(
-                Icons.circle,
-                size: 8,
-                color: Color(0xFFFF7A7A),
+            Positioned(
+              top: 0,
+              child: SizedBox(
+                width: 42,
+                height: 42,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _petal(
+                      Alignment.topCenter,
+                      const Color(0xFFFF7190),
+                    ),
+                    _petal(
+                      Alignment.bottomCenter,
+                      const Color(0xFFFF7190),
+                    ),
+                    _petal(
+                      Alignment.centerLeft,
+                      const Color(0xFFFF8DA6),
+                    ),
+                    _petal(
+                      Alignment.centerRight,
+                      const Color(0xFFFF8DA6),
+                    ),
+                    Container(
+                      width: 13,
+                      height: 13,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFD34E),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -1112,154 +885,92 @@ class _TreeDecoration extends StatelessWidget {
       ),
     );
   }
-}
 
-// ============================================================
-// RUMPUT KECIL
-// ============================================================
-
-class _GrassDecoration extends StatelessWidget {
-  const _GrassDecoration({
-    this.size = 25,
-  });
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size * 1.3,
-      child: CustomPaint(
-        painter: _GrassPainter(),
+  Widget _petal(
+    Alignment alignment,
+    Color color,
+  ) {
+    return Align(
+      alignment: alignment,
+      child: Container(
+        width: 19,
+        height: 19,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
       ),
     );
   }
 }
 
-class _GrassPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF238F3A)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
-
-    final centerX = size.width / 2;
-
-    final left = Path()
-      ..moveTo(centerX, size.height)
-      ..quadraticBezierTo(
-        centerX - 5,
-        size.height * .45,
-        centerX - 9,
-        size.height * .12,
-      );
-
-    final center = Path()
-      ..moveTo(centerX, size.height)
-      ..quadraticBezierTo(
-        centerX,
-        size.height * .40,
-        centerX + 1,
-        size.height * .05,
-      );
-
-    final right = Path()
-      ..moveTo(centerX, size.height)
-      ..quadraticBezierTo(
-        centerX + 6,
-        size.height * .45,
-        centerX + 11,
-        size.height * .18,
-      );
-
-    canvas.drawPath(left, paint);
-    canvas.drawPath(center, paint);
-    canvas.drawPath(right, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
 // ============================================================
-// BUNGA
+// TREE
 // ============================================================
 
-class _FlowerDecoration extends StatelessWidget {
-  const _FlowerDecoration({
-    required this.size,
-    required this.color,
+class _TreeDecoration extends StatelessWidget {
+  const _TreeDecoration({
+    required this.scale,
   });
 
-  final double size;
-  final Color color;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size + 16,
-      height: size + 22,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: 3,
-              height: size * .65,
+    return Transform.scale(
+      scale: scale,
+      alignment: Alignment.bottomCenter,
+      child: SizedBox(
+        width: 100,
+        height: 150,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Container(
+              width: 17,
+              height: 72,
               decoration: BoxDecoration(
-                color: const Color(0xFF3C9B3E),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFF8B5A38),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-          ),
-
-          Positioned(
-            bottom: size * .20,
-            left: 0,
-            child: Transform.rotate(
-              angle: -.55,
+            Positioned(
+              top: 4,
               child: Container(
-                width: size * .35,
-                height: size * .17,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF54A94D),
-                  borderRadius: BorderRadius.circular(20),
+                width: 78,
+                height: 78,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF58BD5A),
+                  shape: BoxShape.circle,
                 ),
               ),
             ),
-          ),
-
-          Positioned(
-            bottom: size * .32,
-            right: 0,
-            child: Transform.rotate(
-              angle: .55,
+            Positioned(
+              top: 26,
+              left: 0,
               child: Container(
-                width: size * .35,
-                height: size * .17,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF54A94D),
-                  borderRadius: BorderRadius.circular(20),
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF4DAD52),
+                  shape: BoxShape.circle,
                 ),
               ),
             ),
-          ),
-
-          Positioned(
-            top: 0,
-            child: Icon(
-              Icons.local_florist_rounded,
-              size: size,
-              color: color,
+            Positioned(
+              top: 27,
+              right: 0,
+              child: Container(
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF69C961),
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1277,23 +988,23 @@ class _Header extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 58,
-          height: 58,
+          width: 62,
+          height: 62,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x18000000),
-                blurRadius: 15,
-                offset: Offset(0, 6),
+                blurRadius: 18,
+                offset: Offset(0, 7),
               ),
             ],
           ),
           child: const Icon(
             Icons.school_rounded,
-            size: 32,
-            color: Color(0xFF1976F3),
+            size: 34,
+            color: Color(0xFF3F6FE8),
           ),
         ),
 
@@ -1309,21 +1020,40 @@ class _Header extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF243B5A),
+                  color: Color(0xFF283B63),
+                  letterSpacing: .2,
                 ),
               ),
-
               SizedBox(height: 2),
-
               Text(
                 'Media pembelajaran anak SD',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF637D96),
+                  color: Color(0xFF71839A),
                 ),
               ),
             ],
+          ),
+        ),
+
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: .92),
+            shape: BoxShape.circle,
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x12000000),
+                blurRadius: 12,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.notifications_none_rounded,
+            color: Color(0xFF3F6FE8),
+            size: 23,
           ),
         ),
       ],
@@ -1343,13 +1073,24 @@ class _WelcomeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .96),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white,
+            Color(0xFFF7FBFF),
+          ],
+        ),
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x16000000),
-            blurRadius: 24,
-            offset: Offset(0, 10),
+            color: Color(0x19000000),
+            blurRadius: 25,
+            offset: Offset(0, 11),
           ),
         ],
       ),
@@ -1365,25 +1106,30 @@ class _WelcomeCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+                  horizontal: 15,
+                  vertical: 9,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD7EAFF),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFFFE99A),
+                      Color(0xFFFFD66B),
+                    ],
+                  ),
                   borderRadius:
                       BorderRadius.circular(30),
                 ),
                 child: const Text(
                   '✨ SELAMAT DATANG',
                   style: TextStyle(
-                    color: Color(0xFF1976F3),
+                    color: Color(0xFF795600),
                     fontWeight: FontWeight.w900,
                     fontSize: 12,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 15),
 
               Text(
                 'Halo, Teman Belajar! 👋',
@@ -1393,7 +1139,7 @@ class _WelcomeCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF243B5A),
+                  color: Color(0xFF283B63),
                 ),
               ),
 
@@ -1407,7 +1153,7 @@ class _WelcomeCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF637D96),
+                  color: Color(0xFF71839A),
                   height: 1.5,
                 ),
               ),
@@ -1430,14 +1176,50 @@ class _WelcomeCard extends StatelessWidget {
                 width: 150,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD7EAFF),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFE2F4FF),
+                      Color(0xFFD7EAFF),
+                    ],
+                  ),
                   borderRadius:
                       BorderRadius.circular(28),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.auto_stories_rounded,
-                  size: 65,
-                  color: Color(0xFF1976F3),
+                child: const Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned(
+                      top: 12,
+                      right: 16,
+                      child: Text(
+                        '⭐',
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 13,
+                      left: 18,
+                      child: Text(
+                        '✨',
+                        style: TextStyle(
+                          fontSize: 19,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.auto_stories_rounded,
+                      size: 65,
+                      color: Color(0xFF3F6FE8),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -1463,15 +1245,41 @@ class _GradeCard extends StatelessWidget {
 
   Color get cardColor {
     const colors = [
-      Color(0xFF1976F3),
-      Color(0xFF43C77A),
-      Color(0xFFFFB93F),
-      Color(0xFF9A6BFF),
-      Color(0xFFFF6B81),
-      Color(0xFF24B8C8),
+      Color(0xFF3F6FE8),
+      Color(0xFF55C98A),
+      Color(0xFFFFB84D),
+      Color(0xFF9A7BE3),
+      Color(0xFFFF718F),
+      Color(0xFF36B8C9),
     ];
 
     return colors[(grade - 1) % colors.length];
+  }
+
+  IconData get gradeIcon {
+    const icons = [
+      Icons.palette_rounded,
+      Icons.calculate_rounded,
+      Icons.science_rounded,
+      Icons.menu_book_rounded,
+      Icons.lightbulb_rounded,
+      Icons.rocket_launch_rounded,
+    ];
+
+    return icons[(grade - 1) % icons.length];
+  }
+
+  String get subtitle {
+    const subtitles = [
+      'Belajar dasar dengan seru',
+      'Yuk makin jago berhitung',
+      'Temukan hal-hal baru',
+      'Asah kemampuanmu',
+      'Tantang dirimu sendiri',
+      'Siap jadi bintang belajar',
+    ];
+
+    return subtitles[(grade - 1) % subtitles.length];
   }
 
   @override
@@ -1481,39 +1289,74 @@ class _GradeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .96),
-          borderRadius: BorderRadius.circular(24),
+          color: Colors.white.withValues(alpha: .97),
+          borderRadius: BorderRadius.circular(26),
           border: Border.all(
-            color: cardColor.withValues(alpha: .22),
+            color: cardColor.withValues(alpha: .20),
             width: 2,
           ),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x12000000),
-              blurRadius: 15,
-              offset: Offset(0, 7),
+              color: cardColor.withValues(alpha: .13),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+            const BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 8,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
-                color: cardColor.withValues(alpha: .12),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    cardColor.withValues(alpha: .18),
+                    cardColor.withValues(alpha: .08),
+                  ],
+                ),
                 borderRadius:
-                    BorderRadius.circular(18),
+                    BorderRadius.circular(20),
               ),
-              child: Center(
-                child: Text(
-                  '$grade',
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.w900,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    gradeIcon,
+                    size: 28,
                     color: cardColor,
                   ),
-                ),
+                  Positioned(
+                    right: 5,
+                    top: 4,
+                    child: Container(
+                      width: 19,
+                      height: 19,
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$grade',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight:
+                                FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -1531,30 +1374,40 @@ class _GradeCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF263E5D),
+                      color: Color(0xFF314566),
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
 
                   Text(
-                    grade >= 5
-                        ? 'Termasuk pilihan tema khusus'
-                        : 'Belajar sambil bermain',
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF637D96),
+                      color: Color(0xFF71839A),
                     ),
                   ),
                 ],
               ),
             ),
 
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 18,
-              color: cardColor,
+            const SizedBox(width: 8),
+
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: cardColor.withValues(alpha: .11),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_forward_rounded,
+                size: 20,
+                color: cardColor,
+              ),
             ),
           ],
         ),
@@ -1573,44 +1426,103 @@ class _FeatureSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .90),
-        borderRadius: BorderRadius.circular(26),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFFFFF),
+            Color(0xFFF7FCFF),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x15000000),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Text(
-            'Belajar Jadi Lebih Seru!',
+          const Text(
+            'Belajar Jadi Lebih Seru! 🎉',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF243B5A),
+              color: Color(0xFF283B63),
             ),
           ),
 
-          SizedBox(height: 16),
+          const SizedBox(height: 7),
 
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
-            children: [
-              _FeatureItem(
-                icon: Icons.menu_book_rounded,
-                title: 'Belajar',
-              ),
+          const Text(
+            'Belajar, bermain, dan raih prestasi bersama!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF71839A),
+            ),
+          ),
 
-              _FeatureItem(
-                icon: Icons.sports_esports_rounded,
-                title: 'Bermain',
-              ),
+          const SizedBox(height: 20),
 
-              _FeatureItem(
-                icon: Icons.emoji_events_rounded,
-                title: 'Berprestasi',
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 520) {
+                return const Column(
+                  children: [
+                    _FeatureItem(
+                      icon: Icons.menu_book_rounded,
+                      title: 'Belajar',
+                      color: Color(0xFF3F6FE8),
+                    ),
+                    SizedBox(height: 14),
+                    _FeatureItem(
+                      icon: Icons.sports_esports_rounded,
+                      title: 'Bermain',
+                      color: Color(0xFF55C98A),
+                    ),
+                    SizedBox(height: 14),
+                    _FeatureItem(
+                      icon: Icons.emoji_events_rounded,
+                      title: 'Berprestasi',
+                      color: Color(0xFFFFB84D),
+                    ),
+                  ],
+                );
+              }
+
+              return const Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly,
+                children: [
+                  _FeatureItem(
+                    icon: Icons.menu_book_rounded,
+                    title: 'Belajar',
+                    color: Color(0xFF3F6FE8),
+                  ),
+                  _FeatureItem(
+                    icon: Icons.sports_esports_rounded,
+                    title: 'Bermain',
+                    color: Color(0xFF55C98A),
+                  ),
+                  _FeatureItem(
+                    icon: Icons.emoji_events_rounded,
+                    title: 'Berprestasi',
+                    color: Color(0xFFFFB84D),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -1626,35 +1538,46 @@ class _FeatureItem extends StatelessWidget {
   const _FeatureItem({
     required this.icon,
     required this.title,
+    required this.color,
   });
 
   final IconData icon;
   final String title;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 52,
+          height: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFFD7EAFF),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withValues(alpha: .18),
+                color.withValues(alpha: .08),
+              ],
+            ),
             borderRadius:
-                BorderRadius.circular(15),
+                BorderRadius.circular(17),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF1976F3),
+            color: color,
+            size: 26,
           ),
         ),
 
-        const SizedBox(height: 7),
+        const SizedBox(width: 10),
 
         Text(
           title,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: Color(0xFF526B84),
           ),
