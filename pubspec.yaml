@@ -13,6 +13,7 @@ dependencies:
   dio: ^5.9.0
   shared_preferences: ^2.5.3
   audioplayers: ^6.5.1
+  google_fonts: ^8.2.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -34,3 +35,5 @@ flutter:
     - assets/Gambar pohon 2.jpeg
     - assets/Gambar pohon 3.jpeg
     - assets/Naik bus.jpeg
+    - assets/Anak Sd Cewek.png
+    - assets/Anak Sd Cowok.png

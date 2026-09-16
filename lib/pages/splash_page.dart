@@ -1,13 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'home_page.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({
-    super.key,
-  });
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -15,46 +14,46 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with TickerProviderStateMixin {
-  late final AnimationController _floatingController;
+  late final AnimationController _characterController;
   late final AnimationController _sunController;
   late final AnimationController _cloudController;
-  late final AnimationController _titleController;
+  late final AnimationController _cardController;
 
   @override
   void initState() {
     super.initState();
 
-    // Animasi utama yang terus berjalan.
-    _floatingController = AnimationController(
+    // Karakter bergerak terus-menerus
+    _characterController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(milliseconds: 2200),
     )..repeat(reverse: true);
 
-    // Matahari berputar sangat pelan.
+    // Matahari berputar
     _sunController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 20),
     )..repeat();
 
-    // Awan bergerak perlahan.
+    // Awan bergerak
     _cloudController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 24),
     )..repeat();
 
-    // Animasi masuk untuk tulisan.
-    _titleController = AnimationController(
+    // Animasi masuk kartu
+    _cardController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1600),
+      duration: const Duration(milliseconds: 1200),
     )..forward();
   }
 
   @override
   void dispose() {
-    _floatingController.dispose();
+    _characterController.dispose();
     _sunController.dispose();
     _cloudController.dispose();
-    _titleController.dispose();
+    _cardController.dispose();
     super.dispose();
   }
 
@@ -73,24 +72,19 @@ class _SplashPageState extends State<SplashPage>
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final height = constraints.maxHeight;
-
-          final bool desktop = width >= 900;
+          final desktop = width >= 900;
 
           return Stack(
             fit: StackFit.expand,
             children: [
-              // =========================================================
-              // BACKGROUND
-              // =========================================================
               const _SplashBackground(),
 
-              // =========================================================
+              // ============================================================
               // MATAHARI
-              // =========================================================
+              // ============================================================
               Positioned(
-                top: desktop ? 35 : 20,
-                right: desktop ? 70 : 25,
+                top: desktop ? 45 : 20,
+                right: desktop ? 70 : 20,
                 child: AnimatedBuilder(
                   animation: _sunController,
                   builder: (context, child) {
@@ -103,17 +97,18 @@ class _SplashPageState extends State<SplashPage>
                 ),
               ),
 
-              // =========================================================
+              // ============================================================
               // AWAN 1
-              // =========================================================
+              // ============================================================
               AnimatedBuilder(
                 animation: _cloudController,
                 builder: (context, child) {
-                  final t = _cloudController.value;
+                  final x = -250 +
+                      ((width + 500) * _cloudController.value);
 
                   return Positioned(
-                    top: desktop ? 65 : 50,
-                    left: -180 + ((width + 360) * t),
+                    top: desktop ? 70 : 45,
+                    left: x,
                     child: const _BigCloud(
                       scale: 1.0,
                     ),
@@ -121,9 +116,9 @@ class _SplashPageState extends State<SplashPage>
                 },
               ),
 
-              // =========================================================
+              // ============================================================
               // AWAN 2
-              // =========================================================
+              // ============================================================
               AnimatedBuilder(
                 animation: _cloudController,
                 builder: (context, child) {
@@ -131,8 +126,8 @@ class _SplashPageState extends State<SplashPage>
                       (_cloudController.value + .48) % 1;
 
                   return Positioned(
-                    top: desktop ? 150 : 115,
-                    left: -150 + ((width + 300) * t),
+                    top: desktop ? 150 : 110,
+                    left: -200 + ((width + 400) * t),
                     child: const _BigCloud(
                       scale: .72,
                     ),
@@ -140,19 +135,19 @@ class _SplashPageState extends State<SplashPage>
                 },
               ),
 
-              // =========================================================
-              // DAUN / BINTANG KECIL
-              // =========================================================
+              // ============================================================
+              // BINTANG
+              // ============================================================
               const Positioned(
-                top: 130,
-                left: 80,
+                top: 135,
+                left: 85,
                 child: _Sparkle(
                   size: 20,
                 ),
               ),
 
               const Positioned(
-                top: 230,
+                top: 225,
                 right: 170,
                 child: _Sparkle(
                   size: 14,
@@ -160,62 +155,61 @@ class _SplashPageState extends State<SplashPage>
               ),
 
               const Positioned(
-                top: 300,
-                left: 170,
+                top: 305,
+                left: 175,
                 child: _Sparkle(
                   size: 12,
                 ),
               ),
 
-              // =========================================================
-              // KONTEN UTAMA
-              // =========================================================
+              // ============================================================
+              // CONTENT UTAMA
+              // ============================================================
               Center(
                 child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
                   padding: EdgeInsets.only(
-                    top: desktop ? 25 : 20,
-                    left: 20,
-                    right: 20,
-                    bottom: desktop ? 90 : 110,
+                    top: desktop ? 20 : 10,
+                    left: desktop ? 90 : 12,
+                    right: desktop ? 90 : 12,
+                    bottom: desktop ? 95 : 105,
                   ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
-                      maxWidth: 920,
+                      maxWidth: 1120,
                     ),
-                    child: AnimatedBuilder(
-                      animation: _titleController,
-                      builder: (context, child) {
-                        final curved = CurvedAnimation(
-                          parent: _titleController,
-                          curve: Curves.easeOutBack,
-                        );
-
-                        return Opacity(
-                          opacity: _titleController.value,
-                          child: Transform.scale(
-                            scale: .88 +
-                                (curved.value * .12),
-                            child: child,
+                    child: FadeTransition(
+                      opacity: CurvedAnimation(
+                        parent: _cardController,
+                        curve: Curves.easeOut,
+                      ),
+                      child: ScaleTransition(
+                        scale: Tween<double>(
+                          begin: .90,
+                          end: 1.0,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: _cardController,
+                            curve: Curves.easeOutBack,
                           ),
-                        );
-                      },
-                      child: _SplashCard(
-                        desktop: desktop,
-                        height: height,
+                        ),
+                        child: _SplashScene(
+                          desktop: desktop,
+                          screenWidth: width,
+                          characterController:
+                              _characterController,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              // =========================================================
-              // TOMBOL MASUK DASHBOARD
-              // KANAN BAWAH, TIDAK TERLALU BESAR
-              // =========================================================
+              // ============================================================
+              // TOMBOL DASHBOARD
+              // ============================================================
               Positioned(
-                right: desktop ? 28 : 18,
-                bottom: desktop ? 24 : 18,
+                right: desktop ? 28 : 15,
+                bottom: desktop ? 22 : 15,
                 child: _EnterButton(
                   onTap: _goToDashboard,
                 ),
@@ -228,76 +222,228 @@ class _SplashPageState extends State<SplashPage>
   }
 }
 
-// =====================================================================
-// BACKGROUND SPLASH
-// =====================================================================
+// ============================================================================
+// SCENE UTAMA
+// ============================================================================
 
-class _SplashBackground extends StatelessWidget {
-  const _SplashBackground();
+class _SplashScene extends StatelessWidget {
+  const _SplashScene({
+    required this.desktop,
+    required this.screenWidth,
+    required this.characterController,
+  });
+
+  final bool desktop;
+  final double screenWidth;
+  final AnimationController characterController;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF35AEEF),
-            Color(0xFF75D4F5),
-            Color(0xFFC8F0F7),
-            Color(0xFFEAF8DD),
-          ],
-          stops: [
-            0,
-            .45,
-            .75,
-            1,
-          ],
-        ),
-      ),
-      child: CustomPaint(
-        painter: _SplashLandscapePainter(),
+    final cardWidth = desktop
+        ? 820.0
+        : math.min(screenWidth - 28, 600.0);
+
+    // Tinggi stage dipas-kan dekat tinggi kartu saja (bukan dibuat sangat
+    // tinggi), supaya karakter yang berdiri di sisi kartu tetap berada di
+    // area bawah/tengah kartu — bukan menggantung tinggi di area langit
+    // dekat matahari & awan.
+    final stageHeight = desktop ? 660.0 : 640.0;
+
+    return SizedBox(
+      width: desktop ? 1080 : cardWidth,
+      height: stageHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          // ================================================================
+          // KARTU PUTIH
+          // ================================================================
+          Positioned(
+            top: desktop ? 40 : 35,
+            child: _SplashCard(
+              desktop: desktop,
+              width: cardWidth,
+            ),
+          ),
+
+          // ================================================================
+          // ANAK COWOK
+          // UKURAN DIPERBESAR, TETAP DI SAMPING KIRI KARTU, TAPI
+          // DISANDARKAN DEKAT DASAR KARTU (TIDAK MENGAMBANG DI LANGIT)
+          // ================================================================
+          Positioned(
+            left: desktop ? -8 : -18,
+            bottom: desktop ? 12 : 10,
+            child: _AnimatedCharacter(
+              controller: characterController,
+              assetPath: 'assets/Anak Sd Cowok.png',
+              delay: 0,
+              desktop: desktop,
+            ),
+          ),
+
+          // ================================================================
+          // ANAK CEWEK
+          // UKURAN DIPERBESAR, TETAP DI SAMPING KANAN KARTU, TAPI
+          // DISANDARKAN DEKAT DASAR KARTU (TIDAK MENGAMBANG DI LANGIT)
+          // ================================================================
+          Positioned(
+            right: desktop ? -8 : -18,
+            bottom: desktop ? 12 : 10,
+            child: _AnimatedCharacter(
+              controller: characterController,
+              assetPath: 'assets/Anak Sd Cewek.png',
+              delay: math.pi * .55,
+              desktop: desktop,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// =====================================================================
-// SPLASH CARD
-// =====================================================================
+// ============================================================================
+// KARAKTER ANIMASI
+// ============================================================================
+
+class _AnimatedCharacter extends StatelessWidget {
+  const _AnimatedCharacter({
+    required this.controller,
+    required this.assetPath,
+    required this.delay,
+    required this.desktop,
+  });
+
+  final AnimationController controller;
+  final String assetPath;
+  final double delay;
+  final bool desktop;
+
+  @override
+  Widget build(BuildContext context) {
+    // ==================================================================
+    // UKURAN ASSET
+    // SEBELUMNYA 235 x 300
+    // SEKARANG DIPERBESAR JADI 320 x 410 (desktop) / 280 x 360 (mobile)
+    // ==================================================================
+    final assetWidth = desktop ? 320.0 : 280.0;
+    final assetHeight = desktop ? 410.0 : 360.0;
+
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final phase =
+            controller.value * math.pi * 2 + delay;
+
+        // Bobbing kecil saja (bukan naik-turun besar) supaya karakter
+        // tetap terasa berpijak, bukan melayang di udara.
+        final y = math.sin(phase) * 6;
+
+        // Gerak kanan kiri sedikit
+        final x = math.sin(phase * .8) * 3;
+
+        // Miring sedikit
+        final rotation =
+            math.sin(phase) * .02;
+
+        return Transform.translate(
+          // Offset y dibuat hanya mengurangi (ke atas), tidak pernah
+          // mendorong karakter turun melewati garis dasar, sehingga
+          // kakinya tetap terlihat menapak.
+          offset: Offset(x, -y.abs()),
+          child: Transform.rotate(
+            angle: rotation,
+            alignment: Alignment.bottomCenter,
+            child: child,
+          ),
+        );
+      },
+      child: SizedBox(
+        width: assetWidth,
+        height: assetHeight,
+        child: Image.asset(
+          assetPath,
+          fit: BoxFit.contain,
+          alignment: Alignment.bottomCenter,
+          errorBuilder:
+              (context, error, stackTrace) {
+            return Container(
+              width: assetWidth,
+              height: assetHeight,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(
+                  alpha: .85,
+                ),
+                borderRadius:
+                    BorderRadius.circular(25),
+              ),
+              child: const Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons
+                        .image_not_supported_rounded,
+                    size: 45,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Asset tidak ditemukan',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// KARTU UTAMA
+// ============================================================================
 
 class _SplashCard extends StatelessWidget {
   const _SplashCard({
     required this.desktop,
-    required this.height,
+    required this.width,
   });
 
   final bool desktop;
-  final double height;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
-    final double cardWidth = desktop ? 760 : 500;
-
     return Container(
-      width: cardWidth,
+      width: width,
       constraints: BoxConstraints(
-        maxWidth: 760,
-        minHeight: desktop ? 480 : 430,
-        maxHeight: desktop
-            ? math.min(height - 120, 600)
-            : 620,
+        minHeight: 510,
+        maxHeight: desktop ? 575 : 570,
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: desktop ? 45 : 25,
-        vertical: desktop ? 32 : 25,
+        horizontal: desktop ? 42 : 22,
+        vertical: desktop ? 30 : 24,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .94),
-        borderRadius: BorderRadius.circular(42),
+        color: Colors.white.withValues(
+          alpha: .94,
+        ),
+        borderRadius:
+            BorderRadius.circular(42),
         border: Border.all(
-          color: Colors.white.withValues(alpha: .85),
+          color: Colors.white.withValues(
+            alpha: .90,
+          ),
           width: 3,
         ),
         boxShadow: [
@@ -313,15 +459,16 @@ class _SplashCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ===========================================================
-          // LOGO / ICON BUKU
-          // ===========================================================
+          // ==============================================================
+          // ICON BUKU
+          // ==============================================================
           Container(
-            width: desktop ? 105 : 85,
-            height: desktop ? 105 : 85,
+            width: desktop ? 105 : 82,
+            height: desktop ? 105 : 82,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
+              gradient:
+                  const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
@@ -338,30 +485,31 @@ class _SplashCard extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Center(
-              child: Icon(
-                Icons.menu_book_rounded,
-                color: Colors.white,
-                size: 52,
-              ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              color: Colors.white,
+              size: desktop ? 52 : 42,
             ),
           ),
 
           const SizedBox(height: 14),
 
-          // ===========================================================
+          // ==============================================================
           // LABEL
-          // ===========================================================
+          // ==============================================================
           Container(
-            padding: const EdgeInsets.symmetric(
+            padding:
+                const EdgeInsets.symmetric(
               horizontal: 18,
               vertical: 8,
             ),
             decoration: BoxDecoration(
               color: const Color(0xFFE6F5FF),
-              borderRadius: BorderRadius.circular(30),
+              borderRadius:
+                  BorderRadius.circular(30),
               border: Border.all(
-                color: const Color(0xFFB9E3FF),
+                color:
+                    const Color(0xFFB9E3FF),
               ),
             ),
             child: const Text(
@@ -376,38 +524,27 @@ class _SplashCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 13),
+          const SizedBox(height: 12),
 
-          // ===========================================================
-          // JUDUL
-          // ===========================================================
-          const FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              'BELAJAR CERIA',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF234E86),
-                letterSpacing: 1,
-              ),
-            ),
-          ),
+          // ==============================================================
+          // JUDUL BELAJAR CERIA
+          // FONT PLAYFUL + WARNA WARNI
+          // ==============================================================
+          const _ColorfulTitle(),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
 
-          const Text(
+          Text(
             'Halo, Teman Belajar! 👋',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 25,
+              fontSize: desktop ? 25 : 22,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF3989F5),
+              color: const Color(0xFF3989F5),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
 
           const Text(
             'Selamat datang di dunia belajar yang seru, '
@@ -415,17 +552,17 @@ class _SplashCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
-              height: 1.45,
+              height: 1.4,
               fontWeight: FontWeight.w700,
               color: Color(0xFF617B96),
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 17),
 
-          // ===========================================================
-          // 3 FITUR
-          // ===========================================================
+          // ==============================================================
+          // FITUR
+          // ==============================================================
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 10,
@@ -437,36 +574,108 @@ class _SplashCard extends StatelessWidget {
                 color: Color(0xFF4F8FF7),
               ),
               _FeatureChip(
-                icon: Icons.sports_esports_rounded,
+                icon:
+                    Icons.sports_esports_rounded,
                 label: 'Bermain',
                 color: Color(0xFF25C78A),
               ),
               _FeatureChip(
-                icon: Icons.emoji_events_rounded,
+                icon:
+                    Icons.emoji_events_rounded,
                 label: 'Berprestasi',
                 color: Color(0xFFFFA726),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 17),
 
-          // ===========================================================
-          // ANAK SD / ILUSTRASI
-          // ===========================================================
-          SizedBox(
-            height: desktop ? 100 : 80,
-            child: _ChildrenIllustration(),
-          ),
+          const _SchoolBook(),
         ],
       ),
     );
   }
 }
 
-// =====================================================================
-// FEATURE CHIP
-// =====================================================================
+// ============================================================================
+// JUDUL WARNA-WARNI
+// ============================================================================
+
+class _ColorfulTitle extends StatelessWidget {
+  const _ColorfulTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    const title = 'BELAJAR CERIA';
+
+    // Warna dibuat bergantian seperti huruf alfabet
+    // pada gambar referensi yang kamu kirim.
+    const colors = [
+      Color(0xFF78A900),
+      Color(0xFF009DAA),
+      Color(0xFFFF8A00),
+      Color(0xFFE8274D),
+      Color(0xFF78A900),
+      Color(0xFF009DAA),
+      Color(0xFFE8274D),
+      Color(0xFFFF8A00),
+      Color(0xFF78A900),
+      Color(0xFF009DAA),
+      Color(0xFFE8274D),
+      Color(0xFF78A900),
+    ];
+
+    final spans = <TextSpan>[];
+    var colorIndex = 0;
+
+    for (final char in title.split('')) {
+      if (char == ' ') {
+        spans.add(
+          const TextSpan(
+            text: '  ',
+          ),
+        );
+        continue;
+      }
+
+      spans.add(
+        TextSpan(
+          text: char,
+          style: GoogleFonts.bubblegumSans(
+            fontSize: 58,
+            fontWeight: FontWeight.w400,
+            color:
+                colors[colorIndex % colors.length],
+            letterSpacing: 0,
+            shadows: const [
+              Shadow(
+                offset: Offset(0, 3),
+                blurRadius: 0,
+                color: Color(0x35000000),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      colorIndex++;
+    }
+
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: spans,
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// CHIP FITUR
+// ============================================================================
 
 class _FeatureChip extends StatelessWidget {
   const _FeatureChip({
@@ -482,15 +691,19 @@ class _FeatureChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding:
+          const EdgeInsets.symmetric(
         horizontal: 13,
         vertical: 9,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: .09),
-        borderRadius: BorderRadius.circular(25),
+        color:
+            color.withValues(alpha: .09),
+        borderRadius:
+            BorderRadius.circular(25),
         border: Border.all(
-          color: color.withValues(alpha: .16),
+          color:
+              color.withValues(alpha: .16),
         ),
       ),
       child: Row(
@@ -524,262 +737,9 @@ class _FeatureChip extends StatelessWidget {
   }
 }
 
-// =====================================================================
-// ILUSTRASI ANAK
-// =====================================================================
-
-class _ChildrenIllustration extends StatefulWidget {
-  @override
-  State<_ChildrenIllustration> createState() =>
-      _ChildrenIllustrationState();
-}
-
-class _ChildrenIllustrationState
-    extends State<_ChildrenIllustration>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        final y =
-            math.sin(controller.value * math.pi) * 5;
-
-        return Transform.translate(
-          offset: Offset(0, -y),
-          child: child,
-        );
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          _ChildCharacter(
-            boy: true,
-          ),
-          const SizedBox(width: 12),
-          const _SchoolBook(),
-          const SizedBox(width: 12),
-          _ChildCharacter(
-            boy: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChildCharacter extends StatelessWidget {
-  const _ChildCharacter({
-    required this.boy,
-  });
-
-  final bool boy;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 80,
-      height: 100,
-      child: CustomPaint(
-        painter: _ChildPainter(
-          boy: boy,
-        ),
-      ),
-    );
-  }
-}
-
-class _ChildPainter extends CustomPainter {
-  const _ChildPainter({
-    required this.boy,
-  });
-
-  final bool boy;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
-
-    // Kepala
-    paint.color = const Color(0xFFFFC79D);
-    canvas.drawCircle(
-      Offset(size.width / 2, 27),
-      18,
-      paint,
-    );
-
-    // Rambut
-    paint.color = boy
-        ? const Color(0xFF5B321F)
-        : const Color(0xFF3C241A);
-
-    if (boy) {
-      final hair = Path()
-        ..moveTo(23, 27)
-        ..quadraticBezierTo(
-          28,
-          3,
-          42,
-          8,
-        )
-        ..quadraticBezierTo(
-          55,
-          5,
-          58,
-          27,
-        )
-        ..close();
-
-      canvas.drawPath(hair, paint);
-    } else {
-      canvas.drawCircle(
-        Offset(size.width / 2, 22),
-        23,
-        paint,
-      );
-
-      paint.color = const Color(0xFFFF365D);
-
-      canvas.drawRect(
-        Rect.fromLTWH(
-          25,
-          8,
-          30,
-          5,
-        ),
-        paint,
-      );
-    }
-
-    // Mata
-    paint.color = const Color(0xFF35251F);
-
-    canvas.drawCircle(
-      const Offset(34, 28),
-      2.5,
-      paint,
-    );
-
-    canvas.drawCircle(
-      const Offset(46, 28),
-      2.5,
-      paint,
-    );
-
-    // Senyum
-    paint
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-
-    final smile = Path()
-      ..moveTo(35, 36)
-      ..quadraticBezierTo(
-        40,
-        41,
-        46,
-        36,
-      );
-
-    canvas.drawPath(smile, paint);
-
-    // Badan seragam
-    paint
-      ..style = PaintingStyle.fill
-      ..color = Colors.white;
-
-    final body = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        21,
-        46,
-        38,
-        40,
-      ),
-      const Radius.circular(9),
-    );
-
-    canvas.drawRRect(body, paint);
-
-    // Celana / rok
-    paint.color = boy
-        ? const Color(0xFFE83B32)
-        : const Color(0xFFE83B32);
-
-    canvas.drawRect(
-      Rect.fromLTWH(
-        23,
-        82,
-        16,
-        15,
-      ),
-      paint,
-    );
-
-    canvas.drawRect(
-      Rect.fromLTWH(
-        41,
-        82,
-        16,
-        15,
-      ),
-      paint,
-    );
-
-    // Dasi
-    paint.color = const Color(0xFFE73535);
-
-    final tie = Path()
-      ..moveTo(37, 48)
-      ..lineTo(43, 48)
-      ..lineTo(40, 70)
-      ..lineTo(37, 48)
-      ..close();
-
-    canvas.drawPath(tie, paint);
-
-    // Tangan
-    paint.color = const Color(0xFFFFC79D);
-
-    canvas.drawCircle(
-      const Offset(18, 58),
-      6,
-      paint,
-    );
-
-    canvas.drawCircle(
-      const Offset(62, 58),
-      6,
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(
-    covariant _ChildPainter oldDelegate,
-  ) {
-    return oldDelegate.boy != boy;
-  }
-}
+// ============================================================================
+// BUKU
+// ============================================================================
 
 class _SchoolBook extends StatelessWidget {
   const _SchoolBook();
@@ -787,31 +747,39 @@ class _SchoolBook extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 68,
-      height: 55,
+      width: 82,
+      height: 60,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFC94A),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        gradient:
+            const LinearGradient(
+          colors: [
+            Color(0xFFFFD75A),
+            Color(0xFFFFB82E),
+          ],
+        ),
+        borderRadius:
+            BorderRadius.circular(14),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x228B6A36),
-            blurRadius: 8,
-            offset: Offset(0, 4),
+            color: const Color(0xFF8B6A36)
+                .withValues(alpha: .20),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: const Icon(
         Icons.menu_book_rounded,
         color: Colors.white,
-        size: 35,
+        size: 38,
       ),
     );
   }
 }
 
-// =====================================================================
-// TOMBOL MASUK
-// =====================================================================
+// ============================================================================
+// TOMBOL MASUK DASHBOARD
+// ============================================================================
 
 class _EnterButton extends StatefulWidget {
   const _EnterButton({
@@ -825,35 +793,38 @@ class _EnterButton extends StatefulWidget {
       _EnterButtonState();
 }
 
-class _EnterButtonState extends State<_EnterButton>
+class _EnterButtonState
+    extends State<_EnterButton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration:
+          const Duration(milliseconds: 900),
     )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: controller,
+      animation: _controller,
       builder: (context, child) {
-        final value = controller.value;
-
         return Transform.translate(
-          offset: Offset(value * 3, 0),
+          offset: Offset(
+            _controller.value * 4,
+            0,
+          ),
           child: child,
         );
       },
@@ -861,31 +832,39 @@ class _EnterButtonState extends State<_EnterButton>
         color: Colors.transparent,
         child: InkWell(
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius:
+              BorderRadius.circular(18),
           child: Container(
-            padding: const EdgeInsets.symmetric(
+            padding:
+                const EdgeInsets.symmetric(
               horizontal: 18,
               vertical: 12,
             ),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              gradient:
+                  const LinearGradient(
                 colors: [
                   Color(0xFF4F8FF7),
                   Color(0xFF2875E8),
                 ],
               ),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius:
+                  BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2875E8)
-                      .withValues(alpha: .28),
+                  color:
+                      const Color(0xFF2875E8)
+                          .withValues(
+                    alpha: .28,
+                  ),
                   blurRadius: 16,
                   offset: const Offset(0, 7),
                 ),
               ],
             ),
             child: const Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize:
+                  MainAxisSize.min,
               children: [
                 Icon(
                   Icons.arrow_forward_rounded,
@@ -910,9 +889,9 @@ class _EnterButtonState extends State<_EnterButton>
   }
 }
 
-// =====================================================================
+// ============================================================================
 // MATAHARI
-// =====================================================================
+// ============================================================================
 
 class _AnimatedSun extends StatelessWidget {
   const _AnimatedSun();
@@ -920,15 +899,19 @@ class _AnimatedSun extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 105,
-      height: 105,
+      width: 110,
+      height: 110,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFFFFCE4F),
+        color:
+            const Color(0xFFFFCE4F),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFC94A)
-                .withValues(alpha: .35),
+            color:
+                const Color(0xFFFFC94A)
+                    .withValues(
+              alpha: .35,
+            ),
             blurRadius: 35,
             spreadRadius: 12,
           ),
@@ -938,16 +921,16 @@ class _AnimatedSun extends StatelessWidget {
         child: Icon(
           Icons.sentiment_satisfied_alt_rounded,
           color: Color(0xFFFFF3BF),
-          size: 55,
+          size: 58,
         ),
       ),
     );
   }
 }
 
-// =====================================================================
+// ============================================================================
 // AWAN
-// =====================================================================
+// ============================================================================
 
 class _BigCloud extends StatelessWidget {
   const _BigCloud({
@@ -960,45 +943,46 @@ class _BigCloud extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scale: scale,
-      alignment: Alignment.center,
       child: SizedBox(
-        width: 220,
-        height: 100,
+        width: 230,
+        height: 105,
         child: Stack(
-          clipBehavior: Clip.none,
           children: [
             Positioned(
               left: 20,
               right: 20,
               bottom: 10,
               child: Container(
-                height: 42,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .92),
+                  color:
+                      Colors.white.withValues(
+                    alpha: .92,
+                  ),
                   borderRadius:
                       BorderRadius.circular(30),
                 ),
               ),
             ),
-            Positioned(
+            const Positioned(
               left: 35,
               bottom: 25,
               child: _CloudCircle(
-                size: 58,
+                size: 60,
               ),
             ),
-            Positioned(
-              left: 78,
+            const Positioned(
+              left: 82,
               bottom: 38,
               child: _CloudCircle(
-                size: 72,
+                size: 75,
               ),
             ),
-            Positioned(
+            const Positioned(
               right: 35,
               bottom: 27,
               child: _CloudCircle(
-                size: 56,
+                size: 58,
               ),
             ),
           ],
@@ -1022,15 +1006,18 @@ class _CloudCircle extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: .94),
+        color:
+            Colors.white.withValues(
+          alpha: .94,
+        ),
       ),
     );
   }
 }
 
-// =====================================================================
+// ============================================================================
 // SPARKLE
-// =====================================================================
+// ============================================================================
 
 class _Sparkle extends StatelessWidget {
   const _Sparkle({
@@ -1049,23 +1036,70 @@ class _Sparkle extends StatelessWidget {
   }
 }
 
-// =====================================================================
-// LANDSCAPE
-// =====================================================================
+// ============================================================================
+// BACKGROUND
+// ============================================================================
 
-class _SplashLandscapePainter extends CustomPainter {
+class _SplashBackground
+    extends StatelessWidget {
+  const _SplashBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration:
+          const BoxDecoration(
+        gradient:
+            LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF35AEEF),
+            Color(0xFF75D4F5),
+            Color(0xFFC8F0F7),
+            Color(0xFFEAF8DD),
+          ],
+          stops: [
+            0,
+            .45,
+            .75,
+            1,
+          ],
+        ),
+      ),
+      child: const CustomPaint(
+        painter:
+            _SplashLandscapePainter(),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// LANDSCAPE / BUKIT / POHON
+// ============================================================================
+
+class _SplashLandscapePainter
+    extends CustomPainter {
   const _SplashLandscapePainter();
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
     final paint = Paint()
       ..style = PaintingStyle.fill;
 
-    // Bukit belakang
-    paint.color = const Color(0xFF9BDF8A);
+    // Bukit belakang.
+    paint.color =
+        const Color(0xFF9BDF8A);
 
     final backHill = Path()
-      ..moveTo(0, size.height * .82)
+      ..moveTo(
+        0,
+        size.height * .82,
+      )
       ..quadraticBezierTo(
         size.width * .20,
         size.height * .70,
@@ -1078,17 +1112,30 @@ class _SplashLandscapePainter extends CustomPainter {
         size.width,
         size.height * .73,
       )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
+      ..lineTo(
+        size.width,
+        size.height,
+      )
+      ..lineTo(
+        0,
+        size.height,
+      )
       ..close();
 
-    canvas.drawPath(backHill, paint);
+    canvas.drawPath(
+      backHill,
+      paint,
+    );
 
-    // Bukit depan
-    paint.color = const Color(0xFF68C96B);
+    // Bukit depan.
+    paint.color =
+        const Color(0xFF68C96B);
 
     final frontHill = Path()
-      ..moveTo(0, size.height * .89)
+      ..moveTo(
+        0,
+        size.height * .89,
+      )
       ..quadraticBezierTo(
         size.width * .18,
         size.height * .79,
@@ -1101,27 +1148,36 @@ class _SplashLandscapePainter extends CustomPainter {
         size.width,
         size.height * .84,
       )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
+      ..lineTo(
+        size.width,
+        size.height,
+      )
+      ..lineTo(
+        0,
+        size.height,
+      )
       ..close();
 
-    canvas.drawPath(frontHill, paint);
+    canvas.drawPath(
+      frontHill,
+      paint,
+    );
 
-    // Pohon kiri
+    // Pohon kiri.
     _drawTree(
       canvas,
       Offset(
-        25,
+        28,
         size.height * .83,
       ),
       1.0,
     );
 
-    // Pohon kanan
+    // Pohon kanan.
     _drawTree(
       canvas,
       Offset(
-        size.width - 25,
+        size.width - 28,
         size.height * .83,
       ),
       .9,
@@ -1136,8 +1192,9 @@ class _SplashLandscapePainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.fill;
 
-    // Batang
-    paint.color = const Color(0xFF8A542F);
+    // Batang.
+    paint.color =
+        const Color(0xFF8A542F);
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -1149,13 +1206,16 @@ class _SplashLandscapePainter extends CustomPainter {
           width: 30 * scale,
           height: 130 * scale,
         ),
-        Radius.circular(10 * scale),
+        Radius.circular(
+          10 * scale,
+        ),
       ),
       paint,
     );
 
-    // Daun
-    paint.color = const Color(0xFF45A95B);
+    // Daun.
+    paint.color =
+        const Color(0xFF45A95B);
 
     canvas.drawCircle(
       Offset(
@@ -1184,7 +1244,9 @@ class _SplashLandscapePainter extends CustomPainter {
       paint,
     );
 
-    paint.color = const Color(0xFF6FD36D);
+    // Highlight daun.
+    paint.color =
+        const Color(0xFF6FD36D);
 
     canvas.drawCircle(
       Offset(
